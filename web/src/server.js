@@ -16,7 +16,20 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
-
+app.get("/", (_req, res) => {
+  res.send(`
+    <html>
+      <head>
+        <title>Skinin Ingredient Checker</title>
+      </head>
+      <body style="font-family: sans-serif; padding: 24px;">
+        <h1>Skinin Ingredient Checker</h1>
+        <p>App server is running on Railway.</p>
+        <p>Use the Shopify theme app extension to check cosmetic ingredients.</p>
+      </body>
+    </html>
+  `);
+});
 app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Skinin Ingredient Checker" });
 });
