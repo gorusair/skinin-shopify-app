@@ -1,0 +1,7 @@
+name = "web"
+roles = ["frontend", "backend"]
+auth_callback_path = ["/auth/callback"]
+
+[commands]
+dev = "npm run server:dev"
+build = "echo 'No web build step required for Express-only app'"

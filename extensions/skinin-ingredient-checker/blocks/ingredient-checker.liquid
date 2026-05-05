@@ -1,0 +1,41 @@
+{% comment %}
+  Renders a product page ingredient checker button.
+{% endcomment %}
+
+{% if product %}
+  <div
+    class="skinin-ingredient-checker"
+    data-shop="{{ shop.permanent_domain | escape }}"
+    data-product-id="{{ product.id }}"
+    data-product-title="{{ product.title | escape }}"
+    data-app-url="{{ block.settings.app_url | escape }}"
+  >
+    <script type="application/json" data-skinin-product>
+      {
+        "description": {{ product.description | strip_html | json }},
+        "metafieldIngredients": {{ product.metafields.skinin.ingredients.value | default: product.metafields.custom.ingredients.value | json }}
+      }
+    </script>
+
+    <button type="button" class="skinin-check-button">
+      Check Ingredients
+    </button>
+  </div>
+
+  {{ 'skinin-ingredient-checker.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'skinin-ingredient-checker.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Ingredient checker",
+  "target": "section",
+  "settings": [
+    {
+      "type": "url",
+      "id": "app_url",
+      "label": "App backend URL"
+    }
+  ]
+}
+{% endschema %}

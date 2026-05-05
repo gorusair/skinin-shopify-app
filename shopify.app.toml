@@ -1,0 +1,25 @@
+name = "Skinin Ingredient Checker"
+handle = "skinin-ingredient-checker"
+client_id = "ad670221e1d6929bc51cf5a88084f53a"
+application_url = "https://quality-battered-daredevil.ngrok-free.dev"
+embedded = true
+web_directories = ["web"]
+
+[build]
+automatically_update_urls_on_dev = true
+
+[access_scopes]
+scopes = "read_products,read_product_listings"
+
+[auth]
+redirect_urls = [
+  "https://quality-battered-daredevil.ngrok-free.dev/auth/callback"
+]
+
+[webhooks]
+api_version = "2026-04"
+
+[[extensions]]
+name = "Skinin Ingredient Checker"
+handle = "skinin-ingredient-checker"
+type = "theme"
