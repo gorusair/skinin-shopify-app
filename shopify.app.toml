@@ -1,23 +1,28 @@
-name = "Skinin Ingredient Checker"
-handle = "skinin-ingredient-checker"
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
 client_id = "ad670221e1d6929bc51cf5a88084f53a"
-application_url = "https://quality-battered-daredevil.ngrok-free.dev"
+web_directories = [ "web" ]
+name = "Skinin Ingredient Checker"
+application_url = "https://skinin-shopify-app-production.up.railway.app"
 embedded = true
-web_directories = ["web"]
+handle = "skinin-ingredient-checker"
 
 [build]
 automatically_update_urls_on_dev = true
 
+[webhooks]
+api_version = "2026-04"
+
 [access_scopes]
-scopes = "read_products,read_product_listings"
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+optional_scopes = [ ]
+use_legacy_install_flow = false
 
 [auth]
 redirect_urls = [
-  "https://quality-battered-daredevil.ngrok-free.dev/auth/callback"
+  "https://skinin-shopify-app-production.up.railway.app/auth/callback"
 ]
-
-[webhooks]
-api_version = "2026-04"
 
 [[extensions]]
 name = "Skinin Ingredient Checker"
