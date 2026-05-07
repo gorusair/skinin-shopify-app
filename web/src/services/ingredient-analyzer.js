@@ -41,19 +41,24 @@ async function fetchIngredientData(name) {
       params: {
         search_terms: name,
         categories_tags_en: "cosmetics",
-        fields: "product_name,ingredients_text,ingredients_analysis_tags,ingredients_tags,categories_tags",
+        fields:
+          "product_name,ingredients_text,ingredients_analysis_tags,ingredients_tags,categories_tags",
         page_size: 5,
-        json: 1
+        json: 1,
       },
       timeout: 6000,
       headers: {
-        "User-Agent": "SkininIngredientChecker/0.1.0"
-      }
+        "User-Agent": "SkininIngredientChecker/0.1.0",
+      },
     });
 
-    return response.data;
+    return response.data?.products?.[0] || null;
   } catch (error) {
-    console.warn(`Open Beauty Facts lookup failed for "${name}": ${error.message}`);
+    console.warn(
+      `Open Beauty Facts lookup failed for ingredient: ${name}`,
+      error.message
+    );
+
     return null;
   }
 }
