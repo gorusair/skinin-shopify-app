@@ -11,13 +11,15 @@
   justify-content: center;
   min-height: 44px;
   padding: 0 18px;
+  transition: background 0.2s;
 }
-
+.skinin-check-button:hover {
+  background: #1f2937;
+}
 .skinin-check-button:disabled {
   cursor: wait;
   opacity: 0.7;
 }
-
 .skinin-modal-overlay {
   align-items: center;
   background: rgba(17, 24, 39, 0.58);
@@ -31,10 +33,9 @@
   top: 0;
   z-index: 2147483000;
 }
-
 .skinin-modal {
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 24px 80px rgba(17, 24, 39, 0.28);
   color: #111827;
   max-height: min(720px, 90vh);
@@ -42,86 +43,120 @@
   overflow: hidden;
   width: 100%;
 }
-
 .skinin-modal-header {
   align-items: center;
-  border-bottom: 1px solid #e5e7eb;
+  background: #111827;
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   padding: 18px 20px;
 }
-
 .skinin-modal-header h2 {
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.2;
   margin: 0;
+  color: #ffffff;
 }
-
 .skinin-modal-close {
-  background: transparent;
+  background: rgba(255,255,255,0.15);
   border: 0;
-  color: #4b5563;
+  border-radius: 50%;
+  color: #ffffff;
   cursor: pointer;
   font: inherit;
-  font-size: 22px;
-  line-height: 1;
-  padding: 4px;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.skinin-modal-close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* 요약 배너 */
+.skinin-summary {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.skinin-summary-safe {
+  background: #f0fdf4;
+  color: #166534;
+}
+.skinin-summary-caution {
+  background: #fffbeb;
+  color: #92400e;
+}
+.skinin-summary-avoid {
+  background: #fff1f2;
+  color: #991b1b;
 }
 
 .skinin-modal-list {
   display: grid;
   gap: 0;
-  max-height: calc(90vh - 82px);
+  max-height: calc(90vh - 130px);
   overflow: auto;
 }
-
 .skinin-modal-item {
   align-items: center;
   border-bottom: 1px solid #f3f4f6;
   display: flex;
   gap: 16px;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 20px;
 }
-
+.skinin-modal-item:last-child {
+  border-bottom: 0;
+}
+.skinin-item-info {
+  flex: 1;
+}
 .skinin-modal-item h3 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1.3;
-  margin: 0 0 4px;
+  margin: 0 0 2px;
 }
-
-.skinin-modal-item p {
-  color: #4b5563;
-  font-size: 14px;
+.skinin-function {
+  color: #6b7280;
+  font-size: 13px;
   line-height: 1.4;
   margin: 0;
 }
-
+.skinin-reason {
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 3px 0 0;
+}
 .skinin-rating {
   border-radius: 999px;
   flex: 0 0 auto;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1;
-  padding: 7px 10px;
+  padding: 6px 12px;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
-
 .skinin-rating-safe {
   background: #dcfce7;
   color: #166534;
 }
-
-.skinin-rating-moderate {
+.skinin-rating-caution {
   background: #fef3c7;
   color: #92400e;
 }
-
 .skinin-rating-avoid {
   background: #fee2e2;
   color: #991b1b;
 }
-
 @media (max-width: 520px) {
   .skinin-modal-item {
     align-items: flex-start;
