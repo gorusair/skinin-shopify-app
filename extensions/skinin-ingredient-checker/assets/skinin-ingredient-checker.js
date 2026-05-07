@@ -87,11 +87,11 @@
 
     let summaryHtml = "";
     if (avoidCount > 0) {
-      summaryHtml = `<div class="skinin-summary skinin-summary-avoid">⚠️ 주의가 필요한 성분 ${avoidCount}개가 발견되었습니다.</div>`;
+      summaryHtml = `<div class="skinin-summary skinin-summary-avoid">⚠️ ${avoidCount} ingredient(s) require attention.</div>`;
     } else if (cautionCount > 0) {
-      summaryHtml = `<div class="skinin-summary skinin-summary-caution">💛 확인이 필요한 성분 ${cautionCount}개가 있습니다.</div>`;
+      summaryHtml = `<div class="skinin-summary skinin-summary-caution">💛 ${cautionCount} ingredient(s) need review.</div>`;
     } else {
-      summaryHtml = `<div class="skinin-summary skinin-summary-safe">✅ 모든 성분이 안전합니다.</div>`;
+      summaryHtml = `<div class="skinin-summary skinin-summary-safe">✅ All ingredients are safe.</div>`;
     }
 
     const overlay = document.createElement("div");

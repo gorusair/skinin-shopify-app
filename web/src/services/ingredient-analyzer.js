@@ -2,52 +2,52 @@ import axios from "axios";
 
 const DEFAULT_BASE_URL = "https://world.openbeautyfacts.org/api/v2";
 
-// 성분별 직접 안전등급 매핑
+// Direct safety rating mapping by ingredient
 const INGREDIENT_SAFETY = {
   // AVOID
-  "fragrance": { rating: "avoid", function: "fragrance", reason: "알레르기 유발 가능성" },
-  "perfume": { rating: "avoid", function: "fragrance", reason: "알레르기 유발 가능성" },
-  "alcohol denat": { rating: "avoid", function: "solvent", reason: "피부 자극" },
-  "denatured alcohol": { rating: "avoid", function: "solvent", reason: "피부 자극" },
-  "formaldehyde": { rating: "avoid", function: "preservative", reason: "발암 가능 물질" },
-  "parabens": { rating: "avoid", function: "preservative", reason: "호르몬 교란 가능성" },
-  "methylparaben": { rating: "avoid", function: "preservative", reason: "호르몬 교란 가능성" },
-  "propylparaben": { rating: "avoid", function: "preservative", reason: "호르몬 교란 가능성" },
-  "oxybenzone": { rating: "avoid", function: "UV filter", reason: "호르몬 교란 가능성" },
+  "fragrance": { rating: "avoid", function: "fragrance", reason: "Potential allergen" },
+  "perfume": { rating: "avoid", function: "fragrance", reason: "Potential allergen" },
+  "alcohol denat": { rating: "avoid", function: "solvent", reason: "Skin irritant" },
+  "denatured alcohol": { rating: "avoid", function: "solvent", reason: "Skin irritant" },
+  "formaldehyde": { rating: "avoid", function: "preservative", reason: "Potential carcinogen" },
+  "parabens": { rating: "avoid", function: "preservative", reason: "Potential hormone disruptor" },
+  "methylparaben": { rating: "avoid", function: "preservative", reason: "Potential hormone disruptor" },
+  "propylparaben": { rating: "avoid", function: "preservative", reason: "Potential hormone disruptor" },
+  "oxybenzone": { rating: "avoid", function: "UV filter", reason: "Potential hormone disruptor" },
 
   // CAUTION
-  "sodium lauryl sulfate": { rating: "caution", function: "cleansing", reason: "민감성 피부 자극 가능" },
-  "sls": { rating: "caution", function: "cleansing", reason: "민감성 피부 자극 가능" },
-  "sodium laureth sulfate": { rating: "caution", function: "cleansing", reason: "자극 가능성" },
-  "phenoxyethanol": { rating: "caution", function: "preservative", reason: "고농도 시 자극 가능" },
-  "benzyl alcohol": { rating: "caution", function: "preservative", reason: "민감성 피부 주의" },
-  "citric acid": { rating: "caution", function: "pH adjuster", reason: "고농도 시 자극 가능" },
-  "retinol": { rating: "caution", function: "anti-aging", reason: "임산부 주의" },
-  "salicylic acid": { rating: "caution", function: "exfoliating", reason: "민감성 피부 주의" },
+  "sodium lauryl sulfate": { rating: "caution", function: "cleansing", reason: "May irritate sensitive skin" },
+  "sls": { rating: "caution", function: "cleansing", reason: "May irritate sensitive skin" },
+  "sodium laureth sulfate": { rating: "caution", function: "cleansing", reason: "Potential irritant" },
+  "phenoxyethanol": { rating: "caution", function: "preservative", reason: "May irritate at high concentrations" },
+  "benzyl alcohol": { rating: "caution", function: "preservative", reason: "Use with caution on sensitive skin" },
+  "citric acid": { rating: "caution", function: "pH adjuster", reason: "May irritate at high concentrations" },
+  "retinol": { rating: "caution", function: "anti-aging", reason: "Caution for pregnant women" },
+  "salicylic acid": { rating: "caution", function: "exfoliating", reason: "Use with caution on sensitive skin" },
 
   // SAFE
-  "water": { rating: "safe", function: "solvent", reason: "안전한 성분" },
-  "aqua": { rating: "safe", function: "solvent", reason: "안전한 성분" },
-  "glycerin": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "glycerol": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "niacinamide": { rating: "safe", function: "brightening", reason: "피부 개선 효과" },
-  "panthenol": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "tocopherol": { rating: "safe", function: "antioxidant", reason: "비타민 E" },
-  "hyaluronic acid": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "sodium hyaluronate": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "butylene glycol": { rating: "safe", function: "moisturizing", reason: "안전한 보습제" },
-  "propylene glycol": { rating: "safe", function: "moisturizing", reason: "일반적으로 안전" },
-  "cetyl alcohol": { rating: "safe", function: "emollient", reason: "안전한 유화제" },
-  "dimethicone": { rating: "safe", function: "emollient", reason: "안전한 실리콘" },
-  "zinc oxide": { rating: "safe", function: "UV filter", reason: "안전한 자외선 차단제" },
-  "titanium dioxide": { rating: "safe", function: "UV filter", reason: "안전한 자외선 차단제" },
-  "aloe vera": { rating: "safe", function: "soothing", reason: "진정 효과" },
-  "aloe barbadensis": { rating: "safe", function: "soothing", reason: "진정 효과" },
-  "centella asiatica": { rating: "safe", function: "soothing", reason: "진정 및 재생 효과" },
-  "ceramide": { rating: "safe", function: "barrier", reason: "피부 장벽 강화" },
-  "adenosine": { rating: "safe", function: "anti-aging", reason: "주름 개선 효과" },
-  "ascorbic acid": { rating: "safe", function: "brightening", reason: "비타민 C" },
-  "vitamin c": { rating: "safe", function: "brightening", reason: "비타민 C" },
+  "water": { rating: "safe", function: "solvent", reason: "Safe ingredient" },
+  "aqua": { rating: "safe", function: "solvent", reason: "Safe ingredient" },
+  "glycerin": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "glycerol": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "niacinamide": { rating: "safe", function: "brightening", reason: "Skin conditioning" },
+  "panthenol": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "tocopherol": { rating: "safe", function: "antioxidant", reason: "Vitamin E" },
+  "hyaluronic acid": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "sodium hyaluronate": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "butylene glycol": { rating: "safe", function: "moisturizing", reason: "Safe moisturizer" },
+  "propylene glycol": { rating: "safe", function: "moisturizing", reason: "Generally safe" },
+  "cetyl alcohol": { rating: "safe", function: "emollient", reason: "Safe emulsifier" },
+  "dimethicone": { rating: "safe", function: "emollient", reason: "Safe silicone" },
+  "zinc oxide": { rating: "safe", function: "UV filter", reason: "Safe UV filter" },
+  "titanium dioxide": { rating: "safe", function: "UV filter", reason: "Safe UV filter" },
+  "aloe vera": { rating: "safe", function: "soothing", reason: "Soothing effect" },
+  "aloe barbadensis": { rating: "safe", function: "soothing", reason: "Soothing effect" },
+  "centella asiatica": { rating: "safe", function: "soothing", reason: "Soothing and regenerating" },
+  "ceramide": { rating: "safe", function: "barrier", reason: "Strengthens skin barrier" },
+  "adenosine": { rating: "safe", function: "anti-aging", reason: "Anti-wrinkle effect" },
+  "ascorbic acid": { rating: "safe", function: "brightening", reason: "Vitamin C" },
+  "vitamin c": { rating: "safe", function: "brightening", reason: "Vitamin C" },
 };
 
 export async function analyzeIngredients(ingredients) {
@@ -57,7 +57,7 @@ export async function analyzeIngredients(ingredients) {
 async function analyzeIngredient(name) {
   const normalizedName = name.trim().toLowerCase();
   
-  // 1. 직접 DB에서 먼저 검색
+  // 1. Search the direct DB first
   const directMatch = findIngredientMatch(normalizedName);
   if (directMatch) {
     return {
@@ -69,7 +69,7 @@ async function analyzeIngredient(name) {
     };
   }
 
-  // 2. DB에 없으면 Open Beauty Facts API 시도
+  // 2. Try the Open Beauty Facts API if not found in the DB
   const openBeautyFactsData = await fetchIngredientData(normalizedName);
   const searchText = JSON.stringify(openBeautyFactsData || {}).toLowerCase();
 
@@ -77,16 +77,16 @@ async function analyzeIngredient(name) {
     name: name.trim(),
     safetyRating: getSafetyRating(searchText),
     function: getIngredientFunction(searchText),
-    reason: "API 데이터 기반",
+    reason: "Based on API data",
     source: openBeautyFactsData ? "open_beauty_facts" : "fallback"
   };
 }
 
 function findIngredientMatch(name) {
-  // 정확히 일치
+  // Exact match
   if (INGREDIENT_SAFETY[name]) return INGREDIENT_SAFETY[name];
   
-  // 부분 일치 (예: "fragrance." → "fragrance")
+  // Partial match (for example, "fragrance." -> "fragrance")
   for (const [key, value] of Object.entries(INGREDIENT_SAFETY)) {
     if (name.includes(key) || key.includes(name)) {
       return value;
