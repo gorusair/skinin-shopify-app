@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 
+import { checkBilling } from "../middleware/billing.js";
 import { analyzeIngredients } from "../services/ingredient-analyzer.js";
 import { saveIngredientCheck } from "../services/firestore.js";
 
@@ -13,7 +14,7 @@ const analyzeRequestSchema = z.object({
   ingredients: z.array(z.string().min(1)).min(1)
 });
 
-router.post("/analyze", async (req, res, next) => {
+router.post("/analyze", checkBilling, async (req, res, next) => {
   try {
     const payload = analyzeRequestSchema.parse(req.body);
     const analysis = await analyzeIngredients(payload.ingredients);
