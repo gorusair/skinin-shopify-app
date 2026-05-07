@@ -18,12 +18,16 @@ router.post("/analyze", async (req, res, next) => {
     const payload = analyzeRequestSchema.parse(req.body);
     const analysis = await analyzeIngredients(payload.ingredients);
 
-    await saveIngredientCheck({
-      shop: payload.shop,
-      productId: payload.productId,
-      productTitle: payload.productTitle,
-      ingredients: analysis
-    });
+    try {
+      await saveIngredientCheck({
+        shop: payload.shop,
+        productId: payload.productId,
+        productTitle: payload.productTitle,
+        ingredients: analysis
+      });
+    } catch (saveError) {
+      console.warn("Failed to save ingredient check", saveError.message);
+    }
 
     res.json({ ingredients: analysis });
   } catch (error) {
