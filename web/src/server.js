@@ -44,7 +44,7 @@
         </head>
         <body style="font-family: sans-serif; padding: 24px;">
           <h1>Skinin Ingredient Checker</h1>
-          <p>App server is running on Railway.</p>
+          <p>App server is running on Render.</p>
           <p>Use the Shopify theme app extension to check cosmetic ingredients.</p>
         </body>
       </html>
