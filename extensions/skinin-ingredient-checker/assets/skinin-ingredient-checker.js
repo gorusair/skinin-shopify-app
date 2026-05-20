@@ -113,7 +113,9 @@
   function openModal(ingredients, options = {}) {
     closeModal();
 
-    const summaryHtml = renderSummary(ingredients, options.status);
+    const status = normalizeModalStatus(ingredients, options.status);
+    const summaryHtml = renderSummary(ingredients, status);
+    const bodyHtml = renderMessage(status);
     const listHtml = ingredients.length
       ? `
         <div class="skinin-modal-list">
@@ -131,6 +133,7 @@
           <button type="button" class="skinin-modal-close" aria-label="Close">✕</button>
         </div>
         ${summaryHtml}
+        ${bodyHtml}
         ${listHtml}
       </div>
     `;
@@ -146,12 +149,16 @@
     document.body.appendChild(overlay);
   }
 
+  function normalizeModalStatus(ingredients, status) {
+    if (status) return status;
+    return ingredients.length ? "results" : "empty";
+  }
+
   function renderSummary(ingredients, status) {
     if (status === "empty") {
       return `
         <div class="skinin-summary skinin-summary-neutral">
-          <strong>No ingredient data found.</strong>
-          <span>Add ingredients to the product description to run a check.</span>
+          No ingredient data found.
         </div>
       `;
     }
@@ -159,7 +166,7 @@
     if (status === "not_ingredient_product") {
       return `
         <div class="skinin-summary skinin-summary-neutral">
-          <span>This product doesn't appear to contain ingredient information.</span>
+          No ingredient data found.
         </div>
       `;
     }
@@ -167,8 +174,7 @@
     if (status === "error") {
       return `
         <div class="skinin-summary skinin-summary-caution">
-          <strong>We couldn't check this product right now.</strong>
-          <span>Please try again in a moment.</span>
+          We couldn't check this product right now.
         </div>
       `;
     }
@@ -187,7 +193,35 @@
       return `<div class="skinin-summary ${summaryClass}">${message}</div>`;
     }
 
-    return `<div class="skinin-summary skinin-summary-safe">All detected ingredients look safe.</div>`;
+    return `<div class="skinin-summary skinin-summary-safe">All ingredients look good.</div>`;
+  }
+
+  function renderMessage(status) {
+    if (status === "empty") {
+      return `
+        <div class="skinin-modal-message">
+          Add ingredients to the product description to run a check.
+        </div>
+      `;
+    }
+
+    if (status === "not_ingredient_product") {
+      return `
+        <div class="skinin-modal-message">
+          This product doesn't appear to contain ingredient information.
+        </div>
+      `;
+    }
+
+    if (status === "error") {
+      return `
+        <div class="skinin-modal-message">
+          Please try again in a moment.
+        </div>
+      `;
+    }
+
+    return "";
   }
 
   function closeModal() {
