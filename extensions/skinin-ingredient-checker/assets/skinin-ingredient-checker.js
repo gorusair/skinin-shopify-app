@@ -3,7 +3,7 @@
     "ingredients",
     "ingredient list",
     "inci",
-    "full ingredients"
+    "full ingredients",
   ];
 
   document.addEventListener("click", async (event) => {
@@ -12,34 +12,38 @@
 
     const root = button.closest(".skinin-ingredient-checker");
     const productData = readProductData(root);
-    const ingredients = extractIngredients(productData);
+    const ingredientResult = extractIngredients(productData);
+    const ingredients = ingredientResult.ingredients;
 
     if (!ingredients.length) {
-      openModal([{ name: "No ingredients found", safetyRating: "caution", function: "Add ingredients to the product description.", reason: "" }]);
+      openModal([], { status: ingredientResult.status });
       return;
     }
 
     button.disabled = true;
-    button.textContent = "Checking...";
+    button.textContent = "Checking ingredients...";
 
     try {
-      const response = await fetch(`${root.dataset.appUrl}/api/ingredients/analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shop: root.dataset.shop,
-          productId: root.dataset.productId,
-          productTitle: root.dataset.productTitle,
-          ingredients
-        })
-      });
+      const response = await fetch(
+        `${root.dataset.appUrl}/api/ingredients/analyze`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop: root.dataset.shop,
+            productId: root.dataset.productId,
+            productTitle: root.dataset.productTitle,
+            ingredients,
+          }),
+        },
+      );
 
-      if (!response.ok) throw new Error("Ingredient analysis failed");
+      if (!response.ok) throw new Error("Ingredient check request failed");
 
       const result = await response.json();
       openModal(result.ingredients || []);
-    } catch (error) {
-      openModal([{ name: "Unable to check ingredients", safetyRating: "caution", function: error.message, reason: "" }]);
+    } catch (_error) {
+      openModal([], { status: "error" });
     } finally {
       button.disabled = false;
       button.textContent = "Check Ingredients";
@@ -57,18 +61,42 @@
 
   function extractIngredients(productData) {
     const metafieldIngredients = productData.metafieldIngredients;
-    if (Array.isArray(metafieldIngredients)) return cleanIngredients(metafieldIngredients);
-    if (typeof metafieldIngredients === "string" && metafieldIngredients.trim()) return splitIngredients(metafieldIngredients);
-    return splitIngredients(findIngredientText(productData.description || ""));
+    if (Array.isArray(metafieldIngredients)) {
+      return {
+        ingredients: cleanIngredients(metafieldIngredients),
+        status: "empty",
+      };
+    }
+    if (
+      typeof metafieldIngredients === "string" &&
+      metafieldIngredients.trim()
+    ) {
+      return {
+        ingredients: splitIngredients(metafieldIngredients),
+        status: "empty",
+      };
+    }
+
+    const description = productData.description || "";
+    const ingredientText = findIngredientText(description);
+    if (ingredientText !== null) {
+      return { ingredients: splitIngredients(ingredientText), status: "empty" };
+    }
+
+    return {
+      ingredients: [],
+      status: description.trim() ? "not_ingredient_product" : "empty",
+    };
   }
 
   function findIngredientText(description) {
     const lowerDescription = description.toLowerCase();
     for (const label of INGREDIENT_LABELS) {
       const index = lowerDescription.indexOf(label);
-      if (index >= 0) return description.slice(index + label.length).replace(/^[:\s-]+/, "");
+      if (index >= 0)
+        return description.slice(index + label.length).replace(/^[:\s-]+/, "");
     }
-    return description;
+    return null;
   }
 
   function splitIngredients(value) {
@@ -76,23 +104,23 @@
   }
 
   function cleanIngredients(values) {
-    return values.map((value) => String(value).trim()).filter(Boolean).slice(0, 80);
+    return values
+      .map((value) => String(value).trim())
+      .filter(Boolean)
+      .slice(0, 80);
   }
 
-  function openModal(ingredients) {
+  function openModal(ingredients, options = {}) {
     closeModal();
 
-    const avoidCount = ingredients.filter(i => i.safetyRating === "avoid").length;
-    const cautionCount = ingredients.filter(i => i.safetyRating === "caution").length;
-
-    let summaryHtml = "";
-    if (avoidCount > 0) {
-      summaryHtml = `<div class="skinin-summary skinin-summary-avoid">⚠️ ${avoidCount} ingredient(s) require attention.</div>`;
-    } else if (cautionCount > 0) {
-      summaryHtml = `<div class="skinin-summary skinin-summary-caution">💛 ${cautionCount} ingredient(s) need review.</div>`;
-    } else {
-      summaryHtml = `<div class="skinin-summary skinin-summary-safe">✅ All ingredients are safe.</div>`;
-    }
+    const summaryHtml = renderSummary(ingredients, options.status);
+    const listHtml = ingredients.length
+      ? `
+        <div class="skinin-modal-list">
+          ${ingredients.map(renderIngredient).join("")}
+        </div>
+      `
+      : "";
 
     const overlay = document.createElement("div");
     overlay.className = "skinin-modal-overlay";
@@ -103,17 +131,63 @@
           <button type="button" class="skinin-modal-close" aria-label="Close">✕</button>
         </div>
         ${summaryHtml}
-        <div class="skinin-modal-list">
-          ${ingredients.map(renderIngredient).join("")}
-        </div>
+        ${listHtml}
       </div>
     `;
 
     overlay.addEventListener("click", (event) => {
-      if (event.target === overlay || event.target.closest(".skinin-modal-close")) closeModal();
+      if (
+        event.target === overlay ||
+        event.target.closest(".skinin-modal-close")
+      )
+        closeModal();
     });
 
     document.body.appendChild(overlay);
+  }
+
+  function renderSummary(ingredients, status) {
+    if (status === "empty") {
+      return `
+        <div class="skinin-summary skinin-summary-neutral">
+          <strong>No ingredient data found.</strong>
+          <span>Add ingredients to the product description to run a check.</span>
+        </div>
+      `;
+    }
+
+    if (status === "not_ingredient_product") {
+      return `
+        <div class="skinin-summary skinin-summary-neutral">
+          <span>This product doesn't appear to contain ingredient information.</span>
+        </div>
+      `;
+    }
+
+    if (status === "error") {
+      return `
+        <div class="skinin-summary skinin-summary-caution">
+          <strong>We couldn't check this product right now.</strong>
+          <span>Please try again in a moment.</span>
+        </div>
+      `;
+    }
+
+    const attentionCount = ingredients.filter((i) =>
+      ["avoid", "caution"].includes(i.safetyRating),
+    ).length;
+    if (attentionCount > 0) {
+      const summaryClass = ingredients.some((i) => i.safetyRating === "avoid")
+        ? "skinin-summary-avoid"
+        : "skinin-summary-caution";
+      const message =
+        attentionCount === 1
+          ? "1 ingredient may need attention."
+          : `${attentionCount} ingredients may need attention.`;
+      return `<div class="skinin-summary ${summaryClass}">${message}</div>`;
+    }
+
+    return `<div class="skinin-summary skinin-summary-safe">All detected ingredients look safe.</div>`;
   }
 
   function closeModal() {
@@ -122,8 +196,12 @@
 
   function renderIngredient(ingredient) {
     const rating = escapeHtml(ingredient.safetyRating || "caution");
-    const ratingLabel = { safe: "SAFE", caution: "CAUTION", avoid: "AVOID" }[rating] || rating.toUpperCase();
-    const reason = ingredient.reason ? `<p class="skinin-reason">${escapeHtml(ingredient.reason)}</p>` : "";
+    const ratingLabel =
+      { safe: "SAFE", caution: "CAUTION", avoid: "AVOID" }[rating] ||
+      rating.toUpperCase();
+    const reason = ingredient.reason
+      ? `<p class="skinin-reason">${escapeHtml(ingredient.reason)}</p>`
+      : "";
 
     return `
       <article class="skinin-modal-item">
@@ -138,6 +216,16 @@
   }
 
   function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+    return String(value).replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[c],
+    );
   }
 })();

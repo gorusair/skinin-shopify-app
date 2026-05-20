@@ -59,7 +59,7 @@
   color: #ffffff;
 }
 .skinin-modal-close {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border: 0;
   border-radius: 50%;
   color: #ffffff;
@@ -74,15 +74,22 @@
   transition: background 0.2s;
 }
 .skinin-modal-close:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* 요약 배너 */
 .skinin-summary {
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.45;
   padding: 12px 20px;
   border-bottom: 1px solid #e5e7eb;
+}
+.skinin-summary strong,
+.skinin-summary span {
+  display: block;
+}
+.skinin-summary span {
+  font-weight: 500;
 }
 .skinin-summary-safe {
   background: #f0fdf4;
@@ -95,6 +102,10 @@
 .skinin-summary-avoid {
   background: #fff1f2;
   color: #991b1b;
+}
+.skinin-summary-neutral {
+  background: #f9fafb;
+  color: #374151;
 }
 
 .skinin-modal-list {

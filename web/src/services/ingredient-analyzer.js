@@ -5,7 +5,7 @@ const DEFAULT_BASE_URL = "https://world.openbeautyfacts.org/api/v2";
 // Direct safety rating mapping by ingredient
 const INGREDIENT_SAFETY = {
   // AVOID
-  "fragrance": { rating: "avoid", function: "fragrance", reason: "Potential allergen" },
+  "fragrance": { rating: "avoid", function: "fragrance", reason: "Potential irritant for sensitive skin" },
   "perfume": { rating: "avoid", function: "fragrance", reason: "Potential allergen" },
   "alcohol denat": { rating: "avoid", function: "solvent", reason: "Skin irritant" },
   "denatured alcohol": { rating: "avoid", function: "solvent", reason: "Skin irritant" },
