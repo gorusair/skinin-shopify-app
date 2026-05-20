@@ -101,3 +101,4 @@
       next(error);
     }
   });
+  export default router;
