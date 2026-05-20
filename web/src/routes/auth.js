@@ -1,4 +1,4 @@
- import crypto from "crypto";
+  import crypto from "crypto";
   import { Router } from "express";
 
   import { saveShopToken } from "../services/firestore.js";
@@ -25,6 +25,10 @@
     return process.env.SHOPIFY_SCOPES || DEFAULT_SCOPES.join(",");
   }
 
+  function getShopAdminUrl(shop) {
+    return `https://${shop}/admin/apps/${process.env.SHOPIFY_API_KEY}`;
+  }
+
   function getCookieValue(cookieHeader, name) {
     if (!cookieHeader) {
       return null;
@@ -38,6 +42,23 @@
     }
 
     return decodeURIComponent(targetCookie.slice(name.length + 1));
+  }
+
+  function clearOAuthStateCookie(res) {
+    res.clearCookie(OAUTH_STATE_COOKIE, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true
+    });
+  }
+
+  function isAlreadyUsedOAuthCodeError(error) {
+    const message = error?.message || "";
+
+    return (
+      message.includes("authorization code was not found") ||
+      message.includes("already used")
+    );
   }
 
   router.get("/", (req, res, next) => {
@@ -68,6 +89,7 @@
   router.get("/callback", async (req, res, next) => {
     try {
       const { code, shop } = req.query;
+      const normalizedShop = normalizeShopDomain(shop);
 
       if (!code || typeof code !== "string") {
         return res.status(400).json({ error: "Missing code parameter" });
@@ -83,22 +105,24 @@
         return res.status(401).json({ error: "Invalid Shopify HMAC" });
       }
 
-      const normalizedShop = normalizeShopDomain(shop);
-      const accessToken = await requestAccessToken(normalizedShop, code);
+      try {
+        const accessToken = await requestAccessToken(normalizedShop, code);
+        await saveShopToken(normalizedShop, accessToken);
+      } catch (error) {
+        if (!isAlreadyUsedOAuthCodeError(error)) {
+          throw error;
+        }
 
-      await saveShopToken(normalizedShop, accessToken);
+        console.warn(
+          `OAuth code already used for ${normalizedShop}; redirecting to Shopify admin.`
+        );
+      }
 
-      res.clearCookie(OAUTH_STATE_COOKIE, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true
-      });
-
-      res.redirect(
-        `https://${normalizedShop}/admin/apps/${process.env.SHOPIFY_API_KEY}`
-      );
+      clearOAuthStateCookie(res);
+      return res.redirect(getShopAdminUrl(normalizedShop));
     } catch (error) {
       next(error);
     }
   });
+
   export default router;
