@@ -17,3 +17,7 @@ Shopify app scaffold for checking cosmetic product ingredients with Open Beauty 
 4. Run `npm run dev`.
 
 The theme block exposes a `Check Ingredients` button on product pages. Configure its backend URL setting in the theme editor so storefront clicks can call `/api/ingredients/analyze`.
+
+## Billing
+
+Shopify Billing API requires public app distribution. Development stores can bypass billing with `BYPASS_BILLING=true`.

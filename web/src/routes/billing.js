@@ -4,6 +4,8 @@ import {
   getBillingConfirmationUrl,
   getBillingStatus,
   getShopAdminUrl,
+  isBillingBypassed,
+  logBillingBypass,
 } from "../middleware/billing.js";
 import { normalizeShopDomain } from "../services/shopify.js";
 
@@ -12,6 +14,12 @@ const router = Router();
 router.get("/create", async (req, res, next) => {
   try {
     const shop = normalizeShopDomain(req.query.shop);
+
+    if (isBillingBypassed()) {
+      logBillingBypass();
+      return res.redirect(`/?shop=${encodeURIComponent(shop)}`);
+    }
+
     const confirmationUrl = await getBillingConfirmationUrl(shop);
 
     return res.redirect(confirmationUrl);

@@ -26,6 +26,16 @@ function getBillingTestMode() {
   return process.env.NODE_ENV !== "production";
 }
 
+export function isBillingBypassed() {
+  return process.env.BYPASS_BILLING === "true";
+}
+
+export function logBillingBypass() {
+  console.info(
+    "[Billing] BYPASS_BILLING enabled - skipping Shopify Billing API",
+  );
+}
+
 function getBillingReturnUrl(shop) {
   const returnUrl = new URL(`${getAppUrl()}/billing/callback`);
   returnUrl.searchParams.set("shop", shop);
@@ -160,6 +170,17 @@ export async function createSubscription(shop, accessToken) {
 
 export async function getBillingStatus(shop) {
   const normalizedShop = normalizeShopDomain(shop);
+
+  if (isBillingBypassed()) {
+    logBillingBypass();
+
+    return {
+      shop: normalizedShop,
+      installed: true,
+      hasActiveSubscription: true,
+    };
+  }
+
   const accessToken = await getShopAccessToken(normalizedShop);
 
   if (!accessToken) {
@@ -184,6 +205,12 @@ export async function getBillingStatus(shop) {
 
 export async function getBillingConfirmationUrl(shop) {
   const normalizedShop = normalizeShopDomain(shop);
+
+  if (isBillingBypassed()) {
+    logBillingBypass();
+    return `/?shop=${encodeURIComponent(normalizedShop)}`;
+  }
+
   const accessToken = await getShopAccessToken(normalizedShop);
 
   if (!accessToken) {
@@ -195,6 +222,11 @@ export async function getBillingConfirmationUrl(shop) {
 
 export async function ensureBilling(req, res, next) {
   const shop = req.body?.shop || req.query?.shop;
+
+  if (isBillingBypassed()) {
+    logBillingBypass();
+    return next();
+  }
 
   if (!shop) {
     return next();
