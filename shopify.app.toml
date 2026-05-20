@@ -29,10 +29,3 @@ name = "Skinin Ingredient Checker"
 handle = "skinin-ingredient-checker"
 type = "theme"
 
-[billing]
-  [[billing.plans]]
-  name = "Pro Plan"
-  price = 29.0
-  currency_code = "USD"
-  interval = "EVERY_30_DAYS"
-  trial_days = 7
