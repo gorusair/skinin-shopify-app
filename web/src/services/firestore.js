@@ -14,18 +14,39 @@
       .replace(/\\n/g, "\n");
   }
 
-  function logFirebaseAdminDiagnostics(privateKey) {
-    console.info("Firebase Admin SDK initialization diagnostics:", {
-      hasProjectId: Boolean(process.env.FIREBASE_PROJECT_ID),
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      hasClientEmail: Boolean(process.env.FIREBASE_CLIENT_EMAIL),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      hasRawPrivateKey: Boolean(process.env.FIREBASE_PRIVATE_KEY),
-      hasNormalizedPrivateKey: Boolean(privateKey),
-      normalizedPrivateKeyHasBeginMarker: privateKey?.includes("BEGIN PRIVATE KEY") ?? false,
-      normalizedPrivateKeyHasEndMarker: privateKey?.includes("END PRIVATE KEY") ?? false,
-      normalizedPrivateKeyLength: privateKey?.length ?? 0
+  function logFirebaseAdminDiagnostics(source, credential) {
+    const privateKey = credential.privateKey ?? credential.private_key;
+
+    console.info(`[Firebase Admin] Using ${source}`, {
+      serviceAccountJsonExists: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON),
+      projectId: credential.projectId ?? credential.project_id,
+      clientEmail: credential.clientEmail ?? credential.client_email,
+      privateKeyExists: Boolean(privateKey),
+      privateKeyHasBegin: privateKey?.includes("BEGIN PRIVATE KEY") ?? false,
+      privateKeyHasEnd: privateKey?.includes("END PRIVATE KEY") ?? false,
+      privateKeyLength: privateKey?.length ?? 0
     });
+  }
+
+  function getFirebaseCredential() {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+      serviceAccount.private_key = normalizePrivateKey(serviceAccount.private_key);
+
+      logFirebaseAdminDiagnostics("FIREBASE_SERVICE_ACCOUNT_JSON", serviceAccount);
+
+      return admin.credential.cert(serviceAccount);
+    }
+
+    const credential = {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY)
+    };
+
+    logFirebaseAdminDiagnostics("split env vars", credential);
+
+    return admin.credential.cert(credential);
   }
 
   export function getFirestore() {
@@ -39,15 +60,8 @@
 
     try {
       if (!admin.apps.length) {
-        const privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY);
-        logFirebaseAdminDiagnostics(privateKey);
-
         admin.initializeApp({
-          credential: admin.credential.cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey
-          })
+          credential: getFirebaseCredential()
         });
       }
 
@@ -82,6 +96,8 @@
 
   export async function saveShopToken(shop, accessToken) {
     try {
+      console.info("[Firestore] saveShopToken called for shop:", shop);
+
       const db = getFirestore();
 
       if (!db) {
@@ -98,6 +114,7 @@
         { merge: true }
       );
 
+      console.info("[Firestore] Saved Shopify token for shop:", shop);
       return true;
     } catch (error) {
       console.warn(`Failed to save Shopify token for ${shop}:`, {
