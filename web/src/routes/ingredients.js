@@ -11,10 +11,10 @@ const analyzeRequestSchema = z.object({
   shop: z.string().min(1),
   productId: z.string().min(1),
   productTitle: z.string().optional(),
-  ingredients: z.array(z.string().min(1)).min(1)
+  ingredients: z.array(z.string().min(1)).min(1),
 });
 
-router.post("/analyze", async (req, res, next) => {
+router.post("/analyze", checkBilling, async (req, res, next) => {
   try {
     const payload = analyzeRequestSchema.parse(req.body);
     const analysis = await analyzeIngredients(payload.ingredients);
@@ -24,7 +24,7 @@ router.post("/analyze", async (req, res, next) => {
         shop: payload.shop,
         productId: payload.productId,
         productTitle: payload.productTitle,
-        ingredients: analysis
+        ingredients: analysis,
       });
     } catch (saveError) {
       console.warn("Failed to save ingredient check", saveError.message);
