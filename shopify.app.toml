@@ -3,7 +3,7 @@
 client_id = "ad670221e1d6929bc51cf5a88084f53a"
 web_directories = [ "web" ]
 name = "Skinin Ingredient Checker"
-application_url = "https://skinin-shopify-app-production.up.railway.app"
+application_url = "https://skinin-shopify-app.onrender.com"
 embedded = true
 handle = "skinin-ingredient-checker"
 
@@ -21,9 +21,8 @@ use_legacy_install_flow = false
 
 [auth]
 redirect_urls = [
-  "https://skinin-shopify-app-production.up.railway.app/auth/callback"
+  "https://skinin-shopify-app.onrender.com/auth/callback"
 ]
-
 [[extensions]]
 name = "Skinin Ingredient Checker"
 handle = "skinin-ingredient-checker"
