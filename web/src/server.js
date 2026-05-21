@@ -41,11 +41,14 @@ app.use(morgan("dev"));
 
 function renderHomePage({ billingStatus, billingBypassed }) {
   const shopConnected = billingStatus?.installed === true;
+  const appInstalled = billingStatus ? billingStatus.installed : true;
   const billingMode = billingBypassed
     ? "Development bypass"
     : "Active subscription";
-  const tokenStatus = shopConnected ? "Firestore token saved" : "Connect shop";
-  const shopStatus = shopConnected ? "Shop connected" : "Shop not connected";
+  const appStatus = appInstalled ? "Installed" : "Needs setup";
+  const storeStatus = shopConnected ? "Connected" : "Connect store";
+  const appDotClass = appInstalled ? "dot" : "dot dot-pending";
+  const storeDotClass = shopConnected ? "dot" : "dot dot-pending";
 
   return `
     <!doctype html>
@@ -57,7 +60,7 @@ function renderHomePage({ billingStatus, billingBypassed }) {
         <style>
           :root {
             color: #111827;
-            background: #f6f7f9;
+            background: #f7f8fa;
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           }
           * {
@@ -68,16 +71,17 @@ function renderHomePage({ billingStatus, billingBypassed }) {
           }
           main {
             margin: 0 auto;
-            max-width: 960px;
-            padding: 40px 20px 56px;
+            max-width: 1040px;
+            padding: 48px 20px 64px;
           }
           .hero {
-            margin-bottom: 28px;
+            margin-bottom: 30px;
+            max-width: 720px;
           }
           h1 {
-            font-size: 32px;
+            font-size: 34px;
             line-height: 1.15;
-            margin: 0 0 10px;
+            margin: 0 0 12px;
           }
           .subtitle {
             color: #4b5563;
@@ -86,24 +90,35 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             margin: 0;
             max-width: 680px;
           }
-          .grid {
+          .page-stack {
             display: grid;
-            gap: 18px;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
           }
           section {
+            padding: 0;
+          }
+          .status-grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+          .status-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 22px;
-          }
-          .wide {
-            grid-column: 1 / -1;
+            padding: 18px;
           }
           h2 {
             font-size: 18px;
             line-height: 1.3;
             margin: 0 0 16px;
+          }
+          h3 {
+            color: #374151;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0 0 8px;
           }
           ul,
           ol {
@@ -114,16 +129,12 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             line-height: 1.55;
             margin: 8px 0;
           }
-          .status-list {
-            display: grid;
-            gap: 10px;
-            list-style: none;
-            padding: 0;
-          }
-          .status-list li {
+          .status-value {
             align-items: center;
             display: flex;
             gap: 10px;
+            color: #111827;
+            font-weight: 700;
             margin: 0;
           }
           .dot {
@@ -132,6 +143,18 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             flex: 0 0 auto;
             height: 9px;
             width: 9px;
+          }
+          .dot-pending {
+            background: #d97706;
+          }
+          .content-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+          }
+          .content-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
           }
           .example {
             background: #f9fafb;
@@ -144,15 +167,18 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             overflow-wrap: anywhere;
             padding: 14px 16px;
           }
-          .status-value {
-            color: #374151;
-            font-weight: 600;
+          .section-note {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 12px 0 0;
           }
           @media (max-width: 760px) {
             main {
               padding-top: 28px;
             }
-            .grid {
+            .status-grid,
+            .content-grid {
               grid-template-columns: 1fr;
             }
           }
@@ -162,46 +188,59 @@ function renderHomePage({ billingStatus, billingBypassed }) {
         <main>
           <div class="hero">
             <h1>Skinin Ingredient Checker</h1>
-            <p class="subtitle">Set up the product page app block, add ingredient lists to your product descriptions, and let shoppers check cosmetic ingredients directly on the storefront.</p>
+            <p class="subtitle">Help shoppers review cosmetic ingredients directly on product pages.</p>
           </div>
 
-          <div class="grid">
-            <section>
-              <h2>Installation Status</h2>
-              <ul class="status-list">
-                <li><span class="dot"></span><span>App installed successfully</span></li>
-                <li><span class="dot"></span><span>Theme app extension available</span></li>
-                ${
-                  billingBypassed
-                    ? '<li><span class="dot"></span><span>Development billing bypass enabled</span></li>'
-                    : '<li><span class="dot"></span><span>Billing active</span></li>'
-                }
-              </ul>
+          <div class="page-stack">
+            <section aria-labelledby="status-heading">
+              <h2 id="status-heading">Setup Status</h2>
+              <div class="status-grid">
+                <div class="status-card">
+                  <h3>App installed</h3>
+                  <p class="status-value"><span class="${appDotClass}"></span>${appStatus}</p>
+                </div>
+                <div class="status-card">
+                  <h3>Store connected</h3>
+                  <p class="status-value"><span class="${storeDotClass}"></span>${storeStatus}</p>
+                </div>
+                <div class="status-card">
+                  <h3>Theme app extension ready</h3>
+                  <p class="status-value"><span class="dot"></span>Ready</p>
+                </div>
+                <div class="status-card">
+                  <h3>Billing mode</h3>
+                  <p class="status-value"><span class="dot"></span>${billingMode}</p>
+                </div>
+              </div>
             </section>
 
-            <section>
-              <h2>Status</h2>
-              <ul class="status-list">
-                <li><span class="dot"></span><span class="status-value">${shopStatus}</span></li>
-                <li><span class="dot"></span><span class="status-value">${tokenStatus}</span></li>
-                <li><span class="dot"></span><span class="status-value">Billing mode: ${billingMode}</span></li>
-              </ul>
-            </section>
+            <div class="content-grid">
+              <section class="content-section">
+                <h2>Setup Guide</h2>
+                <ol>
+                  <li>Go to Online Store &gt; Themes &gt; Customize.</li>
+                  <li>Open a product page template.</li>
+                  <li>Add the Skinin Ingredient Checker app block.</li>
+                  <li>Add ingredients to product descriptions.</li>
+                  <li>Preview the product page and click Check Ingredients.</li>
+                </ol>
+              </section>
 
-            <section class="wide">
-              <h2>Setup Guide</h2>
-              <ol>
-                <li>Open Online Store &gt; Themes &gt; Customize.</li>
-                <li>Go to a product page template.</li>
-                <li>Add the Skinin Ingredient Checker app block.</li>
-                <li>Add ingredients to product descriptions.</li>
-                <li>Preview and test the Check Ingredients button.</li>
-              </ol>
-            </section>
+              <section class="content-section">
+                <h2>Best Practices</h2>
+                <ul>
+                  <li>Start ingredient lists with "Ingredients:"</li>
+                  <li>Separate ingredients with commas.</li>
+                  <li>Keep product descriptions clear.</li>
+                  <li>Avoid unsupported medical claims.</li>
+                </ul>
+              </section>
+            </div>
 
-            <section class="wide">
+            <section class="content-section">
               <h2>Example Ingredient Format</h2>
               <p class="example">Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance</p>
+              <p class="section-note">Use this format in product descriptions so the storefront checker can find the ingredient list reliably.</p>
             </section>
           </div>
         </main>
