@@ -104,10 +104,14 @@
   }
 
   function cleanIngredients(values) {
-    return values
-      .map((value) => String(value).trim())
-      .filter(Boolean)
-      .slice(0, 80);
+    return values.map(cleanIngredientName).filter(Boolean).slice(0, 80);
+  }
+
+  function cleanIngredientName(value) {
+    return String(value)
+      .trim()
+      .replace(/[.,;:]+$/g, "")
+      .trim();
   }
 
   function openModal(ingredients, options = {}) {
@@ -233,6 +237,7 @@
     const ratingLabel =
       { safe: "SAFE", caution: "CAUTION", avoid: "AVOID" }[rating] ||
       rating.toUpperCase();
+    const name = cleanIngredientName(ingredient.name);
     const reason = ingredient.reason
       ? `<p class="skinin-reason">${escapeHtml(ingredient.reason)}</p>`
       : "";
@@ -240,7 +245,7 @@
     return `
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
-          <h3>${escapeHtml(ingredient.name)}</h3>
+          <h3>${escapeHtml(name)}</h3>
           <p class="skinin-function">${escapeHtml(ingredient.function || "cosmetic ingredient")}</p>
           ${reason}
         </div>

@@ -27,7 +27,6 @@ router.get("/create", async (req, res, next) => {
     console.warn("[Billing] Failed to create subscription:", {
       code: error.code,
       message: error.message,
-      stack: error.stack,
     });
     return next(error);
   }
@@ -49,7 +48,6 @@ router.get("/callback", async (req, res, next) => {
     console.warn("[Billing] Billing callback failed:", {
       code: error.code,
       message: error.message,
-      stack: error.stack,
     });
     return next(error);
   }

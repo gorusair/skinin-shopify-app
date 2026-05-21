@@ -27,7 +27,7 @@ router.post("/analyze", checkBilling, async (req, res, next) => {
         ingredients: analysis,
       });
     } catch (saveError) {
-      console.warn("Failed to save ingredient check", saveError.message);
+      console.warn("Failed to save ingredient check");
     }
 
     res.json({ ingredients: analysis });

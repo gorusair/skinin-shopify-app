@@ -55,13 +55,14 @@ export async function analyzeIngredients(ingredients) {
 }
 
 async function analyzeIngredient(name) {
-  const normalizedName = name.trim().toLowerCase();
-  
+  const cleanName = cleanIngredientName(name);
+  const normalizedName = cleanName.toLowerCase();
+
   // 1. Search the direct DB first
   const directMatch = findIngredientMatch(normalizedName);
   if (directMatch) {
     return {
-      name: name.trim(),
+      name: cleanName,
       safetyRating: directMatch.rating,
       function: directMatch.function,
       reason: directMatch.reason,
@@ -74,12 +75,19 @@ async function analyzeIngredient(name) {
   const searchText = JSON.stringify(openBeautyFactsData || {}).toLowerCase();
 
   return {
-    name: name.trim(),
+    name: cleanName,
     safetyRating: getSafetyRating(searchText),
     function: getIngredientFunction(searchText),
     reason: "Based on API data",
     source: openBeautyFactsData ? "open_beauty_facts" : "fallback"
   };
+}
+
+function cleanIngredientName(name) {
+  return String(name)
+    .trim()
+    .replace(/[.,;:]+$/g, "")
+    .trim();
 }
 
 function findIngredientMatch(name) {

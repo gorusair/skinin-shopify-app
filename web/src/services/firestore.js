@@ -12,18 +12,17 @@ function normalizePrivateKey(key) {
 }
 
 function logFirebaseAdminDiagnostics(source, credential) {
-  const privateKey = credential.privateKey ?? credential.private_key;
-
   console.info(`[Firebase Admin] Using ${source}`, {
     serviceAccountJsonExists: Boolean(
       process.env.FIREBASE_SERVICE_ACCOUNT_JSON,
     ),
-    projectId: credential.projectId ?? credential.project_id,
-    clientEmail: credential.clientEmail ?? credential.client_email,
-    privateKeyExists: Boolean(privateKey),
-    privateKeyHasBegin: privateKey?.includes("BEGIN PRIVATE KEY") ?? false,
-    privateKeyHasEnd: privateKey?.includes("END PRIVATE KEY") ?? false,
-    privateKeyLength: privateKey?.length ?? 0,
+    projectIdConfigured: Boolean(credential.projectId ?? credential.project_id),
+    clientEmailConfigured: Boolean(
+      credential.clientEmail ?? credential.client_email,
+    ),
+    privateKeyConfigured: Boolean(
+      credential.privateKey ?? credential.private_key,
+    ),
   });
 }
 
@@ -75,7 +74,7 @@ export function getFirestore() {
     return firestore;
   } catch (error) {
     firestoreInitializationFailed = true;
-    console.warn("Firebase initialization failed:", error.message);
+    console.warn("Firebase initialization failed");
     return null;
   }
 }
@@ -95,7 +94,7 @@ export async function saveIngredientCheck(check) {
 
     return true;
   } catch (error) {
-    console.warn("Failed to save ingredient check:", error.message);
+    console.warn("Failed to save ingredient check");
     return false;
   }
 }
@@ -123,10 +122,10 @@ export async function saveShopToken(shop, accessToken) {
     console.info("[Firestore] Saved Shopify token for shop:", shop);
     return true;
   } catch (error) {
-    console.warn(`Failed to save Shopify token for ${shop}:`, {
+    console.warn("[Firestore] Failed to save Shopify token:", {
       code: error.code,
       message: error.message,
-      stack: error.stack,
+      shop,
     });
     return false;
   }
@@ -148,10 +147,10 @@ export async function getShopAccessToken(shop) {
 
     return snapshot.data()?.accessToken || null;
   } catch (error) {
-    console.warn(`Failed to get Shopify access token for ${shop}:`, {
+    console.warn("[Firestore] Failed to get Shopify access token:", {
       code: error.code,
       message: error.message,
-      stack: error.stack,
+      shop,
     });
     return null;
   }

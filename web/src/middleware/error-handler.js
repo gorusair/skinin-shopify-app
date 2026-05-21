@@ -4,13 +4,16 @@ export function errorHandler(error, _req, res, _next) {
   if (error instanceof ZodError) {
     return res.status(400).json({
       error: "Invalid request",
-      details: error.flatten()
+      details: error.flatten(),
     });
   }
 
-  console.error(error);
+  console.error("Unexpected server error:", {
+    name: error.name,
+    message: error.message,
+  });
 
   return res.status(500).json({
-    error: "Unexpected server error"
+    error: "Unexpected server error",
   });
 }

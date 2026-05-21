@@ -266,7 +266,6 @@ export async function ensureBilling(req, res, next) {
     console.warn("[Billing] Billing check failed:", {
       code: error.code,
       message: error.message,
-      stack: error.stack,
     });
     return next(error);
   }

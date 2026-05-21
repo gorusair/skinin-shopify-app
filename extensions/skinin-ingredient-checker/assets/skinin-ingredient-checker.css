@@ -1,20 +1,32 @@
+.skinin-ingredient-checker {
+  margin: 16px 0;
+}
 .skinin-check-button {
   align-items: center;
-  background: #111827;
-  border: 0;
+  background: #1f2937;
+  border: 1px solid #1f2937;
   border-radius: 6px;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-weight: 700;
+  font-weight: 600;
   justify-content: center;
   min-height: 44px;
-  padding: 0 18px;
-  transition: background 0.2s;
+  padding: 0 20px;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 .skinin-check-button:hover {
-  background: #1f2937;
+  background: #111827;
+  border-color: #111827;
+}
+.skinin-check-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.22);
+  outline: 0;
 }
 .skinin-check-button:disabled {
   cursor: wait;
