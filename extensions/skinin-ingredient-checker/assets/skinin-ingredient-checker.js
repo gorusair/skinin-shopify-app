@@ -139,6 +139,9 @@
         ${summaryHtml}
         ${bodyHtml}
         ${listHtml}
+        <div class="skinin-modal-footer">
+          Results are based on the ingredient information available in the product description and are for informational purposes only.
+        </div>
       </div>
     `;
 
@@ -197,7 +200,7 @@
       return `<div class="skinin-summary ${summaryClass}">${message}</div>`;
     }
 
-    return `<div class="skinin-summary skinin-summary-safe">All ingredients look good.</div>`;
+    return `<div class="skinin-summary skinin-summary-safe">No flagged ingredients found.</div>`;
   }
 
   function renderMessage(status) {
