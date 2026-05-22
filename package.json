@@ -10,6 +10,7 @@
     "build": "shopify app build",
     "deploy": "shopify app deploy",
     "start": "node web/src/server.js",
+    "start:public": "node web/src/public-server.js",
     "server:dev": "nodemon web/src/server.js",
     "lint": "eslint .",
     "format": "prettier --write ."

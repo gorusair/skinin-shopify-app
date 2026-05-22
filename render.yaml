@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: skinin-ingredient-checker
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start:public
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
