@@ -4,6 +4,7 @@
 
 {% if product %}
   <div
+    id="skinin-ingredient-checker-{{ block.id }}"
     class="skinin-ingredient-checker"
     data-shop="{{ shop.permanent_domain | escape }}"
     data-product-id="{{ product.id }}"
@@ -17,19 +18,23 @@
       }
     </script>
 
-    <button type="button" class="skinin-check-button">
+    <button
+      type="button"
+      class="skinin-check-button"
+      data-skinin-check-button
+      aria-haspopup="dialog"
+    >
       Check Ingredients
     </button>
   </div>
-
-  {{ 'skinin-ingredient-checker.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'skinin-ingredient-checker.js' | asset_url }}" defer></script>
 {% endif %}
 
 {% schema %}
 {
   "name": "Ingredient checker",
   "target": "section",
+  "stylesheet": "skinin-ingredient-checker.css",
+  "javascript": "skinin-ingredient-checker.js",
   "settings": [
     {
       "type": "url",

@@ -3,7 +3,7 @@
 client_id = "ad670221e1d6929bc51cf5a88084f53a"
 web_directories = [ "web" ]
 name = "Skinin Ingredient Checker"
-application_url = "https://skinin-shopify-app.onrender.com"
+application_url = "https://skinin-ingredient-checker.onrender.com"
 embedded = true
 handle = "skinin-ingredient-checker"
 
@@ -13,6 +13,18 @@ automatically_update_urls_on_dev = true
 [webhooks]
 api_version = "2026-04"
 
+[[webhooks.subscriptions]]
+compliance_topics = [ "customers/data_request" ]
+uri = "/webhooks/customers/data_request"
+
+[[webhooks.subscriptions]]
+compliance_topics = [ "customers/redact" ]
+uri = "/webhooks/customers/redact"
+
+[[webhooks.subscriptions]]
+compliance_topics = [ "shop/redact" ]
+uri = "/webhooks/shop/redact"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = ""
@@ -21,10 +33,9 @@ use_legacy_install_flow = false
 
 [auth]
 redirect_urls = [
-  "https://skinin-shopify-app.onrender.com/auth/callback"
+  "https://skinin-ingredient-checker.onrender.com/auth/callback"
 ]
 [[extensions]]
 name = "Skinin Ingredient Checker"
 handle = "skinin-ingredient-checker"
 type = "theme"
-

@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install
-    startCommand: npm run start:public
+    startCommand: npm run start
     autoDeploy: true
     envVars:
       - key: NODE_VERSION

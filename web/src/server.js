@@ -7,6 +7,7 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.js";
 import billingRoutes from "./routes/billing.js";
 import ingredientRoutes from "./routes/ingredients.js";
+import webhookRoutes from "./routes/webhooks.js";
 import { getBillingStatus } from "./middleware/billing.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import {
@@ -41,6 +42,7 @@ app.use(
   }),
 );
 app.use(cors({ origin: true, credentials: true }));
+app.use("/webhooks", express.raw({ type: "*/*", limit: "1mb" }), webhookRoutes);
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 

@@ -1,4 +1,7 @@
 (function () {
+  if (window.SkininIngredientCheckerLoaded) return;
+  window.SkininIngredientCheckerLoaded = true;
+
   const INGREDIENT_LABELS = [
     "ingredients",
     "ingredient list",
@@ -7,10 +10,14 @@
   ];
 
   document.addEventListener("click", async (event) => {
-    const button = event.target.closest(".skinin-check-button");
+    const button = event.target.closest(
+      "[data-skinin-check-button], .skinin-check-button",
+    );
     if (!button) return;
 
     const root = button.closest(".skinin-ingredient-checker");
+    if (!root) return;
+
     const productData = readProductData(root);
     const ingredientResult = extractIngredients(productData);
     const ingredients = ingredientResult.ingredients;
@@ -24,6 +31,10 @@
     button.textContent = "Checking ingredients...";
 
     try {
+      if (!root.dataset.appUrl) {
+        throw new Error("Missing Skinin app backend URL");
+      }
+
       const response = await fetch(
         `${root.dataset.appUrl}/api/ingredients/analyze`,
         {
@@ -51,7 +62,9 @@
   });
 
   function readProductData(root) {
-    const script = root.querySelector("[data-skinin-product]");
+    const script = root?.querySelector("[data-skinin-product]");
+    if (!script) return {};
+
     try {
       return JSON.parse(script.textContent);
     } catch (_error) {

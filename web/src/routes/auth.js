@@ -17,7 +17,7 @@
     return (
       process.env.APP_URL ||
       process.env.APPLICATION_URL ||
-      "https://skinin-shopify-app-production.up.railway.app"
+      "https://skinin-ingredient-checker.onrender.com"
     ).replace(/\/$/, "");
   }
 
