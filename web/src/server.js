@@ -344,6 +344,7 @@ app.get("/privacy", (_req, res) => {
   res.send(
     renderPrivacyPage({
       apiSessionUrl: getApiSessionUrl(),
+      enableEmbeddedSession: false,
       shopifyApiKey: getShopifyApiKey(),
     }),
   );
@@ -352,6 +353,7 @@ app.get("/support", (_req, res) => {
   res.send(
     renderSupportPage({
       apiSessionUrl: getApiSessionUrl(),
+      enableEmbeddedSession: false,
       shopifyApiKey: getShopifyApiKey(),
     }),
   );
@@ -360,6 +362,7 @@ app.get("/app-info", (_req, res) => {
   res.send(
     renderAppInfoPage({
       apiSessionUrl: getApiSessionUrl(),
+      enableEmbeddedSession: false,
       shopifyApiKey: getShopifyApiKey(),
     }),
   );

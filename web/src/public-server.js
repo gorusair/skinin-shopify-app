@@ -67,6 +67,7 @@ function getApiSessionUrl() {
 function getEmbeddedPageOptions() {
   return {
     apiSessionUrl: getApiSessionUrl(),
+    enableEmbeddedSession: true,
     shopifyApiKey: getShopifyApiKey(),
   };
 }
@@ -83,16 +84,16 @@ function getBearerToken(req) {
 }
 
 app.get("/", (_req, res) => {
-  res.redirect("/privacy");
+  res.send(renderAppInfoPage(getEmbeddedPageOptions()));
 });
 app.get("/privacy", (_req, res) => {
-  res.send(renderPrivacyPage(getEmbeddedPageOptions()));
+  res.send(renderPrivacyPage());
 });
 app.get("/support", (_req, res) => {
-  res.send(renderSupportPage(getEmbeddedPageOptions()));
+  res.send(renderSupportPage());
 });
 app.get("/app-info", (_req, res) => {
-  res.send(renderAppInfoPage(getEmbeddedPageOptions()));
+  res.send(renderAppInfoPage());
 });
 app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Skinin Ingredient Checker Public Pages" });

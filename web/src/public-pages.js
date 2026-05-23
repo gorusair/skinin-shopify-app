@@ -49,9 +49,9 @@ export function renderEmbeddedSessionScript({ apiSessionUrl }) {
             (async () => {
               try {
               preserveEmbeddedQueryParams();
-              console.log("Requesting session token");
-
               const shopify = await waitForShopifySessionTokenApi();
+              console.log("App Bridge ready");
+              console.log("Requesting session token");
               const token = await shopify.idToken();
 
               console.log("Sending /api/session");
@@ -108,7 +108,14 @@ function renderShopifyShopMetaScript() {
   `;
 }
 
-function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSessionUrl }) {
+function renderPublicPage({
+  title,
+  subtitle,
+  children,
+  shopifyApiKey,
+  apiSessionUrl,
+  enableEmbeddedSession = false,
+}) {
   const resolvedShopifyApiKey = shopifyApiKey || DEFAULT_SHOPIFY_API_KEY;
   const resolvedApiSessionUrl = apiSessionUrl || DEFAULT_API_SESSION_URL;
 
@@ -118,10 +125,10 @@ function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSession
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="shopify-api-key" content="${resolvedShopifyApiKey}">
+        ${enableEmbeddedSession ? `<meta name="shopify-api-key" content="${resolvedShopifyApiKey}">` : ""}
         <title>${title} | Skinin Ingredient Checker</title>
-        ${renderShopifyShopMetaScript()}
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+        ${enableEmbeddedSession ? renderShopifyShopMetaScript() : ""}
+        ${enableEmbeddedSession ? '<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>' : ""}
         <style>
           :root {
             color: #111827;
@@ -246,9 +253,9 @@ function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSession
           <div class="page-stack">
             ${children}
           </div>
-          <p class="session-message" id="session-message">Checking embedded Shopify session.</p>
+          ${enableEmbeddedSession ? '<p class="session-message" id="session-message">Checking embedded Shopify session.</p>' : ""}
         </main>
-        ${renderEmbeddedSessionScript({ apiSessionUrl: resolvedApiSessionUrl })}
+        ${enableEmbeddedSession ? renderEmbeddedSessionScript({ apiSessionUrl: resolvedApiSessionUrl }) : ""}
       </body>
     </html>
   `;
