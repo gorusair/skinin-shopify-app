@@ -2,6 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
+import webhookRoutes from "./routes/webhooks.js";
 import {
   renderAppInfoPage,
   renderPrivacyPage,
@@ -22,6 +23,11 @@ app.use(
       },
     },
   }),
+);
+app.use(
+  "/webhooks",
+  express.raw({ type: "application/json", limit: "1mb" }),
+  webhookRoutes,
 );
 app.use(morgan("dev"));
 
