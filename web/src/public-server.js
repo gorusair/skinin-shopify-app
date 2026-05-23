@@ -83,16 +83,52 @@ function getBearerToken(req) {
   return token;
 }
 
+function isEmbeddedShopifyAdminRequest(req) {
+  const referer = req.get("referer") || "";
+
+  return (
+    req.query.embedded === "1" ||
+    Boolean(req.query.host) ||
+    Boolean(req.query.shop) ||
+    referer.includes("https://admin.shopify.com/")
+  );
+}
+
+function redirectEmbeddedPublicPageToRoot(req, res) {
+  if (!isEmbeddedShopifyAdminRequest(req)) {
+    return false;
+  }
+
+  const queryString = req.originalUrl.includes("?")
+    ? req.originalUrl.slice(req.originalUrl.indexOf("?"))
+    : "";
+
+  res.redirect(`/${queryString}`);
+  return true;
+}
+
 app.get("/", (_req, res) => {
   res.send(renderAppInfoPage(getEmbeddedPageOptions()));
 });
 app.get("/privacy", (_req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(_req, res)) {
+    return;
+  }
+
   res.send(renderPrivacyPage());
 });
 app.get("/support", (_req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(_req, res)) {
+    return;
+  }
+
   res.send(renderSupportPage());
 });
 app.get("/app-info", (_req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(_req, res)) {
+    return;
+  }
+
   res.send(renderAppInfoPage());
 });
 app.get("/health", (_req, res) => {

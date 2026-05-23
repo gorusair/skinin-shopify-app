@@ -93,6 +93,30 @@ function getBearerToken(req) {
   return token;
 }
 
+function isEmbeddedShopifyAdminRequest(req) {
+  const referer = req.get("referer") || "";
+
+  return (
+    req.query.embedded === "1" ||
+    Boolean(req.query.host) ||
+    Boolean(req.query.shop) ||
+    referer.includes("https://admin.shopify.com/")
+  );
+}
+
+function redirectEmbeddedPublicPageToRoot(req, res) {
+  if (!isEmbeddedShopifyAdminRequest(req)) {
+    return false;
+  }
+
+  const queryString = req.originalUrl.includes("?")
+    ? req.originalUrl.slice(req.originalUrl.indexOf("?"))
+    : "";
+
+  res.redirect(`/${queryString}`);
+  return true;
+}
+
 function renderHomePage({ billingStatus, billingBypassed }) {
   const shopConnected = billingStatus?.installed === true;
   const appInstalled = billingStatus ? billingStatus.installed : true;
@@ -340,7 +364,11 @@ app.get("/", async (req, res, next) => {
     next(error);
   }
 });
-app.get("/privacy", (_req, res) => {
+app.get("/privacy", (req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(req, res)) {
+    return;
+  }
+
   res.send(
     renderPrivacyPage({
       apiSessionUrl: getApiSessionUrl(),
@@ -349,7 +377,11 @@ app.get("/privacy", (_req, res) => {
     }),
   );
 });
-app.get("/support", (_req, res) => {
+app.get("/support", (req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(req, res)) {
+    return;
+  }
+
   res.send(
     renderSupportPage({
       apiSessionUrl: getApiSessionUrl(),
@@ -358,7 +390,11 @@ app.get("/support", (_req, res) => {
     }),
   );
 });
-app.get("/app-info", (_req, res) => {
+app.get("/app-info", (req, res) => {
+  if (redirectEmbeddedPublicPageToRoot(req, res)) {
+    return;
+  }
+
   res.send(
     renderAppInfoPage({
       apiSessionUrl: getApiSessionUrl(),
