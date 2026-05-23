@@ -136,6 +136,8 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Skinin Ingredient Checker Public Pages" });
 });
 app.post("/api/session", (req, res) => {
+  console.log("[SESSION DEBUG] /api/session called");
+
   const authorizationHeader = req.get("authorization") || "";
   const token = getBearerToken(req);
 

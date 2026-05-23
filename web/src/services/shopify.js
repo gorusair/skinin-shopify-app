@@ -13,6 +13,10 @@ function decodeBase64Url(value) {
 }
 
 function verifyJwtSignature(header, payload, signature) {
+  if (!process.env.SHOPIFY_API_SECRET) {
+    throw new Error("Missing SHOPIFY_API_SECRET");
+  }
+
   const signedPayload = `${header}.${payload}`;
   const expectedSignature = crypto
     .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
@@ -39,16 +43,19 @@ export function logShopifySessionTokenDebug({ authorizationHeader, token }) {
   );
 
   try {
-    const [, encodedPayload] = token?.split(".") || [];
+    const [encodedHeader, encodedPayload] = token?.split(".") || [];
+    const header = encodedHeader ? JSON.parse(decodeBase64Url(encodedHeader)) : {};
     const payload = encodedPayload
       ? JSON.parse(decodeBase64Url(encodedPayload))
       : {};
 
+    console.log("decoded JWT header alg:", header.alg);
     console.log("decoded JWT aud:", payload.aud);
     console.log("decoded JWT dest:", payload.dest);
     console.log("decoded JWT iss:", payload.iss);
     console.log("decoded JWT exp:", payload.exp);
   } catch (error) {
+    console.log("decoded JWT header alg:", undefined);
     console.log("decoded JWT aud:", undefined);
     console.log("decoded JWT dest:", undefined);
     console.log("decoded JWT iss:", undefined);

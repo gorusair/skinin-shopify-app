@@ -411,6 +411,8 @@ app.get("/health", (_req, res) => {
 app.use("/auth", authRoutes);
 app.use("/billing", billingRoutes);
 async function handleSessionVerification(req, res) {
+  console.log("[SESSION DEBUG] /api/session called");
+
   const authorizationHeader = req.get("authorization") || "";
   const token = getBearerToken(req);
 
