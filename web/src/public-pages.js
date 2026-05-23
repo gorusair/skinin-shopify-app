@@ -95,7 +95,7 @@ export function renderEmbeddedSessionScript({ apiSessionUrl }) {
 function renderShopifyShopMetaScript() {
   return `
         <script>
-          const shopParam = new URLSearchParams(window.location.search).get("shop") || "";
+          const shopParam = new URLSearchParams(window.location.search).get("shop") || ((window.location.pathname.match(/^\\/store\\/([^/]+)\\/apps\\//) || [])[1] ? (window.location.pathname.match(/^\\/store\\/([^/]+)\\/apps\\//) || [])[1] + ".myshopify.com" : "");
           console.log("shop param:", shopParam);
 
           if (shopParam) {
