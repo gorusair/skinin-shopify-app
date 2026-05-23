@@ -25,7 +25,7 @@ import {
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 const DEFAULT_SHOPIFY_API_KEY = "ad670221e1d6929bc51cf5a88084f53a";
 
 app.use(
@@ -438,6 +438,6 @@ app.get("/api/session", handleSessionVerification);
 app.use("/api/ingredients", ingredientRoutes);
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Skinin Ingredient Checker listening on port ${port}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Skinin Ingredient Checker listening on port ${PORT}`);
 });
