@@ -15,6 +15,7 @@ import {
   verifyShopifySessionToken,
 } from "./services/shopify.js";
 import {
+  renderEmbeddedSessionScript,
   renderAppInfoPage,
   renderPrivacyPage,
   renderSupportPage,
@@ -66,6 +67,18 @@ app.use(morgan("dev"));
 
 function getShopifyApiKey() {
   return process.env.SHOPIFY_API_KEY || "";
+}
+
+function getAppUrl() {
+  return (
+    process.env.APP_URL ||
+    process.env.APPLICATION_URL ||
+    "https://skinin-ingredient-checker.onrender.com"
+  ).replace(/\/$/, "");
+}
+
+function getApiSessionUrl() {
+  return `${getAppUrl()}/api/session`;
 }
 
 function getBearerToken(req) {
@@ -293,59 +306,7 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             </section>
           </div>
         </main>
-        <script>
-          (async () => {
-            const sessionMessage = document.getElementById("session-message");
-            const searchParams = new URLSearchParams(window.location.search);
-            const host = searchParams.get("host");
-            const apiKey = document.querySelector('meta[name="shopify-api-key"]')?.content;
-
-            function setSessionMessage(message) {
-              sessionMessage.textContent = message;
-              console.info(message);
-            }
-
-            if (!apiKey || !host) {
-              sessionMessage.textContent = "Open this app from Shopify Admin to authenticate the embedded session.";
-              console.info("Shopify embedded session check skipped: missing apiKey or host parameter.");
-              return;
-            }
-
-            if (!window.shopify || typeof window.shopify.idToken !== "function") {
-              sessionMessage.textContent = "Shopify App Bridge is not ready. Reopen the app from Shopify Admin.";
-              console.info("Shopify App Bridge session token API is unavailable.");
-              return;
-            }
-
-            try {
-              console.info("Shopify App Bridge initialized for embedded session.", {
-                hasApiKey: Boolean(apiKey),
-                hasHost: Boolean(host),
-              });
-
-              const token = await window.shopify.idToken();
-              const response = await fetch("/api/session", {
-                method: "POST",
-                headers: {
-                  Authorization: "Bearer " + token,
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ host }),
-              });
-              const data = await response.json();
-
-              if (!response.ok) {
-                throw new Error(data.error || "Embedded session check failed");
-              }
-
-              setSessionMessage("Session token verified");
-            } catch (error) {
-              sessionMessage.textContent = "Embedded session could not be verified. Reopen the app from Shopify Admin.";
-              console.info("Shopify embedded session verification failed.", error);
-            }
-          })();
-        </script>
+        ${renderEmbeddedSessionScript({ apiSessionUrl: getApiSessionUrl() })}
       </body>
     </html>
   `;
@@ -379,13 +340,28 @@ app.get("/", async (req, res, next) => {
   }
 });
 app.get("/privacy", (_req, res) => {
-  res.send(renderPrivacyPage());
+  res.send(
+    renderPrivacyPage({
+      apiSessionUrl: getApiSessionUrl(),
+      shopifyApiKey: getShopifyApiKey(),
+    }),
+  );
 });
 app.get("/support", (_req, res) => {
-  res.send(renderSupportPage());
+  res.send(
+    renderSupportPage({
+      apiSessionUrl: getApiSessionUrl(),
+      shopifyApiKey: getShopifyApiKey(),
+    }),
+  );
 });
 app.get("/app-info", (_req, res) => {
-  res.send(renderAppInfoPage());
+  res.send(
+    renderAppInfoPage({
+      apiSessionUrl: getApiSessionUrl(),
+      shopifyApiKey: getShopifyApiKey(),
+    }),
+  );
 });
 app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Skinin Ingredient Checker" });

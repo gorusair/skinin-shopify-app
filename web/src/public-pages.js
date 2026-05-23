@@ -1,14 +1,98 @@
 // Placeholder support email until the production support mailbox is configured.
 const SUPPORT_EMAIL = "support@skinin.app";
 
-function renderPublicPage({ title, subtitle, children }) {
+export function renderEmbeddedSessionScript({ apiSessionUrl }) {
+  return `
+        <script>
+          (async () => {
+            const sessionMessage = document.getElementById("session-message");
+
+            function updateSessionMessage(message) {
+              if (sessionMessage) {
+                sessionMessage.textContent = message;
+              }
+            }
+
+            function preserveEmbeddedQueryParams() {
+              if (!window.location.search) {
+                return;
+              }
+
+              document.querySelectorAll('a[href^="/"]').forEach((link) => {
+                const url = new URL(link.getAttribute("href"), window.location.origin);
+
+                new URLSearchParams(window.location.search).forEach((value, key) => {
+                  if (!url.searchParams.has(key)) {
+                    url.searchParams.set(key, value);
+                  }
+                });
+
+                link.href = url.pathname + url.search;
+              });
+            }
+
+            async function waitForShopifySessionTokenApi() {
+              for (let attempt = 0; attempt < 50; attempt += 1) {
+                if (window.shopify && typeof window.shopify.idToken === "function") {
+                  return window.shopify;
+                }
+
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+
+              throw new Error("Shopify App Bridge idToken API is unavailable");
+            }
+
+            try {
+              preserveEmbeddedQueryParams();
+              console.info("Requesting session token");
+
+              const shopify = await waitForShopifySessionTokenApi();
+              const token = await shopify.idToken();
+
+              console.info("Sending /api/session");
+              const response = await fetch("${apiSessionUrl}", {
+                method: "POST",
+                headers: {
+                  Authorization: "Bearer " + token,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  host: new URLSearchParams(window.location.search).get("host"),
+                  path: window.location.pathname,
+                }),
+              });
+
+              const data = await response.json().catch(() => ({}));
+
+              if (!response.ok) {
+                throw new Error(data.error || "Session verification failed with status " + response.status);
+              }
+
+              console.info("Session token verified");
+              updateSessionMessage("Session token verified");
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              console.error(message);
+              updateSessionMessage("Embedded session could not be verified. Reopen the app from Shopify Admin.");
+            }
+          })();
+        </script>
+  `;
+}
+
+function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSessionUrl }) {
+  const shouldVerifyEmbeddedSession = Boolean(shopifyApiKey && apiSessionUrl);
+
   return `
     <!doctype html>
     <html lang="en">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        ${shouldVerifyEmbeddedSession ? `<meta name="shopify-api-key" content="${shopifyApiKey}">` : ""}
         <title>${title} | Skinin Ingredient Checker</title>
+        ${shouldVerifyEmbeddedSession ? '<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>' : ""}
         <style>
           :root {
             color: #111827;
@@ -106,6 +190,12 @@ function renderPublicPage({ title, subtitle, children }) {
             color: #6b7280;
             font-size: 13px;
           }
+          .session-message {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 18px 0 0;
+          }
           @media (max-width: 760px) {
             main {
               padding-top: 28px;
@@ -127,14 +217,17 @@ function renderPublicPage({ title, subtitle, children }) {
           <div class="page-stack">
             ${children}
           </div>
+          ${shouldVerifyEmbeddedSession ? '<p class="session-message" id="session-message">Checking embedded Shopify session.</p>' : ""}
         </main>
+        ${shouldVerifyEmbeddedSession ? renderEmbeddedSessionScript({ apiSessionUrl }) : ""}
       </body>
     </html>
   `;
 }
 
-export function renderPrivacyPage() {
+export function renderPrivacyPage(options = {}) {
   return renderPublicPage({
+    ...options,
     title: "Privacy Policy",
     subtitle:
       "How Skinin Ingredient Checker handles app, shop, and product information.",
@@ -178,8 +271,9 @@ export function renderPrivacyPage() {
   });
 }
 
-export function renderSupportPage() {
+export function renderSupportPage(options = {}) {
   return renderPublicPage({
+    ...options,
     title: "Support",
     subtitle: "Setup help and troubleshooting for Skinin Ingredient Checker.",
     children: `
@@ -234,8 +328,9 @@ export function renderSupportPage() {
   });
 }
 
-export function renderAppInfoPage() {
+export function renderAppInfoPage(options = {}) {
   return renderPublicPage({
+    ...options,
     title: "Skinin Ingredient Checker",
     subtitle:
       "Help shoppers review cosmetic ingredients directly on product pages.",
