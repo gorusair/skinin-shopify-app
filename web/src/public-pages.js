@@ -92,6 +92,22 @@ export function renderEmbeddedSessionScript({ apiSessionUrl }) {
   `;
 }
 
+function renderShopifyShopMetaScript() {
+  return `
+        <script>
+          const shopParam = new URLSearchParams(window.location.search).get("shop") || "";
+          console.log("shop param:", shopParam);
+
+          if (shopParam) {
+            const shopMeta = document.createElement("meta");
+            shopMeta.name = "shopify-shop";
+            shopMeta.content = shopParam;
+            document.head.appendChild(shopMeta);
+          }
+        </script>
+  `;
+}
+
 function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSessionUrl }) {
   const resolvedShopifyApiKey = shopifyApiKey || DEFAULT_SHOPIFY_API_KEY;
   const resolvedApiSessionUrl = apiSessionUrl || DEFAULT_API_SESSION_URL;
@@ -104,6 +120,7 @@ function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSession
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="shopify-api-key" content="${resolvedShopifyApiKey}">
         <title>${title} | Skinin Ingredient Checker</title>
+        ${renderShopifyShopMetaScript()}
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
         <style>
           :root {
