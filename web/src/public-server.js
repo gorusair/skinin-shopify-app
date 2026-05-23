@@ -18,6 +18,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+const DEFAULT_SHOPIFY_API_KEY = "ad670221e1d6929bc51cf5a88084f53a";
 
 app.use(
   helmet({
@@ -48,7 +49,7 @@ app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
 function getShopifyApiKey() {
-  return process.env.SHOPIFY_API_KEY || "";
+  return process.env.SHOPIFY_API_KEY || DEFAULT_SHOPIFY_API_KEY;
 }
 
 function getAppUrl() {

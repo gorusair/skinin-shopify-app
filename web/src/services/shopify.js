@@ -2,6 +2,11 @@ import crypto from "crypto";
 
 const SHOPIFY_SHOP_DOMAIN_PATTERN =
   /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com$/;
+const DEFAULT_SHOPIFY_API_KEY = "ad670221e1d6929bc51cf5a88084f53a";
+
+function getShopifyApiKey() {
+  return process.env.SHOPIFY_API_KEY || DEFAULT_SHOPIFY_API_KEY;
+}
 
 function decodeBase64Url(value) {
   return Buffer.from(value, "base64url").toString("utf8");
@@ -99,7 +104,7 @@ export function verifyShopifySessionToken(token) {
     throw new Error("Shopify session token has expired");
   }
 
-  if (payload.aud !== process.env.SHOPIFY_API_KEY) {
+  if (payload.aud !== getShopifyApiKey()) {
     throw new Error("Invalid Shopify session token audience");
   }
 

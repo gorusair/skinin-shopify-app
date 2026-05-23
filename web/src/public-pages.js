@@ -1,10 +1,13 @@
 // Placeholder support email until the production support mailbox is configured.
 const SUPPORT_EMAIL = "support@skinin.app";
+const DEFAULT_SHOPIFY_API_KEY = "ad670221e1d6929bc51cf5a88084f53a";
+const DEFAULT_API_SESSION_URL =
+  "https://skinin-ingredient-checker.onrender.com/api/session";
 
 export function renderEmbeddedSessionScript({ apiSessionUrl }) {
   return `
         <script>
-          (async () => {
+          function verifyEmbeddedShopifySession() {
             const sessionMessage = document.getElementById("session-message");
 
             function updateSessionMessage(message) {
@@ -43,14 +46,15 @@ export function renderEmbeddedSessionScript({ apiSessionUrl }) {
               throw new Error("Shopify App Bridge idToken API is unavailable");
             }
 
-            try {
+            (async () => {
+              try {
               preserveEmbeddedQueryParams();
-              console.info("Requesting session token");
+              console.log("Requesting session token");
 
               const shopify = await waitForShopifySessionTokenApi();
               const token = await shopify.idToken();
 
-              console.info("Sending /api/session");
+              console.log("Sending /api/session");
               const response = await fetch("${apiSessionUrl}", {
                 method: "POST",
                 headers: {
@@ -69,20 +73,28 @@ export function renderEmbeddedSessionScript({ apiSessionUrl }) {
                 throw new Error(data.error || "Session verification failed with status " + response.status);
               }
 
-              console.info("Session token verified");
+              console.log("Session token verified");
               updateSessionMessage("Session token verified");
-            } catch (error) {
-              const message = error instanceof Error ? error.message : String(error);
-              console.error(message);
-              updateSessionMessage("Embedded session could not be verified. Reopen the app from Shopify Admin.");
-            }
-          })();
+              } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                console.error(message);
+                updateSessionMessage("Embedded session could not be verified. Reopen the app from Shopify Admin.");
+              }
+            })();
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", verifyEmbeddedShopifySession, { once: true });
+          } else {
+            verifyEmbeddedShopifySession();
+          }
         </script>
   `;
 }
 
 function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSessionUrl }) {
-  const shouldVerifyEmbeddedSession = Boolean(shopifyApiKey && apiSessionUrl);
+  const resolvedShopifyApiKey = shopifyApiKey || DEFAULT_SHOPIFY_API_KEY;
+  const resolvedApiSessionUrl = apiSessionUrl || DEFAULT_API_SESSION_URL;
 
   return `
     <!doctype html>
@@ -90,9 +102,9 @@ function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSession
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        ${shouldVerifyEmbeddedSession ? `<meta name="shopify-api-key" content="${shopifyApiKey}">` : ""}
+        <meta name="shopify-api-key" content="${resolvedShopifyApiKey}">
         <title>${title} | Skinin Ingredient Checker</title>
-        ${shouldVerifyEmbeddedSession ? '<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>' : ""}
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
         <style>
           :root {
             color: #111827;
@@ -217,9 +229,9 @@ function renderPublicPage({ title, subtitle, children, shopifyApiKey, apiSession
           <div class="page-stack">
             ${children}
           </div>
-          ${shouldVerifyEmbeddedSession ? '<p class="session-message" id="session-message">Checking embedded Shopify session.</p>' : ""}
+          <p class="session-message" id="session-message">Checking embedded Shopify session.</p>
         </main>
-        ${shouldVerifyEmbeddedSession ? renderEmbeddedSessionScript({ apiSessionUrl }) : ""}
+        ${renderEmbeddedSessionScript({ apiSessionUrl: resolvedApiSessionUrl })}
       </body>
     </html>
   `;
