@@ -131,7 +131,7 @@
       };
     }
 
-    const description = productData.description || "";
+    const description = productData.description || document.body?.innerText || "";
     const ingredientText = findIngredientText(description);
     if (ingredientText !== null) {
       return { ingredients: splitIngredients(ingredientText), status: "empty" };
