@@ -11,6 +11,10 @@ import webhookRoutes from "./routes/webhooks.js";
 import { getBillingStatus } from "./middleware/billing.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import {
+  normalizeShopDomain,
+  verifyShopifySessionToken,
+} from "./services/shopify.js";
+import {
   renderAppInfoPage,
   renderPrivacyPage,
   renderSupportPage,
@@ -28,10 +32,20 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://cdn.shopify.com",
+        ],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "https:"],
+        connectSrc: [
+          "'self'",
+          "https:",
+          "https://admin.shopify.com",
+          "https://*.myshopify.com",
+        ],
         frameAncestors: [
           "'self'",
           "https://admin.shopify.com",
@@ -50,6 +64,21 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
+function getShopifyApiKey() {
+  return process.env.SHOPIFY_API_KEY || "";
+}
+
+function getBearerToken(req) {
+  const authorizationHeader = req.get("authorization") || "";
+  const [scheme, token] = authorizationHeader.split(" ");
+
+  if (scheme?.toLowerCase() !== "bearer") {
+    return null;
+  }
+
+  return token;
+}
+
 function renderHomePage({ billingStatus, billingBypassed }) {
   const shopConnected = billingStatus?.installed === true;
   const appInstalled = billingStatus ? billingStatus.installed : true;
@@ -67,7 +96,9 @@ function renderHomePage({ billingStatus, billingBypassed }) {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="shopify-api-key" content="${getShopifyApiKey()}">
         <title>Skinin Ingredient Checker</title>
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
         <style>
           :root {
             color: #111827;
@@ -184,6 +215,12 @@ function renderHomePage({ billingStatus, billingBypassed }) {
             line-height: 1.5;
             margin: 12px 0 0;
           }
+          .session-message {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 10px 0 0;
+          }
           @media (max-width: 760px) {
             main {
               padding-top: 28px;
@@ -252,9 +289,38 @@ function renderHomePage({ billingStatus, billingBypassed }) {
               <h2>Example Ingredient Format</h2>
               <p class="example">Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance</p>
               <p class="section-note">Use this format in product descriptions so the storefront checker can find the ingredient list reliably.</p>
+              <p class="session-message" id="session-message">Checking embedded Shopify session.</p>
             </section>
           </div>
         </main>
+        <script>
+          (async () => {
+            const sessionMessage = document.getElementById("session-message");
+
+            if (!window.shopify || typeof window.shopify.idToken !== "function") {
+              sessionMessage.textContent = "Open this app from Shopify Admin to authenticate the embedded session.";
+              return;
+            }
+
+            try {
+              const token = await window.shopify.idToken();
+              const response = await fetch("/api/session", {
+                headers: {
+                  Authorization: "Bearer " + token,
+                },
+              });
+              const data = await response.json();
+
+              if (!response.ok) {
+                throw new Error(data.error || "Embedded session check failed");
+              }
+
+              sessionMessage.textContent = "Embedded session active for " + data.shop + ".";
+            } catch (error) {
+              sessionMessage.textContent = "Embedded session could not be verified. Reopen the app from Shopify Admin.";
+            }
+          })();
+        </script>
       </body>
     </html>
   `;
@@ -264,17 +330,18 @@ app.get("/", async (req, res, next) => {
   try {
     let billingStatus = null;
     const billingBypassed = process.env.BYPASS_BILLING === "true";
+    const isEmbeddedRequest = req.query.embedded === "1" || req.query.host;
 
     if (req.query.shop) {
       billingStatus = await getBillingStatus(req.query.shop);
 
-      if (!billingStatus.installed) {
+      if (!isEmbeddedRequest && !billingStatus.installed) {
         return res.redirect(
           `/auth?shop=${encodeURIComponent(billingStatus.shop)}`,
         );
       }
 
-      if (!billingStatus.hasActiveSubscription) {
+      if (!isEmbeddedRequest && !billingStatus.hasActiveSubscription) {
         return res.redirect(
           `/billing/create?shop=${encodeURIComponent(billingStatus.shop)}`,
         );
@@ -301,6 +368,22 @@ app.get("/health", (_req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/billing", billingRoutes);
+app.get("/api/session", async (req, res) => {
+  try {
+    const session = verifyShopifySessionToken(getBearerToken(req));
+    const billingStatus = await getBillingStatus(session.shop);
+
+    return res.json({
+      ok: true,
+      shop: normalizeShopDomain(session.shop),
+      installed: billingStatus.installed,
+      hasActiveSubscription: billingStatus.hasActiveSubscription,
+    });
+  } catch (error) {
+    res.set("X-Shopify-Retry-Invalid-Session-Request", "1");
+    return res.status(401).json({ error: "invalid_session_token" });
+  }
+});
 app.use("/api/ingredients", ingredientRoutes);
 app.use(errorHandler);
 

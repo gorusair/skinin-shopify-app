@@ -1,81 +1,151 @@
 import crypto from "crypto";
 
-  const SHOPIFY_SHOP_DOMAIN_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com$/;
+const SHOPIFY_SHOP_DOMAIN_PATTERN =
+  /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com$/;
 
-  export function normalizeShopDomain(shop) {
-    if (!shop || typeof shop !== "string") {
-      throw new Error("Missing shop parameter");
-    }
+function decodeBase64Url(value) {
+  return Buffer.from(value, "base64url").toString("utf8");
+}
 
-    const normalizedShop = shop.trim().toLowerCase();
+function verifyJwtSignature(header, payload, signature) {
+  const signedPayload = `${header}.${payload}`;
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
+    .update(signedPayload)
+    .digest("base64url");
 
-    if (!SHOPIFY_SHOP_DOMAIN_PATTERN.test(normalizedShop)) {
-      throw new Error("Invalid shop parameter");
-    }
+  const expectedBuffer = Buffer.from(expectedSignature);
+  const signatureBuffer = Buffer.from(signature);
 
-    return normalizedShop;
+  return (
+    expectedBuffer.length === signatureBuffer.length &&
+    crypto.timingSafeEqual(expectedBuffer, signatureBuffer)
+  );
+}
+
+export function normalizeShopDomain(shop) {
+  if (!shop || typeof shop !== "string") {
+    throw new Error("Missing shop parameter");
   }
 
-  export function verifyShopifyHmac(query) {
-    const { hmac, signature, ...messageParams } = query;
+  const normalizedShop = shop.trim().toLowerCase();
 
-    if (!hmac || typeof hmac !== "string") {
-      return false;
-    }
-
-    const message = Object.keys(messageParams)
-      .sort()
-      .map((key) => {
-        const value = messageParams[key];
-        return `${key}=${Array.isArray(value) ? value.join(",") : value}`;
-      })
-      .join("&");
-
-    const generatedHash = crypto
-      .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
-      .update(message)
-      .digest("hex");
-
-    const generatedBuffer = Buffer.from(generatedHash, "utf8");
-    const hmacBuffer = Buffer.from(hmac, "utf8");
-
-    if (generatedBuffer.length !== hmacBuffer.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(generatedBuffer, hmacBuffer);
+  if (!SHOPIFY_SHOP_DOMAIN_PATTERN.test(normalizedShop)) {
+    throw new Error("Invalid shop parameter");
   }
 
-  export async function requestAccessToken(shop, code) {
-    const normalizedShop = normalizeShopDomain(shop);
+  return normalizedShop;
+}
 
-    const response = await fetch(
-      `https://${normalizedShop}/admin/oauth/access_token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        },
-        body: JSON.stringify({
-          client_id: process.env.SHOPIFY_API_KEY,
-          client_secret: process.env.SHOPIFY_API_SECRET,
-          code
-        })
-      }
+export function verifyShopifyHmac(query) {
+  const { hmac, signature, ...messageParams } = query;
+
+  if (!hmac || typeof hmac !== "string") {
+    return false;
+  }
+
+  const message = Object.keys(messageParams)
+    .sort()
+    .map((key) => {
+      const value = messageParams[key];
+      return `${key}=${Array.isArray(value) ? value.join(",") : value}`;
+    })
+    .join("&");
+
+  const generatedHash = crypto
+    .createHmac("sha256", process.env.SHOPIFY_API_SECRET)
+    .update(message)
+    .digest("hex");
+
+  const generatedBuffer = Buffer.from(generatedHash, "utf8");
+  const hmacBuffer = Buffer.from(hmac, "utf8");
+
+  if (generatedBuffer.length !== hmacBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(generatedBuffer, hmacBuffer);
+}
+
+export function verifyShopifySessionToken(token) {
+  if (!token || typeof token !== "string") {
+    throw new Error("Missing Shopify session token");
+  }
+
+  const [encodedHeader, encodedPayload, signature] = token.split(".");
+
+  if (!encodedHeader || !encodedPayload || !signature) {
+    throw new Error("Invalid Shopify session token");
+  }
+
+  const header = JSON.parse(decodeBase64Url(encodedHeader));
+  const payload = JSON.parse(decodeBase64Url(encodedPayload));
+
+  if (header.alg !== "HS256") {
+    throw new Error("Unsupported Shopify session token algorithm");
+  }
+
+  if (!verifyJwtSignature(encodedHeader, encodedPayload, signature)) {
+    throw new Error("Invalid Shopify session token signature");
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+
+  if (payload.nbf && payload.nbf > now) {
+    throw new Error("Shopify session token is not valid yet");
+  }
+
+  if (!payload.exp || payload.exp <= now) {
+    throw new Error("Shopify session token has expired");
+  }
+
+  if (payload.aud !== process.env.SHOPIFY_API_KEY) {
+    throw new Error("Invalid Shopify session token audience");
+  }
+
+  const destination = new URL(payload.dest);
+  const shop = normalizeShopDomain(destination.hostname);
+
+  return {
+    shop,
+    subject: payload.sub,
+    issuer: payload.iss,
+    expiresAt: payload.exp,
+  };
+}
+
+export async function requestAccessToken(shop, code) {
+  const normalizedShop = normalizeShopDomain(shop);
+
+  const response = await fetch(
+    `https://${normalizedShop}/admin/oauth/access_token`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        client_id: process.env.SHOPIFY_API_KEY,
+        client_secret: process.env.SHOPIFY_API_SECRET,
+        code,
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error_description ||
+        data?.error ||
+        "Failed to request access token",
     );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data?.error_description || data?.error || "Failed to request access token"
-      );
-    }
-
-    if (!data.access_token) {
-      throw new Error("Shopify did not return an access token");
-    }
-
-    return data.access_token;
   }
+
+  if (!data.access_token) {
+    throw new Error("Shopify did not return an access token");
+  }
+
+  return data.access_token;
+}

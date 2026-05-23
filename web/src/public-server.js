@@ -14,12 +14,19 @@ const port = process.env.PORT || 3000;
 
 app.use(
   helmet({
+    crossOriginResourcePolicy: false,
+    frameguard: false,
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://cdn.shopify.com"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:"],
+        frameAncestors: [
+          "'self'",
+          "https://admin.shopify.com",
+          "https://*.myshopify.com",
+        ],
       },
     },
   }),
