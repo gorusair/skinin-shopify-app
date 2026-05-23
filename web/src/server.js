@@ -296,18 +296,42 @@ function renderHomePage({ billingStatus, billingBypassed }) {
         <script>
           (async () => {
             const sessionMessage = document.getElementById("session-message");
+            const searchParams = new URLSearchParams(window.location.search);
+            const host = searchParams.get("host");
+            const apiKey = document.querySelector('meta[name="shopify-api-key"]')?.content;
+
+            function setSessionMessage(message) {
+              sessionMessage.textContent = message;
+              console.info(message);
+            }
+
+            if (!apiKey || !host) {
+              sessionMessage.textContent = "Open this app from Shopify Admin to authenticate the embedded session.";
+              console.info("Shopify embedded session check skipped: missing apiKey or host parameter.");
+              return;
+            }
 
             if (!window.shopify || typeof window.shopify.idToken !== "function") {
-              sessionMessage.textContent = "Open this app from Shopify Admin to authenticate the embedded session.";
+              sessionMessage.textContent = "Shopify App Bridge is not ready. Reopen the app from Shopify Admin.";
+              console.info("Shopify App Bridge session token API is unavailable.");
               return;
             }
 
             try {
+              console.info("Shopify App Bridge initialized for embedded session.", {
+                hasApiKey: Boolean(apiKey),
+                hasHost: Boolean(host),
+              });
+
               const token = await window.shopify.idToken();
               const response = await fetch("/api/session", {
+                method: "POST",
                 headers: {
                   Authorization: "Bearer " + token,
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
                 },
+                body: JSON.stringify({ host }),
               });
               const data = await response.json();
 
@@ -315,9 +339,10 @@ function renderHomePage({ billingStatus, billingBypassed }) {
                 throw new Error(data.error || "Embedded session check failed");
               }
 
-              sessionMessage.textContent = "Embedded session active for " + data.shop + ".";
+              setSessionMessage("Session token verified");
             } catch (error) {
               sessionMessage.textContent = "Embedded session could not be verified. Reopen the app from Shopify Admin.";
+              console.info("Shopify embedded session verification failed.", error);
             }
           })();
         </script>
@@ -368,7 +393,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/billing", billingRoutes);
-app.get("/api/session", async (req, res) => {
+async function handleSessionVerification(req, res) {
   try {
     const session = verifyShopifySessionToken(getBearerToken(req));
     const billingStatus = await getBillingStatus(session.shop);
@@ -383,7 +408,10 @@ app.get("/api/session", async (req, res) => {
     res.set("X-Shopify-Retry-Invalid-Session-Request", "1");
     return res.status(401).json({ error: "invalid_session_token" });
   }
-});
+}
+
+app.post("/api/session", handleSessionVerification);
+app.get("/api/session", handleSessionVerification);
 app.use("/api/ingredients", ingredientRoutes);
 app.use(errorHandler);
 
