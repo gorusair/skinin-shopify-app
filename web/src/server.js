@@ -11,6 +11,7 @@ import webhookRoutes from "./routes/webhooks.js";
 import { getBillingStatus } from "./middleware/billing.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import {
+  logShopifySessionTokenDebug,
   normalizeShopDomain,
   verifyShopifySessionToken,
 } from "./services/shopify.js";
@@ -410,8 +411,13 @@ app.get("/health", (_req, res) => {
 app.use("/auth", authRoutes);
 app.use("/billing", billingRoutes);
 async function handleSessionVerification(req, res) {
+  const authorizationHeader = req.get("authorization") || "";
+  const token = getBearerToken(req);
+
+  logShopifySessionTokenDebug({ authorizationHeader, token });
+
   try {
-    const session = verifyShopifySessionToken(getBearerToken(req));
+    const session = verifyShopifySessionToken(token);
     const billingStatus = await getBillingStatus(session.shop);
 
     return res.json({
@@ -421,6 +427,7 @@ async function handleSessionVerification(req, res) {
       hasActiveSubscription: billingStatus.hasActiveSubscription,
     });
   } catch (error) {
+    console.log("exact JWT verification error message:", error.message);
     res.set("X-Shopify-Retry-Invalid-Session-Request", "1");
     return res.status(401).json({ error: "invalid_session_token" });
   }

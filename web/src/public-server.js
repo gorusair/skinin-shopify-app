@@ -10,6 +10,7 @@ import {
   renderSupportPage,
 } from "./public-pages.js";
 import {
+  logShopifySessionTokenDebug,
   normalizeShopDomain,
   verifyShopifySessionToken,
 } from "./services/shopify.js";
@@ -135,14 +136,20 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, app: "Skinin Ingredient Checker Public Pages" });
 });
 app.post("/api/session", (req, res) => {
+  const authorizationHeader = req.get("authorization") || "";
+  const token = getBearerToken(req);
+
+  logShopifySessionTokenDebug({ authorizationHeader, token });
+
   try {
-    const session = verifyShopifySessionToken(getBearerToken(req));
+    const session = verifyShopifySessionToken(token);
 
     return res.json({
       ok: true,
       shop: normalizeShopDomain(session.shop),
     });
   } catch (error) {
+    console.log("exact JWT verification error message:", error.message);
     res.set("X-Shopify-Retry-Invalid-Session-Request", "1");
     return res.status(401).json({ error: "invalid_session_token" });
   }

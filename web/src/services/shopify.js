@@ -28,6 +28,37 @@ function verifyJwtSignature(header, payload, signature) {
   );
 }
 
+export function logShopifySessionTokenDebug({ authorizationHeader, token }) {
+  console.log("/api/session called");
+  console.log("authorization header exists:", Boolean(authorizationHeader));
+  console.log("bearer token extracted:", Boolean(token));
+  console.log("SHOPIFY_API_KEY exists:", Boolean(process.env.SHOPIFY_API_KEY));
+  console.log(
+    "SHOPIFY_API_SECRET exists:",
+    Boolean(process.env.SHOPIFY_API_SECRET),
+  );
+
+  try {
+    const [, encodedPayload] = token?.split(".") || [];
+    const payload = encodedPayload
+      ? JSON.parse(decodeBase64Url(encodedPayload))
+      : {};
+
+    console.log("decoded JWT aud:", payload.aud);
+    console.log("decoded JWT dest:", payload.dest);
+    console.log("decoded JWT iss:", payload.iss);
+    console.log("decoded JWT exp:", payload.exp);
+  } catch (error) {
+    console.log("decoded JWT aud:", undefined);
+    console.log("decoded JWT dest:", undefined);
+    console.log("decoded JWT iss:", undefined);
+    console.log("decoded JWT exp:", undefined);
+    console.log("JWT debug decode error:", error.message);
+  }
+
+  console.log("current unix time:", Math.floor(Date.now() / 1000));
+}
+
 export function normalizeShopDomain(shop) {
   if (!shop || typeof shop !== "string") {
     throw new Error("Missing shop parameter");
