@@ -42,7 +42,11 @@ app.use(
   }),
 );
 app.use(cors({ origin: true, credentials: true }));
-app.use("/webhooks", express.raw({ type: "*/*", limit: "1mb" }), webhookRoutes);
+app.use(
+  "/webhooks",
+  express.raw({ type: "application/json", limit: "1mb" }),
+  webhookRoutes,
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 

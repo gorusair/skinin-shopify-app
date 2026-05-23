@@ -50,6 +50,8 @@ function verifyWebhookHmac(req) {
 
 function handleComplianceWebhook(expectedTopic) {
   return (req, res) => {
+    logWebhookRequest(req, expectedTopic);
+
     if (!verifyWebhookHmac(req)) {
       return res.sendStatus(401);
     }
@@ -69,11 +71,31 @@ function handleComplianceWebhook(expectedTopic) {
   };
 }
 
+function logWebhookRequest(req, expectedTopic = "unknown") {
+  console.info("[Webhook] Request received:", {
+    path: req.originalUrl,
+    method: req.method,
+    expectedTopic,
+    topic: req.get(SHOPIFY_TOPIC_HEADER) || "missing",
+    shop: req.get(SHOPIFY_SHOP_HEADER) || "unknown",
+    hasHmac: Boolean(req.get(SHOPIFY_HMAC_HEADER)),
+  });
+}
+
 router.post(
   "/customers/data_request",
   handleComplianceWebhook("customers/data_request"),
 );
 router.post("/customers/redact", handleComplianceWebhook("customers/redact"));
 router.post("/shop/redact", handleComplianceWebhook("shop/redact"));
+router.post("*", (req, res) => {
+  logWebhookRequest(req);
+
+  if (!verifyWebhookHmac(req)) {
+    return res.sendStatus(401);
+  }
+
+  return res.sendStatus(404);
+});
 
 export default router;
