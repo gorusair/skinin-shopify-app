@@ -1,6 +1,7 @@
 (function () {
   if (window.SkininIngredientCheckerLoaded) return;
   window.SkininIngredientCheckerLoaded = true;
+  console.log("[Skinin] theme extension loaded");
 
   const INGREDIENT_LABELS = [
     "ingredients",
@@ -8,19 +9,40 @@
     "inci",
     "full ingredients",
   ];
+  const ANALYZE_PATH = "/api/ingredients/analyze";
 
-  document.addEventListener("click", async (event) => {
-    const button = event.target.closest(
-      "[data-skinin-check-button], .skinin-check-button",
-    );
-    if (!button) return;
+  bindIngredientCheckerBlocks();
 
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindIngredientCheckerBlocks);
+  }
+
+  document.addEventListener("shopify:section:load", (event) => {
+    bindIngredientCheckerBlocks(event.target);
+  });
+
+  function bindIngredientCheckerBlocks(scope = document) {
+    scope
+      .querySelectorAll("[data-skinin-check-button], .skinin-check-button")
+      .forEach((button) => {
+        if (button.dataset.skininBound === "true") return;
+        button.dataset.skininBound = "true";
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          handleIngredientCheck(button);
+        });
+      });
+  }
+
+  async function handleIngredientCheck(button) {
+    console.log("[Skinin] Check Ingredients clicked");
     const root = button.closest(".skinin-ingredient-checker");
     if (!root) return;
 
     const productData = readProductData(root);
     const ingredientResult = extractIngredients(productData);
     const ingredients = ingredientResult.ingredients;
+    console.log(`[Skinin] ingredients text found: ${ingredients.length > 0}`);
 
     if (!ingredients.length) {
       openModal([], { status: ingredientResult.status });
@@ -29,37 +51,56 @@
 
     button.disabled = true;
     button.textContent = "Checking ingredients...";
+    let statusLogged = false;
 
     try {
-      if (!root.dataset.appUrl) {
-        throw new Error("Missing Skinin app backend URL");
+      console.log("[Skinin] calling analyze API");
+
+      const response = await fetch(resolveAnalyzeUrl(root), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop: root.dataset.shop,
+          productId: root.dataset.productId,
+          productTitle: root.dataset.productTitle,
+          ingredients,
+        }),
+      });
+
+      console.log(`[Skinin] analyze status: ${response.status}`);
+      statusLogged = true;
+
+      if (!response.ok) {
+        throw new Error(`Ingredient check request failed (${response.status})`);
       }
-
-      const response = await fetch(
-        `${root.dataset.appUrl}/api/ingredients/analyze`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            shop: root.dataset.shop,
-            productId: root.dataset.productId,
-            productTitle: root.dataset.productTitle,
-            ingredients,
-          }),
-        },
-      );
-
-      if (!response.ok) throw new Error("Ingredient check request failed");
 
       const result = await response.json();
       openModal(result.ingredients || []);
-    } catch (_error) {
-      openModal([], { status: "error" });
+    } catch (error) {
+      if (!statusLogged) console.log("[Skinin] analyze status: network_error");
+      openModal([], {
+        status: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Ingredient check request failed",
+      });
     } finally {
       button.disabled = false;
       button.textContent = "Check Ingredients";
     }
-  });
+  }
+
+  function resolveAnalyzeUrl(root) {
+    const appUrl = root.dataset.appUrl;
+    if (!appUrl) return ANALYZE_PATH;
+
+    try {
+      return new URL(ANALYZE_PATH, appUrl).toString();
+    } catch (_error) {
+      return ANALYZE_PATH;
+    }
+  }
 
   function readProductData(root) {
     const script = root?.querySelector("[data-skinin-product]");
@@ -132,7 +173,7 @@
 
     const status = normalizeModalStatus(ingredients, options.status);
     const summaryHtml = renderSummary(ingredients, status);
-    const bodyHtml = renderMessage(status);
+    const bodyHtml = renderMessage(status, options.message);
     const listHtml = ingredients.length
       ? `
         <div class="skinin-modal-list">
@@ -216,7 +257,7 @@
     return `<div class="skinin-summary skinin-summary-safe">No flagged ingredients found.</div>`;
   }
 
-  function renderMessage(status) {
+  function renderMessage(status, message) {
     if (status === "empty") {
       return `
         <div class="skinin-modal-message">
@@ -236,7 +277,7 @@
     if (status === "error") {
       return `
         <div class="skinin-modal-message">
-          Please try again in a moment.
+          ${escapeHtml(message || "Please try again in a moment.")}
         </div>
       `;
     }

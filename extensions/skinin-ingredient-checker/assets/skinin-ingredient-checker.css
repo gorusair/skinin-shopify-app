@@ -2,16 +2,21 @@
   margin: 16px 0;
 }
 .skinin-check-button {
+  -webkit-appearance: none;
+  appearance: none;
   align-items: center;
   background: #1f2937;
   border: 1px solid #1f2937;
   border-radius: 6px;
+  box-sizing: border-box;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
+  font-size: 15px;
   font-weight: 600;
   justify-content: center;
+  line-height: 1.2;
   min-height: 44px;
   padding: 0 20px;
   text-decoration: none;

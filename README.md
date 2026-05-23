@@ -18,6 +18,13 @@ Shopify app scaffold for checking cosmetic product ingredients with Open Beauty 
 
 The theme block exposes a `Check Ingredients` button on product pages. Configure its backend URL setting in the theme editor so storefront clicks can call `/api/ingredients/analyze`.
 
+## Theme Extension Regression Note
+
+- Product page button/block: `extensions/skinin-ingredient-checker/blocks/ingredient-checker.liquid`
+- Storefront click handling and modal rendering: `extensions/skinin-ingredient-checker/assets/skinin-ingredient-checker.js`
+- Storefront button/modal styling: `extensions/skinin-ingredient-checker/assets/skinin-ingredient-checker.css`
+- Analyze API route: `web/src/routes/ingredients.js`, mounted by `web/src/server.js` at `/api/ingredients`
+
 ## Billing
 
 Shopify Billing API requires public app distribution. Development stores can bypass billing with `BYPASS_BILLING=true`.
