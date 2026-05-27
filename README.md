@@ -1,13 +1,15 @@
 # Skinin Ingredient Checker
 
-Shopify app scaffold for checking cosmetic product ingredients with Open Beauty Facts.
+Shopify app for checking cosmetic product ingredient lists with an internal hardcoded ingredient reference list and rule-based matching/classification.
+
+The app is an ingredient review aid only. It does not provide medical advice, diagnose, treat, cure, or prevent any condition. Merchants are responsible for providing accurate and complete ingredient lists.
 
 ## Structure
 
 - `web/`: Node.js and Express backend.
 - `extensions/skinin-ingredient-checker/`: Shopify theme app extension with vanilla JavaScript and CSS.
 - `web/src/services/firestore.js`: Firebase Firestore persistence.
-- `web/src/services/ingredient-analyzer.js`: Open Beauty Facts lookup and ingredient classification.
+- `web/src/services/ingredient-analyzer.js`: Internal ingredient reference list and rule-based ingredient classification.
 
 ## First Run
 
@@ -17,6 +19,12 @@ Shopify app scaffold for checking cosmetic product ingredients with Open Beauty 
 4. Run `npm run dev`.
 
 The theme block exposes a `Check Ingredients` button on product pages. Configure its backend URL setting in the theme editor so storefront clicks can call `/api/ingredients/analyze`.
+
+Storefront extraction only analyzes text that appears to be a valid ingredient list. Product descriptions should include a labeled, comma-separated list such as:
+
+`Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance`
+
+If no valid ingredient list is found, the storefront modal shows an empty state instead of analyzing unrelated product page text.
 
 ## Theme Extension Regression Note
 
