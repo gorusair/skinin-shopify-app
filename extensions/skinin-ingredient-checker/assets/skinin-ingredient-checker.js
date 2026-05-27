@@ -250,7 +250,7 @@
         ${bodyHtml}
         ${listHtml}
         <div class="skinin-modal-footer">
-          Results are based on the ingredient information available in the product description and are for informational purposes only.
+          Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.
         </div>
       </div>
     `;
@@ -348,7 +348,11 @@
   function renderIngredient(ingredient) {
     const rating = escapeHtml(ingredient.safetyRating || "caution");
     const ratingLabel =
-      { safe: "SAFE", caution: "CAUTION", avoid: "AVOID" }[rating] ||
+      {
+        safe: "Low concern",
+        caution: "Worth noting",
+        avoid: "Potential sensitivity",
+      }[rating] ||
       rating.toUpperCase();
     const name = cleanIngredientName(ingredient.name);
     const reason = ingredient.reason

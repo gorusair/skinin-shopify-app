@@ -278,7 +278,13 @@
       function showResults(ingredients) {
         var body = ingredients.length
           ? ingredients.map(function (ingredient) {
-              return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(ingredient.safetyRating || "caution") + "\">" + escapeHtml((ingredient.safetyRating || "caution").toUpperCase()) + "</span></article>";
+              var rating = ingredient.safetyRating || "caution";
+              var ratingLabel = {
+                safe: "Low concern",
+                caution: "Worth noting",
+                avoid: "Potential sensitivity"
+              }[rating] || rating.toUpperCase();
+              return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span></article>";
             }).join("")
           : "<div class=\"skinin-modal-message\">No ingredient results returned.</div>";
         showModal("Ingredient Check", body, true);
@@ -290,7 +296,7 @@
 
         var overlay = document.createElement("div");
         overlay.className = "skinin-modal-overlay";
-        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div>";
+        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "<div class=\"skinin-modal-footer\">Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.</div></div>";
         overlay.addEventListener("click", function (event) {
           if (event.target === overlay || event.target.closest(".skinin-modal-close")) overlay.remove();
         });

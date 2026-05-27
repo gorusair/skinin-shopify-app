@@ -187,7 +187,6 @@ button.skinin-check-button:disabled,
   font-weight: 800;
   line-height: 1;
   padding: 6px 12px;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 .skinin-rating-safe {
