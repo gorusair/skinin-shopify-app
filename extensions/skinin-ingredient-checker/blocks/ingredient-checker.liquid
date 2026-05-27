@@ -142,10 +142,14 @@
         console.log("[Skinin] Check Ingredients clicked");
 
         var ingredients = readIngredients(root);
-        console.log("[Skinin] ingredients text found: " + (ingredients.length > 0));
+        console.log("[Skinin] ingredient list found: " + (ingredients.length > 0));
 
         if (!ingredients.length) {
-          showModal("No ingredient data found.", "Add ingredients to the product description to run a check.");
+          console.log("[Skinin] skipped analysis because no ingredient list was found");
+          showModal(
+            "No ingredient list found for this product.",
+            "Add ingredients to the product description using this format: Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance"
+          );
           return;
         }
 
@@ -203,34 +207,72 @@
         }
 
         if (Array.isArray(productData.metafieldIngredients)) {
-          return cleanIngredients(productData.metafieldIngredients);
+          var metafieldArrayIngredients = cleanIngredients(productData.metafieldIngredients);
+          return isPlausibleIngredientList(metafieldArrayIngredients) ? metafieldArrayIngredients : [];
         }
 
         if (productData.metafieldIngredients) {
-          return splitIngredients(productData.metafieldIngredients);
+          var metafieldIngredients = splitIngredients(productData.metafieldIngredients);
+          return isPlausibleIngredientList(metafieldIngredients, productData.metafieldIngredients) ? metafieldIngredients : [];
         }
 
-        return splitIngredients(findIngredientText(productData.description || document.body.innerText || ""));
+        var ingredientText = findIngredientText(productData.description || "");
+        var ingredients = splitIngredients(ingredientText);
+        return isPlausibleIngredientList(ingredients, ingredientText) ? ingredients : [];
       }
 
       function findIngredientText(text) {
         var labels = ["ingredients", "ingredient list", "inci", "full ingredients"];
-        var lowerText = String(text).toLowerCase();
+        var sourceText = String(text || "");
+        var lowerText = sourceText.toLowerCase();
         for (var i = 0; i < labels.length; i += 1) {
-          var index = lowerText.indexOf(labels[i]);
-          if (index >= 0) return String(text).slice(index + labels[i].length).replace(/^[:\s-]+/, "");
+          var pattern = new RegExp("\\b" + escapeRegExp(labels[i]) + "\\b\\s*:", "i");
+          var match = pattern.exec(sourceText);
+          if (match) return trimIngredientSection(sourceText.slice(match.index + match[0].length));
+
+          var index = lowerText.indexOf(labels[i] + ":");
+          if (index >= 0) return trimIngredientSection(sourceText.slice(index + labels[i].length + 1));
         }
         return "";
+      }
+
+      function trimIngredientSection(value) {
+        var sectionBreak = String(value).search(/\b(directions|usage|how to use|warnings?|caution|description|details|benefits|related products?|you may also like|sale)\b\s*:/i);
+        var section = sectionBreak >= 0 ? String(value).slice(0, sectionBreak) : String(value);
+        return section.replace(/^[:\s-]+/, "").trim();
       }
 
       function splitIngredients(value) {
         return cleanIngredients(String(value || "").split(/[,;\n]+/));
       }
 
+      function isPlausibleIngredientList(ingredients, sourceText) {
+        if (!Array.isArray(ingredients) || ingredients.length < 2) return false;
+        if (sourceText && String(sourceText).indexOf(",") < 0) return false;
+
+        var plausibleCount = ingredients.filter(function (ingredient) {
+          return isPlausibleIngredientName(ingredient);
+        }).length;
+        return plausibleCount >= 2 && plausibleCount / ingredients.length >= 0.7;
+      }
+
+      function isPlausibleIngredientName(value) {
+        var ingredient = String(value || "").trim().replace(/[.,;:]+$/g, "").trim();
+        if (!/[a-z]/i.test(ingredient)) return false;
+        if (ingredient.length < 2 || ingredient.length > 80) return false;
+        if (/[+$€£¥₩]|(?:\d+%?\s*off)|(?:\$\s*\d+)/i.test(ingredient)) return false;
+        if (/\b(add to cart|buy now|sale|sold out|related products?|you may also like|shipping|returns?|reviews?|price|subtotal|checkout|home|menu)\b/i.test(ingredient)) return false;
+        return true;
+      }
+
       function cleanIngredients(values) {
         return values.map(function (value) {
           return String(value).trim().replace(/[.,;:]+$/g, "").trim();
         }).filter(Boolean).slice(0, 80);
+      }
+
+      function escapeRegExp(value) {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }
 
       function showResults(ingredients) {
