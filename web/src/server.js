@@ -500,8 +500,13 @@ function renderAdminPage({ shop, appUrl }) {
             var PRESET_SHOP = "${escapedShop}";
             var customIngredients = [];
 
+            console.log("[Skinin Admin] script loaded");
+
+            // --- helpers ---
+
             function getShop() {
-              return PRESET_SHOP || document.getElementById("field-shop")?.value.trim() || "";
+              var shopInput = document.getElementById("field-shop");
+              return PRESET_SHOP || (shopInput ? shopInput.value.trim() : "") || "";
             }
 
             function setField(id, value) {
@@ -509,20 +514,83 @@ function renderAdminPage({ shop, appUrl }) {
               if (el && value !== undefined && value !== null) el.value = value;
             }
 
+            function val(id, fallback) {
+              var el = document.getElementById(id);
+              return el ? el.value.trim() || fallback : fallback;
+            }
+
             function buildPayload(shop) {
               return {
                 shop: shop,
-                buttonText: document.getElementById("field-buttonText").value.trim() || "Check Ingredients",
-                buttonColor: document.getElementById("field-buttonColorHex").value.trim() || "#1f2937",
-                modalTitle: document.getElementById("field-modalTitle").value.trim() || "Ingredient Check",
+                buttonText: val("field-buttonText", "Check Ingredients"),
+                buttonColor: val("field-buttonColorHex", "#1f2937"),
+                modalTitle: val("field-modalTitle", "Ingredient Check"),
                 labels: {
-                  low: document.getElementById("field-labelLow").value.trim() || "Low concern",
-                  mid: document.getElementById("field-labelMid").value.trim() || "Worth noting",
-                  high: document.getElementById("field-labelHigh").value.trim() || "Potential sensitivity"
+                  low: val("field-labelLow", "Low concern"),
+                  mid: val("field-labelMid", "Worth noting"),
+                  high: val("field-labelHigh", "Potential sensitivity")
                 },
-                disclaimerText: document.getElementById("field-disclaimerText").value.trim() || "",
+                disclaimerText: val("field-disclaimerText", ""),
                 customIngredients: customIngredients
               };
+            }
+
+            function esc(str) {
+              return String(str || "").replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c];
+              });
+            }
+
+            function showMsg(type) {
+              var ok = document.getElementById("msg-ok");
+              var err = document.getElementById("msg-err");
+              if (ok) ok.style.display = type === "ok" ? "block" : "none";
+              if (err) err.style.display = type === "err" ? "block" : "none";
+              setTimeout(function () {
+                if (ok) ok.style.display = "none";
+                if (err) err.style.display = "none";
+              }, 4000);
+            }
+
+            function showCiMsg(type) {
+              var ok = document.getElementById("ci-msg-ok");
+              var err = document.getElementById("ci-msg-err");
+              if (ok) ok.style.display = type === "ok" ? "block" : "none";
+              if (err) err.style.display = type === "err" ? "block" : "none";
+              setTimeout(function () {
+                if (ok) ok.style.display = "none";
+                if (err) err.style.display = "none";
+              }, 4000);
+            }
+
+            function renderCustomTable() {
+              var wrap = document.getElementById("ci-table-wrap");
+              if (!wrap) return;
+              if (!customIngredients.length) {
+                wrap.innerHTML = "<p class=\"ci-empty\">No custom ingredients added yet.</p>";
+                return;
+              }
+              var labelText = { safe: "Low concern", caution: "Worth noting", avoid: "Potential sensitivity" };
+              var badgeClass = { safe: "badge-safe", caution: "badge-caution", avoid: "badge-avoid" };
+              var rows = customIngredients.map(function (ci, idx) {
+                return "<tr>" +
+                  "<td>" + esc(ci.name) + "</td>" +
+                  "<td><span class=\"badge " + (badgeClass[ci.rating] || "") + "\">" + esc(labelText[ci.rating] || ci.rating) + "</span></td>" +
+                  "<td>" + esc(ci["function"] || "") + "</td>" +
+                  "<td>" + esc(ci.reason || "") + "</td>" +
+                  "<td><button type=\"button\" class=\"btn-delete\" data-idx=\"" + idx + "\">Delete</button></td>" +
+                  "</tr>";
+              }).join("");
+              wrap.innerHTML = "<table class=\"ci-table\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>" + rows + "</tbody></table>";
+              var deleteBtns = wrap.querySelectorAll(".btn-delete");
+              for (var d = 0; d < deleteBtns.length; d++) {
+                deleteBtns[d].addEventListener("click", (function (idx) {
+                  return function () {
+                    customIngredients.splice(idx, 1);
+                    renderCustomTable();
+                  };
+                })(parseInt(deleteBtns[d].dataset.idx, 10)));
+              }
             }
 
             function loadSettings() {
@@ -548,105 +616,86 @@ function renderAdminPage({ shop, appUrl }) {
                 .catch(function () {});
             }
 
-            var colorPicker = document.getElementById("field-buttonColor");
-            var colorHex = document.getElementById("field-buttonColorHex");
-            colorPicker.addEventListener("input", function () { colorHex.value = colorPicker.value; });
-            colorHex.addEventListener("input", function () {
-              var v = colorHex.value.trim();
-              if (/^#[0-9a-fA-F]{6}$/.test(v)) colorPicker.value = v;
-            });
+            // --- event listeners, all in one place ---
 
-            document.getElementById("settings-form").addEventListener("submit", function (e) {
-              e.preventDefault();
-              var shop = getShop();
-              if (!shop) { alert("Enter a shop domain first."); return; }
-              fetch(APP_URL + "/api/settings", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(buildPayload(shop))
-              })
-                .then(function (r) { return r.json(); })
-                .then(function (data) { showMsg(data.ok !== false ? "ok" : "err"); })
-                .catch(function () { showMsg("err"); });
-            });
+            function init() {
+              console.log("[Skinin Admin] init");
 
-            document.getElementById("ci-add-btn").addEventListener("click", function () {
-              var name = document.getElementById("ci-name").value.trim();
-              if (!name) { document.getElementById("ci-name").focus(); return; }
-              customIngredients.push({
-                name: name,
-                rating: document.getElementById("ci-rating").value,
-                function: document.getElementById("ci-function").value.trim(),
-                reason: document.getElementById("ci-reason").value.trim()
-              });
-              document.getElementById("ci-name").value = "";
-              document.getElementById("ci-function").value = "";
-              document.getElementById("ci-reason").value = "";
-              renderCustomTable();
-            });
-
-            document.getElementById("ci-save-btn").addEventListener("click", function () {
-              var shop = getShop();
-              if (!shop) { alert("Enter a shop domain first."); return; }
-              fetch(APP_URL + "/api/settings", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(buildPayload(shop))
-              })
-                .then(function (r) { return r.json(); })
-                .then(function (data) { showCiMsg(data.ok !== false ? "ok" : "err"); })
-                .catch(function () { showCiMsg("err"); });
-            });
-
-            function renderCustomTable() {
-              var wrap = document.getElementById("ci-table-wrap");
-              if (!wrap) return;
-              if (!customIngredients.length) {
-                wrap.innerHTML = "<p class=\"ci-empty\">No custom ingredients added yet.</p>";
-                return;
+              var colorPicker = document.getElementById("field-buttonColor");
+              var colorHex = document.getElementById("field-buttonColorHex");
+              if (colorPicker && colorHex) {
+                colorPicker.addEventListener("input", function () { colorHex.value = colorPicker.value; });
+                colorHex.addEventListener("input", function () {
+                  var v = colorHex.value.trim();
+                  if (/^#[0-9a-fA-F]{6}$/.test(v)) colorPicker.value = v;
+                });
               }
-              var labelText = { safe: "Low concern", caution: "Worth noting", avoid: "Potential sensitivity" };
-              var badgeClass = { safe: "badge-safe", caution: "badge-caution", avoid: "badge-avoid" };
-              var rows = customIngredients.map(function (ci, idx) {
-                return "<tr><td>" + esc(ci.name) + "</td>" +
-                  "<td><span class=\"badge " + (badgeClass[ci.rating] || "") + "\">" + esc(labelText[ci.rating] || ci.rating) + "</span></td>" +
-                  "<td>" + esc(ci.function || "") + "</td>" +
-                  "<td>" + esc(ci.reason || "") + "</td>" +
-                  "<td><button type=\"button\" class=\"btn-delete\" data-idx=\"" + idx + "\">Delete</button></td></tr>";
-              }).join("");
-              wrap.innerHTML = "<table class=\"ci-table\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>" + rows + "</tbody></table>";
-              wrap.querySelectorAll(".btn-delete").forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                  customIngredients.splice(parseInt(btn.dataset.idx, 10), 1);
+
+              var settingsForm = document.getElementById("settings-form");
+              if (settingsForm) {
+                settingsForm.addEventListener("submit", function (e) {
+                  e.preventDefault();
+                  var shop = getShop();
+                  if (!shop) { alert("Enter a shop domain first."); return; }
+                  fetch(APP_URL + "/api/settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(buildPayload(shop))
+                  })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) { showMsg(data.ok !== false ? "ok" : "err"); })
+                    .catch(function () { showMsg("err"); });
+                });
+              }
+
+              var addBtn = document.getElementById("ci-add-btn");
+              console.log("[Skinin Admin] ci-add-btn found:", !!addBtn);
+              if (addBtn) {
+                addBtn.addEventListener("click", function () {
+                  console.log("[Skinin Admin] Add ingredient clicked");
+                  var nameEl = document.getElementById("ci-name");
+                  var name = nameEl ? nameEl.value.trim() : "";
+                  if (!name) { if (nameEl) nameEl.focus(); return; }
+                  customIngredients.push({
+                    name: name,
+                    rating: document.getElementById("ci-rating").value,
+                    "function": document.getElementById("ci-function").value.trim(),
+                    reason: document.getElementById("ci-reason").value.trim()
+                  });
+                  document.getElementById("ci-name").value = "";
+                  document.getElementById("ci-function").value = "";
+                  document.getElementById("ci-reason").value = "";
                   renderCustomTable();
                 });
-              });
+              }
+
+              var saveBtn = document.getElementById("ci-save-btn");
+              console.log("[Skinin Admin] ci-save-btn found:", !!saveBtn);
+              if (saveBtn) {
+                saveBtn.addEventListener("click", function () {
+                  console.log("[Skinin Admin] Save custom ingredients clicked");
+                  var shop = getShop();
+                  if (!shop) { alert("Enter a shop domain first."); return; }
+                  fetch(APP_URL + "/api/settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(buildPayload(shop))
+                  })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) { showCiMsg(data.ok !== false ? "ok" : "err"); })
+                    .catch(function () { showCiMsg("err"); });
+                });
+              }
+
+              renderCustomTable();
+              loadSettings();
             }
 
-            function showMsg(type) {
-              var ok = document.getElementById("msg-ok");
-              var err = document.getElementById("msg-err");
-              ok.style.display = type === "ok" ? "block" : "none";
-              err.style.display = type === "err" ? "block" : "none";
-              setTimeout(function () { ok.style.display = "none"; err.style.display = "none"; }, 4000);
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", init);
+            } else {
+              init();
             }
-
-            function showCiMsg(type) {
-              var ok = document.getElementById("ci-msg-ok");
-              var err = document.getElementById("ci-msg-err");
-              ok.style.display = type === "ok" ? "block" : "none";
-              err.style.display = type === "err" ? "block" : "none";
-              setTimeout(function () { ok.style.display = "none"; err.style.display = "none"; }, 4000);
-            }
-
-            function esc(str) {
-              return String(str || "").replace(/[&<>"']/g, function (c) {
-                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c];
-              });
-            }
-
-            loadSettings();
-            renderCustomTable();
           })();
         </script>
       </body>
