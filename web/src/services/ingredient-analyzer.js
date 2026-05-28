@@ -1,5 +1,5 @@
 // Direct safety rating mapping by ingredient
-const INGREDIENT_SAFETY = {
+export const INGREDIENT_SAFETY = {
   // AVOID
   fragrance: {
     rating: "avoid",

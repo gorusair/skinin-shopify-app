@@ -4,6 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
+import { INGREDIENT_SAFETY } from "./services/ingredient-analyzer.js";
 import authRoutes from "./routes/auth.js";
 import billingRoutes from "./routes/billing.js";
 import ingredientRoutes from "./routes/ingredients.js";
@@ -24,6 +25,10 @@ import {
 } from "./public-pages.js";
 
 dotenv.config();
+
+const defaultRatingsJson = JSON.stringify(
+  Object.fromEntries(Object.entries(INGREDIENT_SAFETY).map(([k, v]) => [k, v.rating])),
+);
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -340,7 +345,7 @@ function renderHomePage({ billingStatus, billingBypassed }) {
   `;
 }
 
-function renderAdminPage({ shop, appUrl }) {
+function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
   const escapedShop = shop.replace(/"/g, "&quot;").replace(/</g, "&lt;");
   const escapedAppUrl = appUrl.replace(/"/g, "&quot;");
   return `
@@ -365,6 +370,7 @@ function renderAdminPage({ shop, appUrl }) {
           }
           input[type="color"] { height: 42px; padding: 4px 8px; cursor: pointer; }
           textarea { min-height: 80px; resize: vertical; }
+          #ci-paste { min-height: 100px; }
           .color-row { display: flex; gap: 10px; align-items: center; }
           .color-row input[type="text"] { flex: 1; }
           .color-row input[type="color"] { flex: 0 0 50px; }
@@ -382,21 +388,21 @@ function renderAdminPage({ shop, appUrl }) {
           .shop-hint { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
           .section-divider { border-top: 1px solid #e5e7eb; margin: 36px 0 28px; }
           .ci-section h2 { font-size: 18px; margin: 0 0 6px; }
-          .ci-section p { color: #4b5563; font-size: 14px; margin: 0 0 20px; }
+          .ci-section > p { color: #4b5563; font-size: 14px; margin: 0 0 20px; }
+          .ci-paste-wrap { margin-bottom: 20px; }
           .ci-table { border-collapse: collapse; margin-bottom: 20px; width: 100%; }
           .ci-table th { background: #f9fafb; color: #374151; font-size: 12px; font-weight: 600; padding: 9px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-          .ci-table td { border-bottom: 1px solid #f3f4f6; font-size: 13px; padding: 9px 12px; vertical-align: top; }
+          .ci-table td { border-bottom: 1px solid #f3f4f6; font-size: 13px; padding: 8px 12px; vertical-align: middle; }
           .ci-table tr:last-child td { border-bottom: none; }
+          .ci-table select { font-size: 13px; padding: 5px 8px; }
           .ci-empty { color: #9ca3af; font-size: 13px; padding: 12px 0 20px; }
+          .ci-divider { border: none; border-top: 1px dashed #e5e7eb; margin: 24px 0; }
           .ci-add-form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
           .btn-add { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600; padding: 10px; width: 100%; }
           .btn-add:hover { background: #f9fafb; }
-          .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 0; }
+          .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 0; white-space: nowrap; }
           .btn-delete:hover { text-decoration: underline; }
-          .badge { border-radius: 999px; font-size: 11px; font-weight: 700; padding: 3px 10px; }
-          .badge-safe { background: #d1fae5; color: #065f46; }
-          .badge-caution { background: #fef3c7; color: #92400e; }
-          .badge-avoid { background: #fee2e2; color: #991b1b; }
+          .ci-single-label { font-size: 13px; color: #6b7280; margin: 0 0 14px; }
         </style>
       </head>
       <body>
@@ -409,7 +415,7 @@ function renderAdminPage({ shop, appUrl }) {
             : `<div class="form-group"><label for="field-shop">Shop domain</label><input type="text" id="field-shop" placeholder="yourstore.myshopify.com"></div>`
           }
 
-          <form onsubmit="adminSaveSettings(event)">
+          <form id="settings-form">
             <div class="form-group">
               <label for="field-buttonText">Button text</label>
               <input type="text" id="field-buttonText" placeholder="Check Ingredients">
@@ -417,8 +423,8 @@ function renderAdminPage({ shop, appUrl }) {
             <div class="form-group">
               <label>Button color</label>
               <div class="color-row">
-                <input type="text" id="field-buttonColorHex" placeholder="#1f2937" maxlength="7" oninput="adminSyncHex(this)">
-                <input type="color" id="field-buttonColor" value="#1f2937" oninput="adminSyncPicker(this)">
+                <input type="text" id="field-buttonColorHex" placeholder="#1f2937" maxlength="7">
+                <input type="color" id="field-buttonColor" value="#1f2937">
               </div>
             </div>
             <div class="form-group">
@@ -453,7 +459,17 @@ function renderAdminPage({ shop, appUrl }) {
           <div class="ci-section">
             <h2>Custom Ingredients</h2>
             <p>Override or extend the default ingredient database for your store.</p>
-            <div id="ci-table-wrap"><p class="ci-empty">No custom ingredients added yet.</p></div>
+
+            <div class="ci-paste-wrap">
+              <label for="ci-paste">Paste ingredient list</label>
+              <textarea id="ci-paste" placeholder="Paste your ingredient list here, e.g. Water, Glycerin, Retinol, Niacinamide, Fragrance"></textarea>
+              <button type="button" id="parse-btn" class="btn-add" style="margin-top:8px">Parse ingredients</button>
+            </div>
+
+            <div id="ci-table-wrap"><p class="ci-empty">No custom ingredients yet. Paste a list above or add one below.</p></div>
+
+            <hr class="ci-divider">
+            <p class="ci-single-label">Or add a single ingredient:</p>
             <div class="ci-add-form">
               <div>
                 <label for="ci-name">Ingredient name</label>
@@ -475,9 +491,10 @@ function renderAdminPage({ shop, appUrl }) {
                 <label for="ci-reason">Description (optional)</label>
                 <input type="text" id="ci-reason" placeholder="e.g. May cause sensitivity">
               </div>
-              <button type="button" class="btn-add" onclick="adminAddIngredient()">Add ingredient</button>
+              <button type="button" id="ci-add-btn" class="btn-add">Add ingredient</button>
             </div>
-            <button type="button" class="btn-save" onclick="adminSaveIngredients()">Save custom ingredients</button>
+
+            <button type="button" id="ci-save-btn" class="btn-save">Save custom ingredients</button>
             <div id="ci-msg-ok" class="msg msg-ok">Custom ingredients saved.</div>
             <div id="ci-msg-err" class="msg msg-err">Failed to save. Please try again.</div>
           </div>
@@ -487,18 +504,16 @@ function renderAdminPage({ shop, appUrl }) {
           var ADMIN_APP_URL = "${escapedAppUrl}";
           var ADMIN_SHOP = "${escapedShop}";
           var adminIngredients = [];
+          var DEFAULT_RATINGS = ${defaultRatingsJson};
 
           function adminGetShop() {
             var el = document.getElementById("field-shop");
             return ADMIN_SHOP || (el ? el.value.trim() : "");
           }
-
           function adminGetVal(id, fallback) {
             var el = document.getElementById(id);
-            var v = el ? el.value.trim() : "";
-            return v || fallback;
+            return (el && el.value.trim()) ? el.value.trim() : fallback;
           }
-
           function adminBuildPayload() {
             return {
               shop: adminGetShop(),
@@ -514,42 +529,53 @@ function renderAdminPage({ shop, appUrl }) {
               customIngredients: adminIngredients
             };
           }
-
           function adminEsc(s) {
             return String(s || "").replace(/[&<>"']/g, function(c) {
               return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c];
             });
           }
-
+          function adminGetDefaultRating(name) {
+            var key = String(name || "").trim().toLowerCase().replace(/\\s+/g, " ");
+            return DEFAULT_RATINGS[key] || "safe";
+          }
           function adminRenderTable() {
             var wrap = document.getElementById("ci-table-wrap");
             if (!wrap) return;
             if (!adminIngredients.length) {
-              wrap.innerHTML = "<p class=\\"ci-empty\\">No custom ingredients added yet.</p>";
+              wrap.innerHTML = "<p class=\\"ci-empty\\">No custom ingredients yet. Paste a list above or add one below.</p>";
               return;
             }
-            var LABELS = {safe:"Low concern",caution:"Worth noting",avoid:"Potential sensitivity"};
-            var BADGES = {safe:"badge-safe",caution:"badge-caution",avoid:"badge-avoid"};
-            var html = "<table class=\\"ci-table\\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>";
+            var html = "<table class=\\"ci-table\\"><thead><tr><th>Name</th><th>Label</th><th></th></tr></thead><tbody>";
             for (var i = 0; i < adminIngredients.length; i++) {
               var ci = adminIngredients[i];
+              var r = ci.rating || "safe";
               html += "<tr>" +
                 "<td>" + adminEsc(ci.name) + "</td>" +
-                "<td><span class=\\"badge " + (BADGES[ci.rating] || "") + "\\">" + adminEsc(LABELS[ci.rating] || ci.rating) + "</span></td>" +
-                "<td>" + adminEsc(ci["function"] || "") + "</td>" +
-                "<td>" + adminEsc(ci.reason || "") + "</td>" +
-                "<td><button type=\\"button\\" class=\\"btn-delete\\" onclick=\\"adminDeleteIngredient(" + i + ")\\">Delete</button></td>" +
+                "<td><select data-idx=\\"" + i + "\\">" +
+                  "<option value=\\"safe\\"" + (r === "safe" ? " selected" : "") + ">Low concern</option>" +
+                  "<option value=\\"caution\\"" + (r === "caution" ? " selected" : "") + ">Worth noting</option>" +
+                  "<option value=\\"avoid\\"" + (r === "avoid" ? " selected" : "") + ">Potential sensitivity</option>" +
+                "</select></td>" +
+                "<td><button type=\\"button\\" class=\\"btn-delete\\" data-idx=\\"" + i + "\\">Delete</button></td>" +
                 "</tr>";
             }
             html += "</tbody></table>";
             wrap.innerHTML = html;
           }
-
-          function adminDeleteIngredient(idx) {
-            adminIngredients.splice(idx, 1);
+          function adminParseIngredients() {
+            var pasteEl = document.getElementById("ci-paste");
+            var text = pasteEl ? pasteEl.value.trim() : "";
+            if (!text) return;
+            var names = text.split(",").map(function(n) {
+              return n.trim().replace(/[.,;:]+$/, "");
+            }).filter(function(n) { return n.length > 0; });
+            if (!names.length) return;
+            adminIngredients = names.map(function(name) {
+              return { name: name, rating: adminGetDefaultRating(name), "function": "", reason: "" };
+            });
+            pasteEl.value = "";
             adminRenderTable();
           }
-
           function adminAddIngredient() {
             var nameEl = document.getElementById("ci-name");
             var name = nameEl ? nameEl.value.trim() : "";
@@ -565,7 +591,6 @@ function renderAdminPage({ shop, appUrl }) {
             document.getElementById("ci-reason").value = "";
             adminRenderTable();
           }
-
           function adminSaveIngredients() {
             var shop = adminGetShop();
             if (!shop) { alert("Enter a shop domain first."); return; }
@@ -578,7 +603,6 @@ function renderAdminPage({ shop, appUrl }) {
               .then(function(d) { adminShowCiMsg(d.ok !== false ? "ok" : "err"); })
               .catch(function() { adminShowCiMsg("err"); });
           }
-
           function adminSaveSettings(e) {
             e.preventDefault();
             var shop = adminGetShop();
@@ -592,20 +616,6 @@ function renderAdminPage({ shop, appUrl }) {
               .then(function(d) { adminShowMsg(d.ok !== false ? "ok" : "err"); })
               .catch(function() { adminShowMsg("err"); });
           }
-
-          function adminSyncPicker(picker) {
-            var hex = document.getElementById("field-buttonColorHex");
-            if (hex) hex.value = picker.value;
-          }
-
-          function adminSyncHex(hexEl) {
-            var v = hexEl.value.trim();
-            if (/^#[0-9a-fA-F]{6}$/.test(v)) {
-              var p = document.getElementById("field-buttonColor");
-              if (p) p.value = v;
-            }
-          }
-
           function adminShowMsg(type) {
             var ok = document.getElementById("msg-ok");
             var err = document.getElementById("msg-err");
@@ -613,7 +623,6 @@ function renderAdminPage({ shop, appUrl }) {
             err.style.display = type === "err" ? "block" : "none";
             setTimeout(function() { ok.style.display = "none"; err.style.display = "none"; }, 4000);
           }
-
           function adminShowCiMsg(type) {
             var ok = document.getElementById("ci-msg-ok");
             var err = document.getElementById("ci-msg-err");
@@ -622,28 +631,65 @@ function renderAdminPage({ shop, appUrl }) {
             setTimeout(function() { ok.style.display = "none"; err.style.display = "none"; }, 4000);
           }
 
-          // Load saved settings on page load
-          var _shop = adminGetShop();
-          if (_shop) {
-            fetch(ADMIN_APP_URL + "/api/settings?shop=" + encodeURIComponent(_shop))
+          // Attach event listeners — DOM is ready (script is at end of body)
+          document.getElementById("parse-btn").addEventListener("click", adminParseIngredients);
+          document.getElementById("ci-add-btn").addEventListener("click", adminAddIngredient);
+          document.getElementById("ci-save-btn").addEventListener("click", adminSaveIngredients);
+          document.getElementById("settings-form").addEventListener("submit", adminSaveSettings);
+          document.getElementById("field-buttonColor").addEventListener("input", function() {
+            var hex = document.getElementById("field-buttonColorHex");
+            if (hex) hex.value = this.value;
+          });
+          document.getElementById("field-buttonColorHex").addEventListener("input", function() {
+            var v = this.value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+              var p = document.getElementById("field-buttonColor");
+              if (p) p.value = v;
+            }
+          });
+
+          // Event delegation on table wrapper — survives innerHTML re-renders
+          var _tw = document.getElementById("ci-table-wrap");
+          _tw.addEventListener("click", function(e) {
+            if (e.target.classList.contains("btn-delete")) {
+              var idx = parseInt(e.target.getAttribute("data-idx"), 10);
+              adminIngredients.splice(idx, 1);
+              adminRenderTable();
+            }
+          });
+          _tw.addEventListener("change", function(e) {
+            if (e.target.tagName === "SELECT") {
+              var idx = parseInt(e.target.getAttribute("data-idx"), 10);
+              if (!isNaN(idx) && adminIngredients[idx]) {
+                adminIngredients[idx].rating = e.target.value;
+              }
+            }
+          });
+
+          // Load saved settings and custom ingredients on page load
+          var _sh = adminGetShop();
+          if (_sh) {
+            fetch(ADMIN_APP_URL + "/api/settings?shop=" + encodeURIComponent(_sh))
               .then(function(r) { return r.ok ? r.json() : null; })
               .then(function(data) {
-                if (!data) return;
-                var s = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
-                s("field-buttonText", data.buttonText);
-                s("field-buttonColorHex", data.buttonColor);
-                s("field-buttonColor", data.buttonColor);
-                s("field-modalTitle", data.modalTitle);
-                s("field-disclaimerText", data.disclaimerText);
+                if (!data) { adminRenderTable(); return; }
+                var sf = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
+                sf("field-buttonText", data.buttonText);
+                sf("field-buttonColorHex", data.buttonColor);
+                sf("field-buttonColor", data.buttonColor);
+                sf("field-modalTitle", data.modalTitle);
+                sf("field-disclaimerText", data.disclaimerText);
                 if (data.labels) {
-                  s("field-labelLow", data.labels.low);
-                  s("field-labelMid", data.labels.mid);
-                  s("field-labelHigh", data.labels.high);
+                  sf("field-labelLow", data.labels.low);
+                  sf("field-labelMid", data.labels.mid);
+                  sf("field-labelHigh", data.labels.high);
                 }
                 adminIngredients = Array.isArray(data.customIngredients) ? data.customIngredients : [];
                 adminRenderTable();
               })
-              .catch(function() {});
+              .catch(function() { adminRenderTable(); });
+          } else {
+            adminRenderTable();
           }
         </script>
       </body>
@@ -755,7 +801,7 @@ app.use("/api/settings", settingsRoutes);
 app.get("/admin", (req, res) => {
   const shop = String(req.query.shop || "");
   const appUrl = getAppUrl();
-  res.send(renderAdminPage({ shop, appUrl }));
+  res.send(renderAdminPage({ shop, appUrl, defaultRatingsJson }));
 });
 app.use(errorHandler);
 
