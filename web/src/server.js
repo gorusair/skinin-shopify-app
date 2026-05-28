@@ -387,18 +387,18 @@ function renderAdminPage({ shop, appUrl }) {
           .ci-table td { border-bottom: 1px solid #f3f4f6; font-size: 13px; padding: 9px 12px; vertical-align: top; }
           .ci-table tr:last-child td { border-bottom: none; }
           .ci-empty { color: #9ca3af; font-size: 13px; padding: 12px 0 20px; }
-          .ci-add-row { display: grid; gap: 8px; grid-template-columns: 2fr 1fr 1.5fr 2fr auto; align-items: end; margin-bottom: 20px; }
-          .ci-add-row input, .ci-add-row select { border: 1px solid #d1d5db; border-radius: 6px; font: inherit; font-size: 13px; padding: 8px 10px; width: 100%; }
-          .ci-add-row label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #374151; }
-          .btn-add { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px; white-space: nowrap; }
+          .ci-add-form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+          .ci-add-form input, .ci-add-form select { border: 1px solid #d1d5db; border-radius: 6px; font: inherit; font-size: 14px; padding: 9px 12px; width: 100%; }
+          .ci-add-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
+          .btn-add { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600; padding: 10px; width: 100%; }
           .btn-add:hover { background: #f9fafb; }
+          #ci-save-btn { display: block; width: 100%; }
           .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 0; }
           .btn-delete:hover { text-decoration: underline; }
           .badge { border-radius: 999px; font-size: 11px; font-weight: 700; padding: 3px 10px; }
           .badge-safe { background: #d1fae5; color: #065f46; }
           .badge-caution { background: #fef3c7; color: #92400e; }
           .badge-avoid { background: #fee2e2; color: #991b1b; }
-          @media (max-width: 600px) { .ci-add-row { grid-template-columns: 1fr 1fr; } }
         </style>
       </head>
       <body>
@@ -464,7 +464,7 @@ function renderAdminPage({ shop, appUrl }) {
 
             <div id="ci-table-wrap"></div>
 
-            <div class="ci-add-row">
+            <div class="ci-add-form">
               <div>
                 <label for="ci-name">Ingredient name</label>
                 <input type="text" id="ci-name" placeholder="e.g. Retinol">
@@ -485,10 +485,7 @@ function renderAdminPage({ shop, appUrl }) {
                 <label for="ci-reason">Description (optional)</label>
                 <input type="text" id="ci-reason" placeholder="e.g. May cause sensitivity">
               </div>
-              <div>
-                <label>&nbsp;</label>
-                <button type="button" class="btn-add" id="ci-add-btn">Add</button>
-              </div>
+              <button type="button" class="btn-add" id="ci-add-btn">Add ingredient</button>
             </div>
 
             <button type="button" class="btn-save" id="ci-save-btn">Save custom ingredients</button>
