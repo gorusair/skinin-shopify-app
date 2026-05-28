@@ -131,6 +131,70 @@ export async function saveShopToken(shop, accessToken) {
   }
 }
 
+const DEFAULT_SETTINGS = {
+  buttonText: "Check Ingredients",
+  buttonColor: "#1f2937",
+  modalTitle: "Ingredient Check",
+  labels: {
+    low: "Low concern",
+    mid: "Worth noting",
+    high: "Potential sensitivity",
+  },
+  disclaimerText:
+    "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.",
+};
+
+export async function getShopSettings(shop) {
+  try {
+    const db = getFirestore();
+    if (!db) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+
+    const snapshot = await db.collection("shopTokens").doc(shop).get();
+    if (!snapshot.exists) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+
+    const saved = snapshot.data()?.settings;
+    if (!saved) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+
+    return {
+      ...DEFAULT_SETTINGS,
+      ...saved,
+      labels: { ...DEFAULT_SETTINGS.labels, ...(saved.labels || {}) },
+    };
+  } catch (error) {
+    console.warn("[Firestore] Failed to get shop settings:", {
+      shop,
+      message: error.message,
+    });
+    return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+  }
+}
+
+export async function saveShopSettings(shop, settings) {
+  try {
+    const db = getFirestore();
+    if (!db) return false;
+
+    await db
+      .collection("shopTokens")
+      .doc(shop)
+      .set(
+        {
+          settings,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+
+    return true;
+  } catch (error) {
+    console.warn("[Firestore] Failed to save shop settings:", {
+      shop,
+      message: error.message,
+    });
+    return false;
+  }
+}
+
 export async function getShopAccessToken(shop) {
   try {
     const db = getFirestore();

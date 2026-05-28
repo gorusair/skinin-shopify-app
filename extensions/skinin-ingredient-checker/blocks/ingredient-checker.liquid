@@ -146,6 +146,44 @@
       console.log("[Skinin] theme extension loaded");
       button.dataset.skininBound = "true";
 
+      var cfg = {
+        buttonText: "Check Ingredients",
+        buttonColor: "#1f2937",
+        modalTitle: "Ingredient Check",
+        labels: { safe: "Low concern", caution: "Worth noting", avoid: "Potential sensitivity" },
+        disclaimerText: "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice."
+      };
+
+      loadSettings();
+
+      function loadSettings() {
+        var shop = root.dataset.shop;
+        var appUrl = root.dataset.appUrl;
+        if (!shop || !appUrl) return;
+        var url;
+        try { url = new URL("/api/settings", appUrl).toString() + "?shop=" + encodeURIComponent(shop); } catch (e) { return; }
+        fetch(url)
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data) return;
+            if (data.buttonText) cfg.buttonText = data.buttonText;
+            if (data.buttonColor) cfg.buttonColor = data.buttonColor;
+            if (data.modalTitle) cfg.modalTitle = data.modalTitle;
+            if (data.disclaimerText) cfg.disclaimerText = data.disclaimerText;
+            if (data.labels) {
+              if (data.labels.low) cfg.labels.safe = data.labels.low;
+              if (data.labels.mid) cfg.labels.caution = data.labels.mid;
+              if (data.labels.high) cfg.labels.avoid = data.labels.high;
+            }
+            if (!button.disabled) {
+              button.textContent = cfg.buttonText;
+              button.style.setProperty("background", cfg.buttonColor, "important");
+              button.style.setProperty("border-color", cfg.buttonColor, "important");
+            }
+          })
+          .catch(function () {});
+      }
+
       button.addEventListener("click", function (event) {
         event.preventDefault();
         console.log("[Skinin] Check Ingredients clicked");
@@ -192,7 +230,7 @@
           })
           .finally(function () {
             button.disabled = false;
-            button.textContent = "Check Ingredients";
+            button.textContent = cfg.buttonText;
           });
       });
 
@@ -288,15 +326,11 @@
         var body = ingredients.length
           ? ingredients.map(function (ingredient) {
               var rating = ingredient.safetyRating || "caution";
-              var ratingLabel = {
-                safe: "Low concern",
-                caution: "Worth noting",
-                avoid: "Potential sensitivity"
-              }[rating] || rating.toUpperCase();
+              var ratingLabel = cfg.labels[rating] || rating.toUpperCase();
               return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span></article>";
             }).join("")
           : "<div class=\"skinin-modal-message\">No ingredient results returned.</div>";
-        showModal("Ingredient Check", body, true);
+        showModal(cfg.modalTitle, body, true);
       }
 
       function showModal(title, body, bodyIsHtml) {
@@ -305,7 +339,7 @@
 
         var overlay = document.createElement("div");
         overlay.className = "skinin-modal-overlay";
-        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-modal-body\"><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div><div class=\"skinin-modal-footer\">Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.</div></div>";
+        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-modal-body\"><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div><div class=\"skinin-modal-footer\">" + escapeHtml(cfg.disclaimerText) + "</div></div>";
         overlay.addEventListener("click", function (event) {
           if (event.target === overlay || event.target.closest(".skinin-modal-close")) overlay.remove();
         });
