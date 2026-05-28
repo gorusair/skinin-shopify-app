@@ -264,17 +264,41 @@ const INGREDIENT_SAFETY = {
   },
 };
 
-export async function analyzeIngredients(ingredients) {
+export async function analyzeIngredients(ingredients, customIngredients = []) {
+  const customMap = buildCustomMap(customIngredients);
   return Promise.all(
-    ingredients.map((ingredient) => analyzeIngredient(ingredient)),
+    ingredients.map((ingredient) => analyzeIngredient(ingredient, customMap)),
   );
 }
 
-async function analyzeIngredient(name) {
+function buildCustomMap(customIngredients) {
+  const map = {};
+  for (const item of customIngredients) {
+    if (item?.name) {
+      map[normalizeIngredientName(item.name)] = item;
+    }
+  }
+  return map;
+}
+
+async function analyzeIngredient(name, customMap = {}) {
   const cleanName = cleanIngredientName(name);
   const normalizedName = normalizeIngredientName(cleanName);
 
-  // 1. Search the direct DB first
+  // 1. Custom ingredients take priority
+  const customMatch = customMap[normalizedName];
+  if (customMatch) {
+    return {
+      name: cleanName,
+      safetyRating: customMatch.rating,
+      function: customMatch.function || "custom ingredient",
+      category: customMatch.function || "custom ingredient",
+      reason: customMatch.reason || "",
+      source: "custom_db",
+    };
+  }
+
+  // 2. Search the default DB
   const directMatch = findIngredientMatch(normalizedName);
   if (directMatch) {
     return {

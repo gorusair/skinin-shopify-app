@@ -18,6 +18,16 @@ const settingsBodySchema = z.object({
     })
     .optional(),
   disclaimerText: z.string().optional(),
+  customIngredients: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        rating: z.enum(["safe", "caution", "avoid"]),
+        function: z.string().optional(),
+        reason: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
 router.get("/", async (req, res, next) => {

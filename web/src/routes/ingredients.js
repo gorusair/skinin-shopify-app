@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { checkBilling } from "../middleware/billing.js";
 import { analyzeIngredients } from "../services/ingredient-analyzer.js";
-import { saveIngredientCheck } from "../services/firestore.js";
+import { saveIngredientCheck, getCustomIngredients } from "../services/firestore.js";
 
 const router = Router();
 
@@ -17,7 +17,8 @@ const analyzeRequestSchema = z.object({
 router.post("/analyze", checkBilling, async (req, res, next) => {
   try {
     const payload = analyzeRequestSchema.parse(req.body);
-    const analysis = await analyzeIngredients(payload.ingredients);
+    const customIngredients = await getCustomIngredients(payload.shop).catch(() => []);
+    const analysis = await analyzeIngredients(payload.ingredients, customIngredients);
 
     try {
       await saveIngredientCheck({

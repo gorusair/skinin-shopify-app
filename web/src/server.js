@@ -379,6 +379,26 @@ function renderAdminPage({ shop, appUrl }) {
           .msg-ok { background: #d1fae5; color: #065f46; }
           .msg-err { background: #fee2e2; color: #991b1b; }
           .shop-hint { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
+          .section-divider { border-top: 1px solid #e5e7eb; margin: 36px 0 28px; }
+          .ci-section h2 { font-size: 18px; margin: 0 0 6px; }
+          .ci-section p { color: #4b5563; font-size: 14px; margin: 0 0 20px; }
+          .ci-table { border-collapse: collapse; margin-bottom: 20px; width: 100%; }
+          .ci-table th { background: #f9fafb; color: #374151; font-size: 12px; font-weight: 600; padding: 9px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+          .ci-table td { border-bottom: 1px solid #f3f4f6; font-size: 13px; padding: 9px 12px; vertical-align: top; }
+          .ci-table tr:last-child td { border-bottom: none; }
+          .ci-empty { color: #9ca3af; font-size: 13px; padding: 12px 0 20px; }
+          .ci-add-row { display: grid; gap: 8px; grid-template-columns: 2fr 1fr 1.5fr 2fr auto; align-items: end; margin-bottom: 20px; }
+          .ci-add-row input, .ci-add-row select { border: 1px solid #d1d5db; border-radius: 6px; font: inherit; font-size: 13px; padding: 8px 10px; width: 100%; }
+          .ci-add-row label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #374151; }
+          .btn-add { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px; white-space: nowrap; }
+          .btn-add:hover { background: #f9fafb; }
+          .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 0; }
+          .btn-delete:hover { text-decoration: underline; }
+          .badge { border-radius: 999px; font-size: 11px; font-weight: 700; padding: 3px 10px; }
+          .badge-safe { background: #d1fae5; color: #065f46; }
+          .badge-caution { background: #fef3c7; color: #92400e; }
+          .badge-avoid { background: #fee2e2; color: #991b1b; }
+          @media (max-width: 600px) { .ci-add-row { grid-template-columns: 1fr 1fr; } }
         </style>
       </head>
       <body>
@@ -436,12 +456,52 @@ function renderAdminPage({ shop, appUrl }) {
             <div id="msg-ok" class="msg msg-ok">Settings saved.</div>
             <div id="msg-err" class="msg msg-err">Failed to save. Please try again.</div>
           </form>
+
+          <div class="section-divider"></div>
+          <div class="ci-section">
+            <h2>Custom Ingredients</h2>
+            <p>Override or extend the default ingredient database for your store.</p>
+
+            <div id="ci-table-wrap"></div>
+
+            <div class="ci-add-row">
+              <div>
+                <label for="ci-name">Ingredient name</label>
+                <input type="text" id="ci-name" placeholder="e.g. Retinol">
+              </div>
+              <div>
+                <label for="ci-rating">Label</label>
+                <select id="ci-rating">
+                  <option value="safe">Low concern</option>
+                  <option value="caution" selected>Worth noting</option>
+                  <option value="avoid">Potential sensitivity</option>
+                </select>
+              </div>
+              <div>
+                <label for="ci-function">Function (optional)</label>
+                <input type="text" id="ci-function" placeholder="e.g. anti-aging">
+              </div>
+              <div>
+                <label for="ci-reason">Description (optional)</label>
+                <input type="text" id="ci-reason" placeholder="e.g. May cause sensitivity">
+              </div>
+              <div>
+                <label>&nbsp;</label>
+                <button type="button" class="btn-add" id="ci-add-btn">Add</button>
+              </div>
+            </div>
+
+            <button type="button" class="btn-save" id="ci-save-btn">Save custom ingredients</button>
+            <div id="ci-msg-ok" class="msg msg-ok">Custom ingredients saved.</div>
+            <div id="ci-msg-err" class="msg msg-err">Failed to save. Please try again.</div>
+          </div>
         </main>
 
         <script>
           (function () {
             var APP_URL = "${escapedAppUrl}";
             var PRESET_SHOP = "${escapedShop}";
+            var customIngredients = [];
 
             function getShop() {
               return PRESET_SHOP || document.getElementById("field-shop")?.value.trim() || "";
@@ -450,6 +510,22 @@ function renderAdminPage({ shop, appUrl }) {
             function setField(id, value) {
               var el = document.getElementById(id);
               if (el && value !== undefined && value !== null) el.value = value;
+            }
+
+            function buildPayload(shop) {
+              return {
+                shop: shop,
+                buttonText: document.getElementById("field-buttonText").value.trim() || "Check Ingredients",
+                buttonColor: document.getElementById("field-buttonColorHex").value.trim() || "#1f2937",
+                modalTitle: document.getElementById("field-modalTitle").value.trim() || "Ingredient Check",
+                labels: {
+                  low: document.getElementById("field-labelLow").value.trim() || "Low concern",
+                  mid: document.getElementById("field-labelMid").value.trim() || "Worth noting",
+                  high: document.getElementById("field-labelHigh").value.trim() || "Potential sensitivity"
+                },
+                disclaimerText: document.getElementById("field-disclaimerText").value.trim() || "",
+                customIngredients: customIngredients
+              };
             }
 
             function loadSettings() {
@@ -469,6 +545,8 @@ function renderAdminPage({ shop, appUrl }) {
                     setField("field-labelMid", data.labels.mid);
                     setField("field-labelHigh", data.labels.high);
                   }
+                  customIngredients = Array.isArray(data.customIngredients) ? data.customIngredients : [];
+                  renderCustomTable();
                 })
                 .catch(function () {});
             }
@@ -485,31 +563,68 @@ function renderAdminPage({ shop, appUrl }) {
               e.preventDefault();
               var shop = getShop();
               if (!shop) { alert("Enter a shop domain first."); return; }
-
-              var payload = {
-                shop: shop,
-                buttonText: document.getElementById("field-buttonText").value.trim() || "Check Ingredients",
-                buttonColor: document.getElementById("field-buttonColorHex").value.trim() || "#1f2937",
-                modalTitle: document.getElementById("field-modalTitle").value.trim() || "Ingredient Check",
-                labels: {
-                  low: document.getElementById("field-labelLow").value.trim() || "Low concern",
-                  mid: document.getElementById("field-labelMid").value.trim() || "Worth noting",
-                  high: document.getElementById("field-labelHigh").value.trim() || "Potential sensitivity"
-                },
-                disclaimerText: document.getElementById("field-disclaimerText").value.trim() || ""
-              };
-
               fetch(APP_URL + "/api/settings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(buildPayload(shop))
               })
                 .then(function (r) { return r.json(); })
-                .then(function (data) {
-                  showMsg(data.ok !== false ? "ok" : "err");
-                })
+                .then(function (data) { showMsg(data.ok !== false ? "ok" : "err"); })
                 .catch(function () { showMsg("err"); });
             });
+
+            document.getElementById("ci-add-btn").addEventListener("click", function () {
+              var name = document.getElementById("ci-name").value.trim();
+              if (!name) { document.getElementById("ci-name").focus(); return; }
+              customIngredients.push({
+                name: name,
+                rating: document.getElementById("ci-rating").value,
+                function: document.getElementById("ci-function").value.trim(),
+                reason: document.getElementById("ci-reason").value.trim()
+              });
+              document.getElementById("ci-name").value = "";
+              document.getElementById("ci-function").value = "";
+              document.getElementById("ci-reason").value = "";
+              renderCustomTable();
+            });
+
+            document.getElementById("ci-save-btn").addEventListener("click", function () {
+              var shop = getShop();
+              if (!shop) { alert("Enter a shop domain first."); return; }
+              fetch(APP_URL + "/api/settings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(buildPayload(shop))
+              })
+                .then(function (r) { return r.json(); })
+                .then(function (data) { showCiMsg(data.ok !== false ? "ok" : "err"); })
+                .catch(function () { showCiMsg("err"); });
+            });
+
+            function renderCustomTable() {
+              var wrap = document.getElementById("ci-table-wrap");
+              if (!wrap) return;
+              if (!customIngredients.length) {
+                wrap.innerHTML = "<p class=\"ci-empty\">No custom ingredients added yet.</p>";
+                return;
+              }
+              var labelText = { safe: "Low concern", caution: "Worth noting", avoid: "Potential sensitivity" };
+              var badgeClass = { safe: "badge-safe", caution: "badge-caution", avoid: "badge-avoid" };
+              var rows = customIngredients.map(function (ci, idx) {
+                return "<tr><td>" + esc(ci.name) + "</td>" +
+                  "<td><span class=\"badge " + (badgeClass[ci.rating] || "") + "\">" + esc(labelText[ci.rating] || ci.rating) + "</span></td>" +
+                  "<td>" + esc(ci.function || "") + "</td>" +
+                  "<td>" + esc(ci.reason || "") + "</td>" +
+                  "<td><button type=\"button\" class=\"btn-delete\" data-idx=\"" + idx + "\">Delete</button></td></tr>";
+              }).join("");
+              wrap.innerHTML = "<table class=\"ci-table\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>" + rows + "</tbody></table>";
+              wrap.querySelectorAll(".btn-delete").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                  customIngredients.splice(parseInt(btn.dataset.idx, 10), 1);
+                  renderCustomTable();
+                });
+              });
+            }
 
             function showMsg(type) {
               var ok = document.getElementById("msg-ok");
@@ -519,7 +634,22 @@ function renderAdminPage({ shop, appUrl }) {
               setTimeout(function () { ok.style.display = "none"; err.style.display = "none"; }, 4000);
             }
 
+            function showCiMsg(type) {
+              var ok = document.getElementById("ci-msg-ok");
+              var err = document.getElementById("ci-msg-err");
+              ok.style.display = type === "ok" ? "block" : "none";
+              err.style.display = type === "err" ? "block" : "none";
+              setTimeout(function () { ok.style.display = "none"; err.style.display = "none"; }, 4000);
+            }
+
+            function esc(str) {
+              return String(str || "").replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c];
+              });
+            }
+
             loadSettings();
+            renderCustomTable();
           })();
         </script>
       </body>

@@ -147,25 +147,26 @@ const DEFAULT_SETTINGS = {
 export async function getShopSettings(shop) {
   try {
     const db = getFirestore();
-    if (!db) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+    if (!db) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels }, customIngredients: [] };
 
     const snapshot = await db.collection("shopTokens").doc(shop).get();
-    if (!snapshot.exists) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+    if (!snapshot.exists) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels }, customIngredients: [] };
 
-    const saved = snapshot.data()?.settings;
-    if (!saved) return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+    const data = snapshot.data();
+    const saved = data?.settings || {};
 
     return {
       ...DEFAULT_SETTINGS,
       ...saved,
       labels: { ...DEFAULT_SETTINGS.labels, ...(saved.labels || {}) },
+      customIngredients: data?.customIngredients || [],
     };
   } catch (error) {
     console.warn("[Firestore] Failed to get shop settings:", {
       shop,
       message: error.message,
     });
-    return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels } };
+    return { ...DEFAULT_SETTINGS, labels: { ...DEFAULT_SETTINGS.labels }, customIngredients: [] };
   }
 }
 
@@ -174,16 +175,16 @@ export async function saveShopSettings(shop, settings) {
     const db = getFirestore();
     if (!db) return false;
 
-    await db
-      .collection("shopTokens")
-      .doc(shop)
-      .set(
-        {
-          settings,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
+    const { customIngredients, ...settingsFields } = settings;
+    const updateData = {
+      settings: settingsFields,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    if (customIngredients !== undefined) {
+      updateData.customIngredients = customIngredients;
+    }
+
+    await db.collection("shopTokens").doc(shop).set(updateData, { merge: true });
 
     return true;
   } catch (error) {
@@ -192,6 +193,24 @@ export async function saveShopSettings(shop, settings) {
       message: error.message,
     });
     return false;
+  }
+}
+
+export async function getCustomIngredients(shop) {
+  try {
+    const db = getFirestore();
+    if (!db) return [];
+
+    const snapshot = await db.collection("shopTokens").doc(shop).get();
+    if (!snapshot.exists) return [];
+
+    return snapshot.data()?.customIngredients || [];
+  } catch (error) {
+    console.warn("[Firestore] Failed to get custom ingredients:", {
+      shop,
+      message: error.message,
+    });
+    return [];
   }
 }
 
