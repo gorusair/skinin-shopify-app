@@ -358,7 +358,7 @@ function renderAdminPage({ shop, appUrl }) {
           .subtitle { color: #4b5563; font-size: 15px; margin: 0 0 36px; }
           .form-group { margin-bottom: 20px; }
           label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
-          input[type="text"], input[type="color"], textarea {
+          input[type="text"], input[type="color"], textarea, select {
             border: 1px solid #d1d5db; border-radius: 6px; font: inherit; font-size: 14px;
             padding: 9px 12px; width: 100%;
           }
@@ -372,7 +372,7 @@ function renderAdminPage({ shop, appUrl }) {
           .btn-save {
             background: #1f2937; border: none; border-radius: 6px; color: #fff;
             cursor: pointer; font: inherit; font-size: 15px; font-weight: 600;
-            padding: 11px 28px;
+            padding: 11px 28px; width: 100%;
           }
           .btn-save:hover { background: #374151; }
           .msg { display: none; font-size: 14px; margin-top: 14px; padding: 10px 16px; border-radius: 6px; }
@@ -388,11 +388,8 @@ function renderAdminPage({ shop, appUrl }) {
           .ci-table tr:last-child td { border-bottom: none; }
           .ci-empty { color: #9ca3af; font-size: 13px; padding: 12px 0 20px; }
           .ci-add-form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
-          .ci-add-form input, .ci-add-form select { border: 1px solid #d1d5db; border-radius: 6px; font: inherit; font-size: 14px; padding: 9px 12px; width: 100%; }
-          .ci-add-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
           .btn-add { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600; padding: 10px; width: 100%; }
           .btn-add:hover { background: #f9fafb; }
-          #ci-save-btn { display: block; width: 100%; }
           .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 13px; padding: 0; }
           .btn-delete:hover { text-decoration: underline; }
           .badge { border-radius: 999px; font-size: 11px; font-weight: 700; padding: 3px 10px; }
@@ -406,31 +403,27 @@ function renderAdminPage({ shop, appUrl }) {
           <h1>Customize Widget</h1>
           <p class="subtitle">Configure how the ingredient checker appears on your storefront.</p>
 
-          ${escapedShop ? `<p class="shop-hint">Shop: <strong>${escapedShop}</strong></p>` : `
-          <div class="form-group">
-            <label for="field-shop">Shop domain</label>
-            <input type="text" id="field-shop" placeholder="yourstore.myshopify.com">
-          </div>`}
+          ${escapedShop
+            ? `<p class="shop-hint">Shop: <strong>${escapedShop}</strong></p>`
+            : `<div class="form-group"><label for="field-shop">Shop domain</label><input type="text" id="field-shop" placeholder="yourstore.myshopify.com"></div>`
+          }
 
-          <form id="settings-form" novalidate>
+          <form onsubmit="adminSaveSettings(event)">
             <div class="form-group">
               <label for="field-buttonText">Button text</label>
               <input type="text" id="field-buttonText" placeholder="Check Ingredients">
             </div>
-
             <div class="form-group">
               <label>Button color</label>
               <div class="color-row">
-                <input type="text" id="field-buttonColorHex" placeholder="#1f2937" maxlength="7">
-                <input type="color" id="field-buttonColor" value="#1f2937">
+                <input type="text" id="field-buttonColorHex" placeholder="#1f2937" maxlength="7" oninput="adminSyncHex(this)">
+                <input type="color" id="field-buttonColor" value="#1f2937" oninput="adminSyncPicker(this)">
               </div>
             </div>
-
             <div class="form-group">
               <label for="field-modalTitle">Modal title</label>
               <input type="text" id="field-modalTitle" placeholder="Ingredient Check">
             </div>
-
             <fieldset>
               <legend>Safety label text</legend>
               <div class="form-group">
@@ -446,12 +439,10 @@ function renderAdminPage({ shop, appUrl }) {
                 <input type="text" id="field-labelHigh" placeholder="Potential sensitivity">
               </div>
             </fieldset>
-
             <div class="form-group">
               <label for="field-disclaimerText">Disclaimer text</label>
               <textarea id="field-disclaimerText" placeholder="Ingredient notes are based on..."></textarea>
             </div>
-
             <button type="submit" class="btn-save">Save settings</button>
             <div id="msg-ok" class="msg msg-ok">Settings saved.</div>
             <div id="msg-err" class="msg msg-err">Failed to save. Please try again.</div>
@@ -461,9 +452,7 @@ function renderAdminPage({ shop, appUrl }) {
           <div class="ci-section">
             <h2>Custom Ingredients</h2>
             <p>Override or extend the default ingredient database for your store.</p>
-
-            <div id="ci-table-wrap"></div>
-
+            <div id="ci-table-wrap"><p class="ci-empty">No custom ingredients added yet.</p></div>
             <div class="ci-add-form">
               <div>
                 <label for="ci-name">Ingredient name</label>
@@ -485,218 +474,176 @@ function renderAdminPage({ shop, appUrl }) {
                 <label for="ci-reason">Description (optional)</label>
                 <input type="text" id="ci-reason" placeholder="e.g. May cause sensitivity">
               </div>
-              <button type="button" class="btn-add" id="ci-add-btn">Add ingredient</button>
+              <button type="button" class="btn-add" onclick="adminAddIngredient()">Add ingredient</button>
             </div>
-
-            <button type="button" class="btn-save" id="ci-save-btn">Save custom ingredients</button>
+            <button type="button" class="btn-save" onclick="adminSaveIngredients()">Save custom ingredients</button>
             <div id="ci-msg-ok" class="msg msg-ok">Custom ingredients saved.</div>
             <div id="ci-msg-err" class="msg msg-err">Failed to save. Please try again.</div>
           </div>
         </main>
 
         <script>
-          (function () {
-            var APP_URL = "${escapedAppUrl}";
-            var PRESET_SHOP = "${escapedShop}";
-            var customIngredients = [];
+          var ADMIN_APP_URL = "${escapedAppUrl}";
+          var ADMIN_SHOP = "${escapedShop}";
+          var adminIngredients = [];
 
-            console.log("[Skinin Admin] script loaded");
+          function adminGetShop() {
+            var el = document.getElementById("field-shop");
+            return ADMIN_SHOP || (el ? el.value.trim() : "");
+          }
 
-            // --- helpers ---
+          function adminGetVal(id, fallback) {
+            var el = document.getElementById(id);
+            var v = el ? el.value.trim() : "";
+            return v || fallback;
+          }
 
-            function getShop() {
-              var shopInput = document.getElementById("field-shop");
-              return PRESET_SHOP || (shopInput ? shopInput.value.trim() : "") || "";
+          function adminBuildPayload() {
+            return {
+              shop: adminGetShop(),
+              buttonText: adminGetVal("field-buttonText", "Check Ingredients"),
+              buttonColor: adminGetVal("field-buttonColorHex", "#1f2937"),
+              modalTitle: adminGetVal("field-modalTitle", "Ingredient Check"),
+              labels: {
+                low: adminGetVal("field-labelLow", "Low concern"),
+                mid: adminGetVal("field-labelMid", "Worth noting"),
+                high: adminGetVal("field-labelHigh", "Potential sensitivity")
+              },
+              disclaimerText: adminGetVal("field-disclaimerText", ""),
+              customIngredients: adminIngredients
+            };
+          }
+
+          function adminEsc(s) {
+            return String(s || "").replace(/[&<>"']/g, function(c) {
+              return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c];
+            });
+          }
+
+          function adminRenderTable() {
+            var wrap = document.getElementById("ci-table-wrap");
+            if (!wrap) return;
+            if (!adminIngredients.length) {
+              wrap.innerHTML = "<p class=\\"ci-empty\\">No custom ingredients added yet.</p>";
+              return;
             }
-
-            function setField(id, value) {
-              var el = document.getElementById(id);
-              if (el && value !== undefined && value !== null) el.value = value;
+            var LABELS = {safe:"Low concern",caution:"Worth noting",avoid:"Potential sensitivity"};
+            var BADGES = {safe:"badge-safe",caution:"badge-caution",avoid:"badge-avoid"};
+            var html = "<table class=\\"ci-table\\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>";
+            for (var i = 0; i < adminIngredients.length; i++) {
+              var ci = adminIngredients[i];
+              html += "<tr>" +
+                "<td>" + adminEsc(ci.name) + "</td>" +
+                "<td><span class=\\"badge " + (BADGES[ci.rating] || "") + "\\">" + adminEsc(LABELS[ci.rating] || ci.rating) + "</span></td>" +
+                "<td>" + adminEsc(ci["function"] || "") + "</td>" +
+                "<td>" + adminEsc(ci.reason || "") + "</td>" +
+                "<td><button type=\\"button\\" class=\\"btn-delete\\" onclick=\\"adminDeleteIngredient(" + i + ")\\">Delete</button></td>" +
+                "</tr>";
             }
+            html += "</tbody></table>";
+            wrap.innerHTML = html;
+          }
 
-            function val(id, fallback) {
-              var el = document.getElementById(id);
-              return el ? el.value.trim() || fallback : fallback;
+          function adminDeleteIngredient(idx) {
+            adminIngredients.splice(idx, 1);
+            adminRenderTable();
+          }
+
+          function adminAddIngredient() {
+            var nameEl = document.getElementById("ci-name");
+            var name = nameEl ? nameEl.value.trim() : "";
+            if (!name) { if (nameEl) nameEl.focus(); return; }
+            adminIngredients.push({
+              name: name,
+              rating: document.getElementById("ci-rating").value,
+              "function": document.getElementById("ci-function").value.trim(),
+              reason: document.getElementById("ci-reason").value.trim()
+            });
+            document.getElementById("ci-name").value = "";
+            document.getElementById("ci-function").value = "";
+            document.getElementById("ci-reason").value = "";
+            adminRenderTable();
+          }
+
+          function adminSaveIngredients() {
+            var shop = adminGetShop();
+            if (!shop) { alert("Enter a shop domain first."); return; }
+            fetch(ADMIN_APP_URL + "/api/settings", {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify(adminBuildPayload())
+            })
+              .then(function(r) { return r.json(); })
+              .then(function(d) { adminShowCiMsg(d.ok !== false ? "ok" : "err"); })
+              .catch(function() { adminShowCiMsg("err"); });
+          }
+
+          function adminSaveSettings(e) {
+            e.preventDefault();
+            var shop = adminGetShop();
+            if (!shop) { alert("Enter a shop domain first."); return; }
+            fetch(ADMIN_APP_URL + "/api/settings", {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify(adminBuildPayload())
+            })
+              .then(function(r) { return r.json(); })
+              .then(function(d) { adminShowMsg(d.ok !== false ? "ok" : "err"); })
+              .catch(function() { adminShowMsg("err"); });
+          }
+
+          function adminSyncPicker(picker) {
+            var hex = document.getElementById("field-buttonColorHex");
+            if (hex) hex.value = picker.value;
+          }
+
+          function adminSyncHex(hexEl) {
+            var v = hexEl.value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+              var p = document.getElementById("field-buttonColor");
+              if (p) p.value = v;
             }
+          }
 
-            function buildPayload(shop) {
-              return {
-                shop: shop,
-                buttonText: val("field-buttonText", "Check Ingredients"),
-                buttonColor: val("field-buttonColorHex", "#1f2937"),
-                modalTitle: val("field-modalTitle", "Ingredient Check"),
-                labels: {
-                  low: val("field-labelLow", "Low concern"),
-                  mid: val("field-labelMid", "Worth noting"),
-                  high: val("field-labelHigh", "Potential sensitivity")
-                },
-                disclaimerText: val("field-disclaimerText", ""),
-                customIngredients: customIngredients
-              };
-            }
+          function adminShowMsg(type) {
+            var ok = document.getElementById("msg-ok");
+            var err = document.getElementById("msg-err");
+            ok.style.display = type === "ok" ? "block" : "none";
+            err.style.display = type === "err" ? "block" : "none";
+            setTimeout(function() { ok.style.display = "none"; err.style.display = "none"; }, 4000);
+          }
 
-            function esc(str) {
-              return String(str || "").replace(/[&<>"']/g, function (c) {
-                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c];
-              });
-            }
+          function adminShowCiMsg(type) {
+            var ok = document.getElementById("ci-msg-ok");
+            var err = document.getElementById("ci-msg-err");
+            ok.style.display = type === "ok" ? "block" : "none";
+            err.style.display = type === "err" ? "block" : "none";
+            setTimeout(function() { ok.style.display = "none"; err.style.display = "none"; }, 4000);
+          }
 
-            function showMsg(type) {
-              var ok = document.getElementById("msg-ok");
-              var err = document.getElementById("msg-err");
-              if (ok) ok.style.display = type === "ok" ? "block" : "none";
-              if (err) err.style.display = type === "err" ? "block" : "none";
-              setTimeout(function () {
-                if (ok) ok.style.display = "none";
-                if (err) err.style.display = "none";
-              }, 4000);
-            }
-
-            function showCiMsg(type) {
-              var ok = document.getElementById("ci-msg-ok");
-              var err = document.getElementById("ci-msg-err");
-              if (ok) ok.style.display = type === "ok" ? "block" : "none";
-              if (err) err.style.display = type === "err" ? "block" : "none";
-              setTimeout(function () {
-                if (ok) ok.style.display = "none";
-                if (err) err.style.display = "none";
-              }, 4000);
-            }
-
-            function renderCustomTable() {
-              var wrap = document.getElementById("ci-table-wrap");
-              if (!wrap) return;
-              if (!customIngredients.length) {
-                wrap.innerHTML = "<p class=\"ci-empty\">No custom ingredients added yet.</p>";
-                return;
-              }
-              var labelText = { safe: "Low concern", caution: "Worth noting", avoid: "Potential sensitivity" };
-              var badgeClass = { safe: "badge-safe", caution: "badge-caution", avoid: "badge-avoid" };
-              var rows = customIngredients.map(function (ci, idx) {
-                return "<tr>" +
-                  "<td>" + esc(ci.name) + "</td>" +
-                  "<td><span class=\"badge " + (badgeClass[ci.rating] || "") + "\">" + esc(labelText[ci.rating] || ci.rating) + "</span></td>" +
-                  "<td>" + esc(ci["function"] || "") + "</td>" +
-                  "<td>" + esc(ci.reason || "") + "</td>" +
-                  "<td><button type=\"button\" class=\"btn-delete\" data-idx=\"" + idx + "\">Delete</button></td>" +
-                  "</tr>";
-              }).join("");
-              wrap.innerHTML = "<table class=\"ci-table\"><thead><tr><th>Name</th><th>Label</th><th>Function</th><th>Description</th><th></th></tr></thead><tbody>" + rows + "</tbody></table>";
-              var deleteBtns = wrap.querySelectorAll(".btn-delete");
-              for (var d = 0; d < deleteBtns.length; d++) {
-                deleteBtns[d].addEventListener("click", (function (idx) {
-                  return function () {
-                    customIngredients.splice(idx, 1);
-                    renderCustomTable();
-                  };
-                })(parseInt(deleteBtns[d].dataset.idx, 10)));
-              }
-            }
-
-            function loadSettings() {
-              var shop = getShop();
-              if (!shop) return;
-              fetch(APP_URL + "/api/settings?shop=" + encodeURIComponent(shop))
-                .then(function (r) { return r.ok ? r.json() : null; })
-                .then(function (data) {
-                  if (!data) return;
-                  setField("field-buttonText", data.buttonText);
-                  setField("field-buttonColorHex", data.buttonColor);
-                  setField("field-buttonColor", data.buttonColor);
-                  setField("field-modalTitle", data.modalTitle);
-                  setField("field-disclaimerText", data.disclaimerText);
-                  if (data.labels) {
-                    setField("field-labelLow", data.labels.low);
-                    setField("field-labelMid", data.labels.mid);
-                    setField("field-labelHigh", data.labels.high);
-                  }
-                  customIngredients = Array.isArray(data.customIngredients) ? data.customIngredients : [];
-                  renderCustomTable();
-                })
-                .catch(function () {});
-            }
-
-            // --- event listeners, all in one place ---
-
-            function init() {
-              console.log("[Skinin Admin] init");
-
-              var colorPicker = document.getElementById("field-buttonColor");
-              var colorHex = document.getElementById("field-buttonColorHex");
-              if (colorPicker && colorHex) {
-                colorPicker.addEventListener("input", function () { colorHex.value = colorPicker.value; });
-                colorHex.addEventListener("input", function () {
-                  var v = colorHex.value.trim();
-                  if (/^#[0-9a-fA-F]{6}$/.test(v)) colorPicker.value = v;
-                });
-              }
-
-              var settingsForm = document.getElementById("settings-form");
-              if (settingsForm) {
-                settingsForm.addEventListener("submit", function (e) {
-                  e.preventDefault();
-                  var shop = getShop();
-                  if (!shop) { alert("Enter a shop domain first."); return; }
-                  fetch(APP_URL + "/api/settings", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(buildPayload(shop))
-                  })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) { showMsg(data.ok !== false ? "ok" : "err"); })
-                    .catch(function () { showMsg("err"); });
-                });
-              }
-
-              var addBtn = document.getElementById("ci-add-btn");
-              console.log("[Skinin Admin] ci-add-btn found:", !!addBtn);
-              if (addBtn) {
-                addBtn.addEventListener("click", function () {
-                  console.log("[Skinin Admin] Add ingredient clicked");
-                  var nameEl = document.getElementById("ci-name");
-                  var name = nameEl ? nameEl.value.trim() : "";
-                  if (!name) { if (nameEl) nameEl.focus(); return; }
-                  customIngredients.push({
-                    name: name,
-                    rating: document.getElementById("ci-rating").value,
-                    "function": document.getElementById("ci-function").value.trim(),
-                    reason: document.getElementById("ci-reason").value.trim()
-                  });
-                  document.getElementById("ci-name").value = "";
-                  document.getElementById("ci-function").value = "";
-                  document.getElementById("ci-reason").value = "";
-                  renderCustomTable();
-                });
-              }
-
-              var saveBtn = document.getElementById("ci-save-btn");
-              console.log("[Skinin Admin] ci-save-btn found:", !!saveBtn);
-              if (saveBtn) {
-                saveBtn.addEventListener("click", function () {
-                  console.log("[Skinin Admin] Save custom ingredients clicked");
-                  var shop = getShop();
-                  if (!shop) { alert("Enter a shop domain first."); return; }
-                  fetch(APP_URL + "/api/settings", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(buildPayload(shop))
-                  })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) { showCiMsg(data.ok !== false ? "ok" : "err"); })
-                    .catch(function () { showCiMsg("err"); });
-                });
-              }
-
-              renderCustomTable();
-              loadSettings();
-            }
-
-            if (document.readyState === "loading") {
-              document.addEventListener("DOMContentLoaded", init);
-            } else {
-              init();
-            }
-          })();
+          // Load saved settings on page load
+          var _shop = adminGetShop();
+          if (_shop) {
+            fetch(ADMIN_APP_URL + "/api/settings?shop=" + encodeURIComponent(_shop))
+              .then(function(r) { return r.ok ? r.json() : null; })
+              .then(function(data) {
+                if (!data) return;
+                var s = function(id, v) { var el = document.getElementById(id); if (el && v) el.value = v; };
+                s("field-buttonText", data.buttonText);
+                s("field-buttonColorHex", data.buttonColor);
+                s("field-buttonColor", data.buttonColor);
+                s("field-modalTitle", data.modalTitle);
+                s("field-disclaimerText", data.disclaimerText);
+                if (data.labels) {
+                  s("field-labelLow", data.labels.low);
+                  s("field-labelMid", data.labels.mid);
+                  s("field-labelHigh", data.labels.high);
+                }
+                adminIngredients = Array.isArray(data.customIngredients) ? data.customIngredients : [];
+                adminRenderTable();
+              })
+              .catch(function() {});
+          }
         </script>
       </body>
     </html>
