@@ -55,6 +55,7 @@ app.use(
           "https://admin.shopify.com",
           "https://*.myshopify.com",
         ],
+        scriptSrcAttr: ["'unsafe-inline'"],
       },
     },
   }),
