@@ -125,16 +125,17 @@ function redirectEmbeddedPublicPageToRoot(req, res) {
   return true;
 }
 
-function renderHomePage({ billingStatus, billingBypassed }) {
-  const shopConnected = billingStatus?.installed === true;
+function renderHomePage({ billingStatus, billingBypassed, shop }) {
   const appInstalled = billingStatus ? billingStatus.installed : true;
-  const billingMode = billingBypassed
-    ? "Development bypass"
-    : "Active subscription";
-  const appStatus = appInstalled ? "Installed" : "Needs setup";
-  const storeStatus = shopConnected ? "Connected" : "Connect store";
-  const appDotClass = appInstalled ? "dot" : "dot dot-pending";
-  const storeDotClass = shopConnected ? "dot" : "dot dot-pending";
+  const shopConnected = billingStatus?.installed === true;
+  const resolvedShop = shop || billingStatus?.shop || "";
+  const adminUrl = resolvedShop
+    ? `/admin?shop=${encodeURIComponent(resolvedShop)}`
+    : "/admin";
+  const storeUrl = resolvedShop ? `https://${resolvedShop}` : null;
+  const appDotClass = appInstalled ? "dot dot-green" : "dot dot-amber";
+  const storeDotClass = shopConnected ? "dot dot-green" : "dot dot-amber";
+  const billingMode = billingBypassed ? "Development bypass" : "Active subscription";
 
   return `
     <!doctype html>
@@ -146,135 +147,53 @@ function renderHomePage({ billingStatus, billingBypassed }) {
         <title>Skinin Ingredient Checker</title>
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
         <style>
-          :root {
-            color: #111827;
-            background: #f7f8fa;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          :root { color: #111827; background: #f7f8fa; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+          * { box-sizing: border-box; }
+          body { margin: 0; }
+          main { margin: 0 auto; max-width: 960px; padding: 48px 24px 80px; }
+          h1 { font-size: 28px; font-weight: 700; line-height: 1.2; margin: 0 0 8px; }
+          h2 { font-size: 16px; font-weight: 600; margin: 0 0 14px; }
+          h3 { font-size: 12px; font-weight: 600; color: #6b7280; letter-spacing: .04em; margin: 0 0 6px; text-transform: uppercase; }
+          p { margin: 0; }
+          ul, ol { margin: 0; padding-left: 20px; }
+          li { line-height: 1.6; margin: 6px 0; font-size: 14px; }
+
+          .hero { margin-bottom: 36px; }
+          .hero-desc { color: #4b5563; font-size: 15px; line-height: 1.6; margin: 0 0 24px; max-width: 560px; }
+          .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+          .btn-primary {
+            align-items: center; background: #1f2937; border: none; border-radius: 7px;
+            color: #fff; cursor: pointer; display: inline-flex; font: inherit; font-size: 14px;
+            font-weight: 600; gap: 6px; padding: 10px 20px; text-decoration: none;
           }
-          * {
-            box-sizing: border-box;
+          .btn-primary:hover { background: #374151; }
+          .btn-secondary {
+            align-items: center; background: #fff; border: 1px solid #d1d5db; border-radius: 7px;
+            color: #374151; cursor: pointer; display: inline-flex; font: inherit; font-size: 14px;
+            font-weight: 600; gap: 6px; padding: 10px 20px; text-decoration: none;
           }
-          body {
-            margin: 0;
+          .btn-secondary:hover { background: #f9fafb; }
+
+          .grid-3 { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin-bottom: 28px; }
+          .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; }
+          .card-value { align-items: center; display: flex; gap: 8px; font-size: 15px; font-weight: 700; margin-top: 4px; }
+          .dot { border-radius: 999px; flex-shrink: 0; height: 8px; width: 8px; }
+          .dot-green { background: #16a34a; }
+          .dot-amber { background: #d97706; }
+
+          .two-col { display: grid; gap: 20px; grid-template-columns: 1.4fr 1fr; }
+          .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 22px 24px; }
+          .example-block {
+            background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+            font-family: ui-monospace, Menlo, Monaco, monospace; font-size: 13px;
+            line-height: 1.6; margin: 10px 0 0; padding: 12px 14px; overflow-wrap: anywhere;
           }
-          main {
-            margin: 0 auto;
-            max-width: 1040px;
-            padding: 48px 20px 64px;
-          }
-          .hero {
-            margin-bottom: 30px;
-            max-width: 720px;
-          }
-          h1 {
-            font-size: 34px;
-            line-height: 1.15;
-            margin: 0 0 12px;
-          }
-          .subtitle {
-            color: #4b5563;
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 0;
-            max-width: 680px;
-          }
-          .page-stack {
-            display: grid;
-            gap: 20px;
-          }
-          section {
-            padding: 0;
-          }
-          .status-grid {
-            display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-          }
-          .status-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 18px;
-          }
-          h2 {
-            font-size: 18px;
-            line-height: 1.3;
-            margin: 0 0 16px;
-          }
-          h3 {
-            color: #374151;
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.4;
-            margin: 0 0 8px;
-          }
-          ul,
-          ol {
-            margin: 0;
-            padding-left: 22px;
-          }
-          li {
-            line-height: 1.55;
-            margin: 8px 0;
-          }
-          .status-value {
-            align-items: center;
-            display: flex;
-            gap: 10px;
-            color: #111827;
-            font-weight: 700;
-            margin: 0;
-          }
-          .dot {
-            background: #16a34a;
-            border-radius: 999px;
-            flex: 0 0 auto;
-            height: 9px;
-            width: 9px;
-          }
-          .dot-pending {
-            background: #d97706;
-          }
-          .content-grid {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
-          }
-          .content-section {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 24px;
-          }
-          .example {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            color: #1f2937;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-            line-height: 1.55;
-            margin: 0;
-            overflow-wrap: anywhere;
-            padding: 14px 16px;
-          }
-          .section-note {
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.5;
-            margin: 12px 0 0;
-          }
-          .session-message {
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.5;
-            margin: 10px 0 0;
-          }
-          @media (max-width: 760px) {
-            main {
-              padding-top: 28px;
-            }
-            .status-grid,
-            .content-grid {
-              grid-template-columns: 1fr;
-            }
+          .muted { color: #6b7280; font-size: 13px; margin-top: 10px; line-height: 1.5; }
+          #session-message { color: #9ca3af; font-size: 12px; margin-top: 16px; }
+
+          @media (max-width: 680px) {
+            .grid-3, .two-col { grid-template-columns: 1fr; }
+            h1 { font-size: 22px; }
           }
         </style>
       </head>
@@ -282,61 +201,56 @@ function renderHomePage({ billingStatus, billingBypassed }) {
         <main>
           <div class="hero">
             <h1>Skinin Ingredient Checker</h1>
-            <p class="subtitle">Help shoppers review cosmetic ingredients directly on product pages.</p>
+            <p class="hero-desc">Help shoppers understand cosmetic ingredients directly on your product pages.</p>
+            <div class="btn-row">
+              <a href="${adminUrl}" class="btn-primary">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-5"/><path d="M17 3l-9 9M13 3h4v4"/></svg>
+                Customize Widget
+              </a>
+              ${storeUrl ? `<a href="${storeUrl}" target="_blank" rel="noopener" class="btn-secondary">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-5"/><path d="M15 3h2v2M10 10l7-7"/></svg>
+                View on Store
+              </a>` : ""}
+            </div>
           </div>
 
-          <div class="page-stack">
-            <section aria-labelledby="status-heading">
-              <h2 id="status-heading">Setup Status</h2>
-              <div class="status-grid">
-                <div class="status-card">
-                  <h3>App installed</h3>
-                  <p class="status-value"><span class="${appDotClass}"></span>${appStatus}</p>
-                </div>
-                <div class="status-card">
-                  <h3>Store connected</h3>
-                  <p class="status-value"><span class="${storeDotClass}"></span>${storeStatus}</p>
-                </div>
-                <div class="status-card">
-                  <h3>Theme app extension ready</h3>
-                  <p class="status-value"><span class="dot"></span>Ready</p>
-                </div>
-                <div class="status-card">
-                  <h3>Billing mode</h3>
-                  <p class="status-value"><span class="dot"></span>${billingMode}</p>
-                </div>
-              </div>
-            </section>
-
-            <div class="content-grid">
-              <section class="content-section">
-                <h2>Setup Guide</h2>
-                <ol>
-                  <li>Go to Online Store &gt; Themes &gt; Customize.</li>
-                  <li>Open a product page template.</li>
-                  <li>Add the Skinin Ingredient Checker app block.</li>
-                  <li>Add ingredients to product descriptions.</li>
-                  <li>Preview the product page and click Check Ingredients.</li>
-                </ol>
-              </section>
-
-              <section class="content-section">
-                <h2>Best Practices</h2>
-                <ul>
-                  <li>Start ingredient lists with "Ingredients:"</li>
-                  <li>Separate ingredients with commas.</li>
-                  <li>Keep product descriptions clear.</li>
-                  <li>Avoid unsupported medical claims.</li>
-                </ul>
-              </section>
+          <div class="grid-3">
+            <div class="card">
+              <h3>App</h3>
+              <div class="card-value"><span class="${appDotClass}"></span>${appInstalled ? "Installed" : "Needs setup"}</div>
             </div>
+            <div class="card">
+              <h3>Store</h3>
+              <div class="card-value"><span class="${storeDotClass}"></span>${shopConnected ? "Connected" : "Not connected"}</div>
+            </div>
+            <div class="card">
+              <h3>Billing</h3>
+              <div class="card-value"><span class="dot dot-green"></span>${billingMode}</div>
+            </div>
+          </div>
 
-            <section class="content-section">
-              <h2>Example Ingredient Format</h2>
-              <p class="example">Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance</p>
-              <p class="section-note">Use this format in product descriptions so the storefront checker can find the ingredient list reliably.</p>
-              <p class="session-message" id="session-message">Checking embedded Shopify session.</p>
-            </section>
+          <div class="two-col">
+            <div class="panel">
+              <h2>Setup Guide</h2>
+              <ol>
+                <li>Go to <strong>Online Store › Themes › Customize</strong>.</li>
+                <li>Open a product page template.</li>
+                <li>Add the <strong>Skinin Ingredient Checker</strong> app block.</li>
+                <li>Add ingredients to product descriptions.</li>
+                <li>Preview a product page and click <strong>Check Ingredients</strong>.</li>
+              </ol>
+              <div class="example-block">Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance</div>
+              <p class="muted">Start the ingredient list with "Ingredients:" and separate items with commas.</p>
+              <p id="session-message"></p>
+            </div>
+            <div class="panel">
+              <h2>Tips</h2>
+              <ul>
+                <li>Use <strong>Customize Widget</strong> to change button text, color, and labels.</li>
+                <li>Add custom ingredients to override or extend the default database.</li>
+                <li>Ingredient notes are informational only — not medical advice.</li>
+              </ul>
+            </div>
           </div>
         </main>
         ${renderEmbeddedSessionScript({ apiSessionUrl: getApiSessionUrl() })}
@@ -719,7 +633,8 @@ app.get("/", async (req, res, next) => {
       }
     }
 
-    res.send(renderHomePage({ billingStatus, billingBypassed }));
+    const shop = billingStatus?.shop || String(req.query.shop || "");
+    res.send(renderHomePage({ billingStatus, billingBypassed, shop }));
   } catch (error) {
     next(error);
   }
