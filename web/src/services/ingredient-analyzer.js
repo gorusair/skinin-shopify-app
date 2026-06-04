@@ -5,11 +5,13 @@ export const INGREDIENT_SAFETY = {
     rating: "avoid",
     function: "fragrance",
     reason: "Potential irritant for sensitive skin",
+    reason_ko: "향기 성분; 민감한 피부에 자극을 줄 수 있음",
   },
   parfum: {
     rating: "avoid",
     function: "fragrance",
     reason: "Potential irritant for sensitive skin",
+    reason_ko: "향기 성분; 민감한 피부에 자극을 줄 수 있음",
   },
   perfume: {
     rating: "avoid",
@@ -27,26 +29,31 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "solvent",
     reason: "May be drying for some skin types",
+    reason_ko: "피부를 건조하게 만들 수 있는 변성 알코올",
   },
   "denatured alcohol": {
     rating: "caution",
     function: "solvent",
     reason: "May be drying for some skin types",
+    reason_ko: "피부를 건조하게 만들 수 있는 변성 알코올",
   },
   ethanol: {
     rating: "caution",
     function: "solvent",
     reason: "May be drying for some skin types",
+    reason_ko: "피부를 건조하게 만들 수 있는 알코올 성분",
   },
   limonene: {
     rating: "caution",
     function: "fragrance",
     reason: "Potential irritant for sensitive skin",
+    reason_ko: "천연 향기 성분; 민감한 피부에 알레르기 반응 가능성",
   },
   linalool: {
     rating: "caution",
     function: "fragrance",
     reason: "Potential irritant for sensitive skin",
+    reason_ko: "천연 향기 성분; 민감한 피부에 알레르기 반응 가능성",
   },
   citral: {
     rating: "caution",
@@ -77,6 +84,7 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "cleansing",
     reason: "May irritate sensitive skin",
+    reason_ko: "강력한 계면활성제; 민감 피부에 자극 가능성",
   },
   sls: {
     rating: "caution",
@@ -92,6 +100,7 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "preservative",
     reason: "May irritate at high concentrations",
+    reason_ko: "방부 성분; 고농도에서 자극 가능성",
   },
   "benzyl alcohol": {
     rating: "caution",
@@ -107,6 +116,7 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "skin-conditioning",
     reason: "Use with caution on sensitive skin",
+    reason_ko: "세포 재생을 촉진하는 비타민 A 성분; 민감 피부는 주의",
   },
   "retinyl palmitate": {
     rating: "caution",
@@ -117,6 +127,7 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "exfoliating",
     reason: "Use with caution on sensitive skin",
+    reason_ko: "모공을 정리하는 각질 용해 성분; 민감 피부는 주의",
   },
   parabens: {
     rating: "caution",
@@ -127,6 +138,7 @@ export const INGREDIENT_SAFETY = {
     rating: "caution",
     function: "preservative",
     reason: "Some shoppers prefer to review this preservative",
+    reason_ko: "파라벤 계열 방부 성분; 일부 소비자가 성분 확인을 선호",
   },
   propylparaben: {
     rating: "caution",
@@ -140,47 +152,55 @@ export const INGREDIENT_SAFETY = {
   },
 
   // SAFE
-  water: { rating: "safe", function: "solvent", reason: "Common solvent" },
-  aqua: { rating: "safe", function: "solvent", reason: "Common solvent" },
+  water: { rating: "safe", function: "solvent", reason: "Common solvent", reason_ko: "제형의 기본 용매" },
+  aqua: { rating: "safe", function: "solvent", reason: "Common solvent", reason_ko: "제형의 기본 용매" },
   glycerin: {
     rating: "safe",
     function: "moisturizing",
     reason: "Common moisturizer",
+    reason_ko: "피부 수분을 붙잡아 주는 보습 성분",
   },
   glycerol: {
     rating: "safe",
     function: "moisturizing",
     reason: "Common moisturizer",
+    reason_ko: "피부 수분을 붙잡아 주는 보습 성분",
   },
   niacinamide: {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 결을 고르게 하고 장벽을 강화하는 비타민 B3",
   },
   panthenol: {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 장벽을 강화하는 프로비타민 B5 성분",
   },
   tocopherol: {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부를 보호하는 항산화 비타민 E 성분",
   },
   "hyaluronic acid": {
     rating: "safe",
     function: "moisturizing",
     reason: "Hydrating ingredient",
+    reason_ko: "수분을 끌어당겨 피부를 촉촉하게 유지하는 성분",
   },
   "sodium hyaluronate": {
     rating: "safe",
     function: "moisturizing",
     reason: "Hydrating ingredient",
+    reason_ko: "히알루론산 나트륨 염; 피부 깊숙이 수분을 공급",
   },
   "butylene glycol": {
     rating: "safe",
     function: "moisturizing",
     reason: "Common moisturizer",
+    reason_ko: "수분을 잡아주는 흡습제이자 제형 보조 성분",
   },
   "propylene glycol": {
     rating: "safe",
@@ -191,26 +211,31 @@ export const INGREDIENT_SAFETY = {
     rating: "safe",
     function: "emollient",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부를 부드럽게 해주는 식물 유래 지방 알코올",
   },
   dimethicone: {
     rating: "safe",
     function: "emollient",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 표면에 보호막을 형성해 수분 증발을 막는 실리콘 성분",
   },
   "zinc oxide": {
     rating: "safe",
     function: "UV filter",
     reason: "Mineral UV filter",
+    reason_ko: "자외선을 물리적으로 차단하는 미네랄 성분",
   },
   "titanium dioxide": {
     rating: "safe",
     function: "UV filter",
     reason: "Mineral UV filter",
+    reason_ko: "자외선을 물리적으로 차단하는 미네랄 성분",
   },
   allantoin: {
     rating: "safe",
     function: "soothing",
     reason: "Soothing ingredient",
+    reason_ko: "피부를 진정시키고 재생을 돕는 성분",
   },
   "centella asiatica": {
     rating: "safe",
@@ -221,6 +246,7 @@ export const INGREDIENT_SAFETY = {
     rating: "safe",
     function: "soothing",
     reason: "Soothing ingredient",
+    reason_ko: "강력한 진정 및 항염 효과를 가진 병풀 추출물",
   },
   "aloe vera": {
     rating: "safe",
@@ -236,38 +262,44 @@ export const INGREDIENT_SAFETY = {
     rating: "safe",
     function: "soothing",
     reason: "Soothing ingredient",
+    reason_ko: "피부를 시원하게 진정시키는 알로에 성분",
   },
   ceramide: {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 장벽 기능에 필수적인 지질 성분",
   },
   "ceramide np": {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 장벽을 구성하는 핵심 세라마이드 성분",
   },
   adenosine: {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 탄력을 높이고 주름 개선을 돕는 성분",
   },
   "ascorbic acid": {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 밝기를 높여주는 항산화 비타민 C 성분",
   },
   "vitamin c": {
     rating: "safe",
     function: "skin-conditioning",
     reason: "Skin-conditioning ingredient",
+    reason_ko: "피부 밝기를 높여주는 항산화 비타민 C 성분",
   },
 
   // Additional Humectants/Moisturizers
   sorbitol: { rating: "safe", function: "moisturizing", reason: "Gentle humectant" },
   "sorbitol solution": { rating: "safe", function: "moisturizing", reason: "Gentle humectant" },
   urea: { rating: "caution", function: "moisturizing", reason: "Effective humectant; may irritate at high concentrations" },
-  betaine: { rating: "safe", function: "moisturizing", reason: "Gentle humectant with soothing properties" },
+  betaine: { rating: "safe", function: "moisturizing", reason: "Gentle humectant with soothing properties", reason_ko: "식물 유래 보습 성분; 자극이 적어 민감 피부에도 적합" },
   trehalose: { rating: "safe", function: "moisturizing", reason: "Gentle humectant" },
   erythritol: { rating: "safe", function: "moisturizing", reason: "Gentle humectant" },
   "sodium pca": { rating: "safe", function: "moisturizing", reason: "Natural moisturizing factor component" },
@@ -285,15 +317,15 @@ export const INGREDIENT_SAFETY = {
   "hydrolyzed hyaluronic acid": { rating: "safe", function: "moisturizing", reason: "Low molecular weight HA for deeper penetration" },
 
   // Emollients/Oils
-  "jojoba oil": { rating: "safe", function: "emollient", reason: "Non-comedogenic emollient closely resembling skin sebum" },
+  "jojoba oil": { rating: "safe", function: "emollient", reason: "Non-comedogenic emollient closely resembling skin sebum", reason_ko: "피지와 유사한 구조의 가벼운 보습 오일" },
   "simmondsia chinensis seed oil": { rating: "safe", function: "emollient", reason: "Non-comedogenic emollient closely resembling skin sebum" },
   "argan oil": { rating: "safe", function: "emollient", reason: "Nourishing emollient rich in vitamin E" },
   "argania spinosa kernel oil": { rating: "safe", function: "emollient", reason: "Nourishing emollient rich in vitamin E" },
   "rosehip oil": { rating: "safe", function: "emollient", reason: "Rich in vitamins A and C; beneficial for skin repair" },
   "rosa canina fruit oil": { rating: "safe", function: "emollient", reason: "Rich in vitamins A and C; beneficial for skin repair" },
-  squalane: { rating: "safe", function: "emollient", reason: "Lightweight, non-comedogenic emollient" },
+  squalane: { rating: "safe", function: "emollient", reason: "Lightweight, non-comedogenic emollient", reason_ko: "가볍고 모공을 막지 않는 피부 친화적 보습 성분" },
   squalene: { rating: "caution", function: "emollient", reason: "Unstable form; may oxidize and clog pores" },
-  "shea butter": { rating: "safe", function: "emollient", reason: "Rich, nourishing emollient" },
+  "shea butter": { rating: "safe", function: "emollient", reason: "Rich, nourishing emollient", reason_ko: "영양감 풍부한 보습 에몰리언트" },
   "butyrospermum parkii butter": { rating: "safe", function: "emollient", reason: "Rich, nourishing emollient" },
   "cocoa butter": { rating: "caution", function: "emollient", reason: "Rich emollient; may be comedogenic" },
   "theobroma cacao seed butter": { rating: "caution", function: "emollient", reason: "Rich emollient; may be comedogenic" },
@@ -389,25 +421,25 @@ export const INGREDIENT_SAFETY = {
   "drometrizole trisiloxane": { rating: "safe", function: "UV filter", reason: "Photostable broad-spectrum UV filter" },
 
   // Exfoliants (AHAs / BHAs / PHAs)
-  "glycolic acid": { rating: "caution", function: "exfoliating", reason: "Effective AHA; may cause irritation or photosensitivity" },
-  "lactic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA; may cause irritation at high concentrations" },
+  "glycolic acid": { rating: "caution", function: "exfoliating", reason: "Effective AHA; may cause irritation or photosensitivity", reason_ko: "각질을 효과적으로 제거하는 AHA 성분; 자극 주의" },
+  "lactic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA; may cause irritation at high concentrations", reason_ko: "순하게 각질을 제거하는 AHA 성분; 고농도 주의" },
   "mandelic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA suitable for sensitive skin; use with caution" },
   "tartaric acid": { rating: "caution", function: "exfoliating", reason: "AHA; use with caution on sensitive skin" },
   "malic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA; use with caution on sensitive skin" },
   gluconolactone: { rating: "caution", function: "exfoliating", reason: "Gentle PHA; suitable for sensitive skin but use with caution" },
   "lactobionic acid": { rating: "caution", function: "exfoliating", reason: "Gentle PHA with antioxidant properties; use with caution" },
   "polyhydroxy acid": { rating: "caution", function: "exfoliating", reason: "Gentle exfoliant; suitable for sensitive skin" },
-  "azelaic acid": { rating: "caution", function: "exfoliating", reason: "Effective for redness and hyperpigmentation; may cause tingling" },
+  "azelaic acid": { rating: "caution", function: "exfoliating", reason: "Effective for redness and hyperpigmentation; may cause tingling", reason_ko: "피부 결과 색소 침착에 사용하는 성분; 일부 따끔거림 가능" },
   "benzoyl peroxide": { rating: "avoid", function: "exfoliating", reason: "Strong oxidant; may cause significant irritation and bleach fabrics" },
   "trichloroacetic acid": { rating: "avoid", function: "exfoliating", reason: "Professional-use only chemical peel; too harsh for home use" },
 
   // Actives/Treatments
   tretinoin: { rating: "avoid", function: "skin-conditioning", reason: "Prescription-strength retinoid; use under dermatologist supervision only" },
   "retinoic acid": { rating: "avoid", function: "skin-conditioning", reason: "Prescription-strength retinoid; use under dermatologist supervision only" },
-  "kojic acid": { rating: "caution", function: "skin-conditioning", reason: "Brightening agent; may cause irritation or sensitization" },
-  "tranexamic acid": { rating: "safe", function: "skin-conditioning", reason: "Gentle brightening ingredient; well-tolerated" },
-  arbutin: { rating: "safe", function: "skin-conditioning", reason: "Gentle brightening ingredient" },
-  "alpha-arbutin": { rating: "safe", function: "skin-conditioning", reason: "Effective, gentle brightening ingredient" },
+  "kojic acid": { rating: "caution", function: "skin-conditioning", reason: "Brightening agent; may cause irritation or sensitization", reason_ko: "멜라닌 생성을 억제하는 미백 성분; 자극 주의" },
+  "tranexamic acid": { rating: "safe", function: "skin-conditioning", reason: "Gentle brightening ingredient; well-tolerated", reason_ko: "트러블 자국과 색소 침착에 사용하는 순한 미백 성분" },
+  arbutin: { rating: "safe", function: "skin-conditioning", reason: "Gentle brightening ingredient", reason_ko: "멜라닌 생성을 억제하는 순한 미백 성분" },
+  "alpha-arbutin": { rating: "safe", function: "skin-conditioning", reason: "Effective, gentle brightening ingredient", reason_ko: "효과적이고 순한 미백 성분" },
   resveratrol: { rating: "safe", function: "antioxidant", reason: "Potent antioxidant with anti-aging properties" },
   "ferulic acid": { rating: "safe", function: "antioxidant", reason: "Antioxidant that enhances efficacy of vitamins C and E" },
   glutathione: { rating: "safe", function: "antioxidant", reason: "Natural antioxidant" },
@@ -565,7 +597,7 @@ export const INGREDIENT_SAFETY = {
   "portulaca oleracea extract": { rating: "safe", function: "soothing", reason: "Soothing botanical with antioxidant properties" },
 
   // Korean/Asian Skincare Ingredients
-  "galactomyces ferment filtrate": { rating: "safe", function: "skin-conditioning", reason: "Yeast ferment filtrate; brightening and hydrating" },
+  "galactomyces ferment filtrate": { rating: "safe", function: "skin-conditioning", reason: "Yeast ferment filtrate; brightening and hydrating", reason_ko: "효모 발효 추출물; 미백과 보습에 도움" },
   "bifida ferment lysate": { rating: "safe", function: "skin-conditioning", reason: "Probiotic-derived ingredient for skin barrier support" },
   "rice extract": { rating: "safe", function: "skin-conditioning", reason: "Brightening and soothing botanical" },
   "oryza sativa bran extract": { rating: "safe", function: "skin-conditioning", reason: "Brightening and soothing botanical" },
@@ -574,7 +606,7 @@ export const INGREDIENT_SAFETY = {
   "panax ginseng root extract": { rating: "safe", function: "skin-conditioning", reason: "Antioxidant and revitalizing botanical" },
   "bamboo extract": { rating: "safe", function: "skin-conditioning", reason: "Silica-rich botanical; smoothing and mattifying" },
   "bambusa vulgaris extract": { rating: "safe", function: "skin-conditioning", reason: "Silica-rich botanical; smoothing and mattifying" },
-  madecassoside: { rating: "safe", function: "soothing", reason: "Active compound from centella asiatica; potent anti-inflammatory" },
+  madecassoside: { rating: "safe", function: "soothing", reason: "Active compound from centella asiatica; potent anti-inflammatory", reason_ko: "병풀 유래 핵심 성분; 강력한 항염 작용" },
   asiaticoside: { rating: "safe", function: "soothing", reason: "Active compound from centella asiatica; promotes wound healing" },
   "madecassic acid": { rating: "safe", function: "soothing", reason: "Active compound from centella asiatica; anti-inflammatory" },
   "asiatic acid": { rating: "safe", function: "soothing", reason: "Active compound from centella asiatica; promotes collagen synthesis" },
@@ -619,7 +651,7 @@ export const INGREDIENT_SAFETY = {
   arginine: { rating: "safe", function: "skin-conditioning", reason: "Amino acid with soothing properties" },
 
   // Polysaccharides and Beta-Glucans
-  "beta-glucan": { rating: "safe", function: "soothing", reason: "Potent soothing and immune-modulating ingredient" },
+  "beta-glucan": { rating: "safe", function: "soothing", reason: "Potent soothing and immune-modulating ingredient", reason_ko: "피부 진정과 면역 조절을 돕는 강력한 성분" },
   "oat extract": { rating: "safe", function: "soothing", reason: "Anti-inflammatory and soothing botanical" },
   "avena sativa kernel extract": { rating: "safe", function: "soothing", reason: "Anti-inflammatory and soothing botanical" },
   "colloidal oatmeal": { rating: "safe", function: "soothing", reason: "Clinically proven to relieve skin irritation and itching" },
@@ -764,8 +796,8 @@ export const INGREDIENT_SAFETY = {
   "artemisia vulgaris water": { rating: "safe", function: "soothing", reason: "Mugwort water; anti-inflammatory" },
   "panthenol": { rating: "safe", function: "skin-conditioning", reason: "Provitamin B5; hydrating and healing" },
   "dexpanthenol": { rating: "safe", function: "skin-conditioning", reason: "Provitamin B5; hydrating and healing" },
-  "bisabolol": { rating: "safe", function: "soothing", reason: "Gentle soothing ingredient from chamomile" },
-  "alpha-bisabolol": { rating: "safe", function: "soothing", reason: "Gentle soothing ingredient from chamomile" },
+  "bisabolol": { rating: "safe", function: "soothing", reason: "Gentle soothing ingredient from chamomile", reason_ko: "카모마일 유래의 순한 진정 성분" },
+  "alpha-bisabolol": { rating: "safe", function: "soothing", reason: "Gentle soothing ingredient from chamomile", reason_ko: "카모마일 유래의 순한 진정 성분" },
   "centella asiatica water": { rating: "safe", function: "soothing", reason: "Centella-infused water; anti-inflammatory" },
   "dipotassium glycyrrhizinate": { rating: "safe", function: "soothing", reason: "Anti-inflammatory licorice root derivative" },
   "sodium hyaluronate": { rating: "safe", function: "moisturizing", reason: "Hydrating ingredient" },
@@ -803,6 +835,7 @@ async function analyzeIngredient(name, customMap = {}) {
       function: customMatch.function || "custom ingredient",
       category: customMatch.function || "custom ingredient",
       reason: customMatch.reason || "",
+      reason_ko: customMatch.reason_ko || "",
       source: "custom_db",
     };
   }
@@ -816,6 +849,7 @@ async function analyzeIngredient(name, customMap = {}) {
       function: directMatch.function,
       category: directMatch.function,
       reason: directMatch.reason,
+      reason_ko: directMatch.reason_ko || "",
       source: "ingredient_db",
     };
   }
@@ -826,6 +860,7 @@ async function analyzeIngredient(name, customMap = {}) {
     function: "unknown",
     category: "unknown",
     reason: "Ingredient information is limited",
+    reason_ko: "",
     source: "fallback",
   };
 }

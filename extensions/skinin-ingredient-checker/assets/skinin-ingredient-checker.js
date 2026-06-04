@@ -13,6 +13,7 @@
   const EMPTY_STATE_MESSAGE =
     "Add ingredients to the product description using this format: Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance";
   const ANALYZE_PATH = "/api/ingredients/analyze";
+  const IS_KOREAN = (document.documentElement.lang || "").toLowerCase().startsWith("ko");
 
   bindIngredientCheckerBlocks();
 
@@ -355,14 +356,18 @@
       }[rating] ||
       rating.toUpperCase();
     const name = cleanIngredientName(ingredient.name);
-    const reason = ingredient.reason
-      ? `<p class="skinin-reason">${escapeHtml(ingredient.reason)}</p>`
+    const reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : ingredient.reason;
+    const reason = reasonText
+      ? `<p class="skinin-reason">${escapeHtml(reasonText)}</p>`
       : "";
 
     return `
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
-          <h3>${escapeHtml(name)}</h3>
+          <div class="skinin-item-name">
+            <span class="skinin-dot skinin-dot-${rating}" aria-hidden="true"></span>
+            <h3>${escapeHtml(name)}</h3>
+          </div>
           <p class="skinin-function">${escapeHtml(ingredient.function || "cosmetic ingredient")}</p>
           ${reason}
         </div>
