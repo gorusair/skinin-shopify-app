@@ -72,6 +72,7 @@
       installUrl.searchParams.set("scope", getScopes());
       installUrl.searchParams.set("redirect_uri", redirectUri);
       installUrl.searchParams.set("state", state);
+      installUrl.searchParams.append("grant_options[]", "offline");
 
       res.cookie(OAUTH_STATE_COOKIE, state, {
         httpOnly: true,

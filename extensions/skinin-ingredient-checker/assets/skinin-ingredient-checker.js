@@ -12,8 +12,8 @@
   const EMPTY_STATE_TITLE = "No ingredient list found for this product.";
   const EMPTY_STATE_MESSAGE =
     "Add ingredients to the product description using this format: Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance";
-  const ANALYZE_PATH = "/api/ingredients/analyze";
-  const IS_KOREAN = (document.documentElement.lang || "").toLowerCase().startsWith("ko");
+  const ANALYZE_PATH = "https://skinin-shopify-app.onrender.com/api/ingredients/analyze";
+  const IS_KOREAN = (navigator.language || "").startsWith("ko");
 
   bindIngredientCheckerBlocks();
 
@@ -98,15 +98,8 @@
     }
   }
 
-  function resolveAnalyzeUrl(root) {
-    const appUrl = root.dataset.appUrl;
-    if (!appUrl) return ANALYZE_PATH;
-
-    try {
-      return new URL(ANALYZE_PATH, appUrl).toString();
-    } catch (_error) {
-      return ANALYZE_PATH;
-    }
+  function resolveAnalyzeUrl(_root) {
+    return ANALYZE_PATH;
   }
 
   function readProductData(root) {
@@ -355,6 +348,15 @@
         avoid: "Potential sensitivity",
       }[rating] ||
       rating.toUpperCase();
+    const dotClass =
+      {
+        safe: "safe",
+        low_concern: "safe",
+        caution: "caution",
+        worth_noting: "caution",
+        avoid: "avoid",
+        potential_sensitivity: "avoid",
+      }[rating] || "caution";
     const name = cleanIngredientName(ingredient.name);
     const reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : ingredient.reason;
     const reason = reasonText
@@ -365,7 +367,7 @@
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
           <div class="skinin-item-name">
-            <span class="skinin-dot skinin-dot-${rating}" aria-hidden="true"></span>
+            <span class="skinin-dot skinin-dot-${dotClass}" aria-hidden="true"></span>
             <h3>${escapeHtml(name)}</h3>
           </div>
           <p class="skinin-function">${escapeHtml(ingredient.function || "cosmetic ingredient")}</p>

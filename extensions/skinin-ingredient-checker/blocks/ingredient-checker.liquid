@@ -1,3 +1,36 @@
+{% style %}
+  article.skinin-modal-item:has(.skinin-rating-safe) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  article.skinin-modal-item:has(.skinin-rating-caution) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #FFC107;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  article.skinin-modal-item:has(.skinin-rating-avoid) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #FF6B6B;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+{% endstyle %}
+
 {% comment %}
   Renders a product page ingredient checker button.
 {% endcomment %}
@@ -234,12 +267,8 @@
           });
       });
 
-      function resolveAnalyzeUrl(rootNode) {
-        try {
-          return new URL("/api/ingredients/analyze", rootNode.dataset.appUrl || window.location.origin).toString();
-        } catch (error) {
-          return "/api/ingredients/analyze";
-        }
+      function resolveAnalyzeUrl(_rootNode) {
+        return "https://skinin-shopify-app.onrender.com/api/ingredients/analyze";
       }
 
       function readIngredients(rootNode) {
@@ -327,7 +356,10 @@
           ? ingredients.map(function (ingredient) {
               var rating = ingredient.safetyRating || "caution";
               var ratingLabel = cfg.labels[rating] || rating.toUpperCase();
-              return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span></article>";
+              var dotClass = (rating === "safe" || rating === "low_concern") ? "skinin-dot-safe"
+                : (rating === "avoid" || rating === "potential_sensitivity") ? "skinin-dot-avoid"
+                : "skinin-dot-caution";
+              return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><span class=\"skinin-dot " + dotClass + "\" aria-hidden=\"true\"></span><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span></article>";
             }).join("")
           : "<div class=\"skinin-modal-message\">No ingredient results returned.</div>";
         showModal(cfg.modalTitle, body, true);
