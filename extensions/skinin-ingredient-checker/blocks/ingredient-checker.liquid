@@ -187,6 +187,8 @@
         disclaimerText: "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice."
       };
 
+      var IS_KOREAN = (navigator.language || "").indexOf("ko") === 0;
+
       loadSettings();
 
       function loadSettings() {
@@ -359,7 +361,27 @@
               var dotClass = (rating === "safe" || rating === "low_concern") ? "skinin-dot-safe"
                 : (rating === "avoid" || rating === "potential_sensitivity") ? "skinin-dot-avoid"
                 : "skinin-dot-caution";
-              return "<article class=\"skinin-modal-item\"><div class=\"skinin-item-info\"><span class=\"skinin-dot " + dotClass + "\" aria-hidden=\"true\"></span><h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3><p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p></div><span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span></article>";
+              var reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : ingredient.reason;
+              var detailHtml = reasonText
+                ? "<div class=\"skinin-detail\" style=\"display:none;\"><p class=\"skinin-detail-text\">" + escapeHtml(reasonText) + "</p></div>"
+                : "";
+              var toggleHtml = reasonText
+                ? "<button type=\"button\" class=\"skinin-toggle\" aria-label=\"Show details\" aria-expanded=\"false\">▼</button>"
+                : "";
+              return "<article class=\"skinin-modal-item\">"
+                + "<div class=\"skinin-item-info\">"
+                  + "<div class=\"skinin-item-name\">"
+                    + "<span class=\"skinin-dot " + dotClass + "\" aria-hidden=\"true\"></span>"
+                    + "<h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3>"
+                  + "</div>"
+                  + "<p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p>"
+                  + detailHtml
+                + "</div>"
+                + "<div class=\"skinin-item-right\">"
+                  + "<span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span>"
+                  + toggleHtml
+                + "</div>"
+              + "</article>";
             }).join("")
           : "<div class=\"skinin-modal-message\">No ingredient results returned.</div>";
         showModal(cfg.modalTitle, body, true);
@@ -373,6 +395,19 @@
         overlay.className = "skinin-modal-overlay";
         overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-modal-body\"><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div><div class=\"skinin-modal-footer\">" + escapeHtml(cfg.disclaimerText) + "</div></div>";
         overlay.addEventListener("click", function (event) {
+          var toggle = event.target.closest && event.target.closest(".skinin-toggle");
+          if (toggle) {
+            var item = toggle.closest(".skinin-modal-item");
+            var detail = item && item.querySelector(".skinin-detail");
+            if (detail) {
+              var isOpen = detail.style.display === "block";
+              detail.style.display = isOpen ? "none" : "block";
+              toggle.textContent = isOpen ? "▼" : "▲";
+              toggle.setAttribute("aria-label", isOpen ? "Show details" : "Hide details");
+              toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+            }
+            return;
+          }
           if (event.target === overlay || event.target.closest(".skinin-modal-close")) overlay.remove();
         });
         document.body.appendChild(overlay);

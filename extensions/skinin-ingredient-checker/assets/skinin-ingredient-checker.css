@@ -190,11 +190,35 @@ button.skinin-check-button:disabled,
   line-height: 1.4;
   margin: 0;
 }
-.skinin-reason {
-  color: #9ca3af;
+.skinin-detail {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+.skinin-detail-text {
   font-size: 12px;
-  line-height: 1.4;
-  margin: 3px 0 0;
+  color: #888;
+  line-height: 1.6;
+  margin: 0;
+}
+.skinin-item-right {
+  align-items: flex-end;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 4px;
+}
+.skinin-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  color: #aaa;
+  padding: 2px 4px;
+  margin-top: 4px;
+}
+.skinin-toggle:hover {
+  color: #555;
 }
 .skinin-modal-footer {
   border-top: 1px solid #f3f4f6;
@@ -229,5 +253,10 @@ button.skinin-check-button:disabled,
   .skinin-modal-item {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .skinin-item-right {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 8px;
   }
 }

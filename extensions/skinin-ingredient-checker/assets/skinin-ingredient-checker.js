@@ -250,6 +250,19 @@
     `;
 
     overlay.addEventListener("click", (event) => {
+      const toggle = event.target.closest?.(".skinin-toggle");
+      if (toggle) {
+        const item = toggle.closest(".skinin-modal-item");
+        const detail = item?.querySelector(".skinin-detail");
+        if (detail) {
+          const isOpen = detail.style.display === "block";
+          detail.style.display = isOpen ? "none" : "block";
+          toggle.textContent = isOpen ? "▼" : "▲";
+          toggle.setAttribute("aria-label", isOpen ? "Show details" : "Hide details");
+          toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+        }
+        return;
+      }
       if (
         event.target === overlay ||
         event.target.closest(".skinin-modal-close")
@@ -359,8 +372,11 @@
       }[rating] || "caution";
     const name = cleanIngredientName(ingredient.name);
     const reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : ingredient.reason;
-    const reason = reasonText
-      ? `<p class="skinin-reason">${escapeHtml(reasonText)}</p>`
+    const detail = reasonText
+      ? `<div class="skinin-detail" style="display:none;"><p class="skinin-detail-text">${escapeHtml(reasonText)}</p></div>`
+      : "";
+    const toggle = reasonText
+      ? `<button type="button" class="skinin-toggle" aria-label="Show details" aria-expanded="false">▼</button>`
       : "";
 
     return `
@@ -371,9 +387,12 @@
             <h3>${escapeHtml(name)}</h3>
           </div>
           <p class="skinin-function">${escapeHtml(ingredient.function || "cosmetic ingredient")}</p>
-          ${reason}
+          ${detail}
         </div>
-        <span class="skinin-rating skinin-rating-${rating}">${ratingLabel}</span>
+        <div class="skinin-item-right">
+          <span class="skinin-rating skinin-rating-${rating}">${ratingLabel}</span>
+          ${toggle}
+        </div>
       </article>
     `;
   }
