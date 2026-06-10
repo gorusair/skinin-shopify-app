@@ -1,5 +1,4 @@
-// Placeholder support email until the production support mailbox is configured.
-const SUPPORT_EMAIL = "support@skinin.app";
+const SUPPORT_EMAIL = "skinin.app@gmail.com";
 const DEFAULT_SHOPIFY_API_KEY = "ad670221e1d6929bc51cf5a88084f53a";
 const DEFAULT_API_SESSION_URL =
   "https://skinin-ingredient-checker.onrender.com/api/session";
@@ -269,38 +268,43 @@ export function renderPrivacyPage(options = {}) {
       "How Skinin Ingredient Checker handles app, shop, and product information.",
     children: `
       <section>
-        <h2>Overview</h2>
-        <p>Skinin Ingredient Checker helps merchants add an ingredient review experience to Shopify product pages. This policy explains what information the app uses to install, operate, and provide ingredient review functionality.</p>
-      </section>
-
-      <section>
-        <h2>Information We Use</h2>
+        <h2>App Information</h2>
         <ul>
-          <li>Shop information needed for installation and operation, such as the shop domain.</li>
-          <li>Shop installation data, including an access token required for app functionality.</li>
-          <li>Product information needed to identify ingredient lists, such as product title and product description.</li>
-          <li>Ingredient text provided by merchants in product descriptions or supported product fields.</li>
+          <li><strong>App name:</strong> Skinin Ingredient Checker</li>
+          <li><strong>Developer:</strong> SKinin Labs (<a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>)</li>
         </ul>
       </section>
 
       <section>
-        <h2>How Information Is Used</h2>
-        <p>Shop installation data is used to keep the app connected to the merchant store and to support app features. Product title, product description, and ingredient text may be used to identify ingredient lists and return ingredient review results on the storefront.</p>
+        <h2>Data We Collect</h2>
+        <ul>
+          <li>Shopify store domain</li>
+          <li>Product descriptions (used to extract ingredient lists)</li>
+        </ul>
       </section>
 
       <section>
-        <h2>Customer Health Information</h2>
-        <p>Skinin Ingredient Checker does not collect customer health information. The app is designed to review ingredient text supplied by merchants and does not ask shoppers to provide health details.</p>
+        <h2>Purpose</h2>
+        <p>Collected data is used for ingredient analysis only. We do not use this data for advertising, profiling, or any unrelated purpose.</p>
+      </section>
+
+      <section>
+        <h2>Storage</h2>
+        <p>Data is stored in Firebase Firestore (Google Cloud). Access is restricted to the app service account.</p>
+      </section>
+
+      <section>
+        <h2>Third Parties</h2>
+        <p>We do not sell your data to third parties.</p>
       </section>
 
       <section>
         <h2>Informational Use Only</h2>
-        <p>Skinin Ingredient Checker is an ingredient review aid. It does not provide medical advice and does not diagnose, treat, cure, or prevent any condition. Results are based on the ingredient information available in the product description and are for informational purposes only.</p>
-        <p>The app does not guarantee product safety. Merchants are responsible for providing accurate and complete ingredient lists in product descriptions.</p>
+        <p>Skinin Ingredient Checker is an ingredient review aid. It does not provide medical advice and does not diagnose, treat, cure, or prevent any condition. Results are for informational purposes only.</p>
       </section>
 
       <section>
-        <h2>Contact and Support</h2>
+        <h2>Contact</h2>
         <p>For privacy or support questions, contact <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.</p>
       </section>
     `,
