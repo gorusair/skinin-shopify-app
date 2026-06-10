@@ -153,7 +153,7 @@ export const INGREDIENT_SAFETY = {
 
   // SAFE
   water: { rating: "safe", function: "solvent", reason: "The most common solvent in skincare, used as the base for nearly all water-phase formulas. Carries other ingredients and supports formula stability. Universally well tolerated on the skin.", reason_ko: "제형의 기본 용매" },
-  aqua: { rating: "safe", function: "solvent", reason: "Common solvent", reason_ko: "제형의 기본 용매" },
+  aqua: { rating: "safe", function: "solvent", reason: "The INCI name for water, used as the primary solvent in most skincare formulas. Carries active ingredients and maintains formula texture and stability. Universally well tolerated across all skin types.", reason_ko: "제형의 기본 용매" },
   glycerin: {
     rating: "safe",
     function: "moisturizing",
@@ -273,7 +273,7 @@ export const INGREDIENT_SAFETY = {
   "ceramide np": {
     rating: "safe",
     function: "skin-conditioning",
-    reason: "Skin-conditioning ingredient",
+    reason: "One of the most studied ceramide types, structurally similar to the lipids naturally found in healthy skin. Helps reinforce the barrier to retain moisture and protect against external stressors. Well tolerated by dry, sensitive, and compromised skin types.",
     reason_ko: "피부 장벽을 구성하는 핵심 세라마이드 성분",
   },
   adenosine: {
@@ -430,7 +430,7 @@ export const INGREDIENT_SAFETY = {
   "lactobionic acid": { rating: "caution", function: "exfoliating", reason: "Gentle PHA with antioxidant properties; use with caution" },
   "polyhydroxy acid": { rating: "caution", function: "exfoliating", reason: "Gentle exfoliant; suitable for sensitive skin" },
   "azelaic acid": { rating: "caution", function: "exfoliating", reason: "Effective for redness and hyperpigmentation; may cause tingling", reason_ko: "피부 결과 색소 침착에 사용하는 성분; 일부 따끔거림 가능" },
-  "benzoyl peroxide": { rating: "avoid", function: "exfoliating", reason: "Strong oxidant; may cause significant irritation and bleach fabrics" },
+  "benzoyl peroxide": { rating: "avoid", function: "exfoliating", reason: "A potent antibacterial oxidant used to treat acne by targeting bacteria and clearing pores. Can cause notable dryness, redness, or peeling, particularly on first use or sensitive skin. Known to bleach fabric on contact and is generally used under dermatological guidance." },
   "trichloroacetic acid": { rating: "avoid", function: "exfoliating", reason: "Professional-use only chemical peel; too harsh for home use" },
 
   // Actives/Treatments
