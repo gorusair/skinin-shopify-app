@@ -257,6 +257,7 @@
             return response.json();
           })
           .then(function (result) {
+            console.log("[Skinin] response data:", result);
             showResults(result.ingredients || []);
           })
           .catch(function (error) {

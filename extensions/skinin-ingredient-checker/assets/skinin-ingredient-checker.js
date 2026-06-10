@@ -371,13 +371,9 @@
         potential_sensitivity: "avoid",
       }[rating] || "caution";
     const name = cleanIngredientName(ingredient.name);
-    const reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : ingredient.reason;
-    const detail = reasonText
-      ? `<div class="skinin-detail" style="display:none;"><p class="skinin-detail-text">${escapeHtml(reasonText)}</p></div>`
-      : "";
-    const toggle = reasonText
-      ? `<button type="button" class="skinin-toggle" aria-label="Show details" aria-expanded="false">▼</button>`
-      : "";
+    const reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : (ingredient.reason || "No additional details available.");
+    const detail = `<div class="skinin-detail" style="display:none;"><p class="skinin-detail-text">${escapeHtml(reasonText)}</p></div>`;
+    const toggle = `<button type="button" class="skinin-toggle" aria-label="Show details" aria-expanded="false">▼</button>`;
 
     return `
       <article class="skinin-modal-item">
