@@ -1,3 +1,4 @@
+/* skinin-asset v1.0.4 */
 (function () {
   if (window.SkininIngredientCheckerLoaded) return;
   window.SkininIngredientCheckerLoaded = true;
