@@ -613,6 +613,11 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
 
 app.get("/", async (req, res, next) => {
   try {
+    // OAuth install flow: shop present but not yet embedded → start OAuth
+    if (req.query.shop && !req.query.embedded && !req.query.host) {
+      return res.redirect(`/auth?shop=${encodeURIComponent(req.query.shop)}`);
+    }
+
     let billingStatus = null;
     const billingBypassed = process.env.BYPASS_BILLING === "true";
     const isEmbeddedRequest = req.query.embedded === "1" || req.query.host;
