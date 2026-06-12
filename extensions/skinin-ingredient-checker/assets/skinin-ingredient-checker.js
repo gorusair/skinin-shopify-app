@@ -1,4 +1,4 @@
-/* skinin-asset v1.0.4 */
+/* skinin-asset v1.0.5 */
 (function () {
   if (window.SkininIngredientCheckerLoaded) return;
   window.SkininIngredientCheckerLoaded = true;
@@ -261,6 +261,15 @@
     });
 
     document.body.appendChild(overlay);
+
+    overlay.querySelectorAll(".skinin-toggle-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const detail = btn.nextElementSibling;
+        const isOpen = detail.style.display === "block";
+        detail.style.display = isOpen ? "none" : "block";
+        btn.textContent = isOpen ? "▼ Details" : "▲ Details";
+      });
+    });
   }
 
   function normalizeModalStatus(ingredients, status) {
@@ -361,6 +370,10 @@
         potential_sensitivity: "avoid",
       }[rating] || "caution";
     const name = cleanIngredientName(ingredient.name);
+    const reasonText = ingredient.reason ? escapeHtml(ingredient.reason) : "";
+    const reasonHtml = reasonText
+      ? `<button class="skinin-toggle-btn" style="font-size:12px;color:#888;cursor:pointer;background:none;border:none;padding:2px 0;display:block;">▼ Details</button><p class="skinin-detail-text" style="display:none;font-size:12px;color:#555;margin-top:4px;line-height:1.5;">${reasonText}</p>`
+      : "";
     return `
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
@@ -368,7 +381,8 @@
             <span class="skinin-dot skinin-dot-${dotClass}" aria-hidden="true"></span>
             <h3>${escapeHtml(name)}</h3>
           </div>
-          <p class="skinin-function">${escapeHtml(ingredient.function || "cosmetic ingredient")}</p>
+          <p class="skinin-function">${escapeHtml(ingredient.category || ingredient.function || "cosmetic ingredient")}</p>
+          ${reasonHtml}
         </div>
         <div class="skinin-item-right">
           <span class="skinin-rating skinin-rating-${rating}">${ratingLabel}</span>
