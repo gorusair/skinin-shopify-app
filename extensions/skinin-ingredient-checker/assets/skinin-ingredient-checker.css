@@ -181,9 +181,9 @@ button.skinin-check-button:disabled,
   flex-shrink: 0;
   vertical-align: middle;
 }
-.skinin-dot-safe    { background-color: #4CAF50; }
-.skinin-dot-caution { background-color: #FFC107; }
-.skinin-dot-avoid   { background-color: #FF6B6B; }
+.skinin-dot.skinin-rating-safe    { background-color: #4CAF50; }
+.skinin-dot.skinin-rating-caution { background-color: #FFC107; }
+.skinin-dot.skinin-rating-avoid   { background-color: #FF6B6B; }
 .skinin-function {
   color: #6b7280;
   font-size: 13px;
