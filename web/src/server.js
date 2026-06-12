@@ -614,7 +614,7 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
 app.get("/", async (req, res, next) => {
   try {
     // OAuth install flow: shop present but not yet embedded → start OAuth
-    if (req.query.shop && !req.query.embedded && !req.query.host) {
+    if (req.query.shop && !req.query.embedded) {
       return res.redirect(`/auth?shop=${encodeURIComponent(req.query.shop)}`);
     }
 
