@@ -14,8 +14,6 @@
   const EMPTY_STATE_MESSAGE =
     "Add ingredients to the product description using this format: Ingredients: Water, Glycerin, Niacinamide, Panthenol, Fragrance";
   const ANALYZE_PATH = "https://skinin-shopify-app.onrender.com/api/ingredients/analyze";
-  const IS_KOREAN = (navigator.language || "").startsWith("ko");
-
   bindIngredientCheckerBlocks();
 
   if (document.readyState === "loading") {
@@ -360,15 +358,6 @@
         avoid: "Potential sensitivity",
       }[rating] ||
       rating.toUpperCase();
-    const dotClass =
-      {
-        safe: "safe",
-        low_concern: "safe",
-        caution: "caution",
-        worth_noting: "caution",
-        avoid: "avoid",
-        potential_sensitivity: "avoid",
-      }[rating] || "caution";
     const name = cleanIngredientName(ingredient.name);
     const reasonText = ingredient.reason ? escapeHtml(ingredient.reason) : "";
     const reasonHtml = reasonText
@@ -378,7 +367,6 @@
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
           <div class="skinin-item-name">
-            <span class="skinin-dot skinin-dot-${dotClass}" aria-hidden="true"></span>
             <h3>${escapeHtml(name)}</h3>
           </div>
           <p class="skinin-function">${escapeHtml(ingredient.category || ingredient.function || "cosmetic ingredient")}</p>
