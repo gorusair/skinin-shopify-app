@@ -373,11 +373,11 @@
                     + "<h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3>"
                   + "</div>"
                   + "<p class=\"skinin-function\">" + escapeHtml(ingredient.function || "cosmetic ingredient") + "</p>"
+                  + toggleHtml
                   + detailHtml
                 + "</div>"
                 + "<div class=\"skinin-item-right\">"
                   + "<span class=\"skinin-rating skinin-rating-" + escapeHtml(rating) + "\">" + escapeHtml(ratingLabel) + "</span>"
-                  + toggleHtml
                 + "</div>"
               + "</article>";
             }).join("")
