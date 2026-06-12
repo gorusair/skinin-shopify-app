@@ -99,8 +99,10 @@
     }
   }
 
-  function resolveAnalyzeUrl(_root) {
-    return ANALYZE_PATH;
+  function resolveAnalyzeUrl(root) {
+    const appUrl = root?.dataset.appUrl;
+    if (!appUrl) return ANALYZE_PATH;
+    try { return new URL("/api/ingredients/analyze", appUrl).toString(); } catch (_e) { return ANALYZE_PATH; }
   }
 
   function readProductData(root) {

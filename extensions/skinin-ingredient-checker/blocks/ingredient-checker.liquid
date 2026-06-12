@@ -271,8 +271,10 @@
           });
       });
 
-      function resolveAnalyzeUrl(_rootNode) {
-        return "https://skinin-shopify-app.onrender.com/api/ingredients/analyze";
+      function resolveAnalyzeUrl(rootNode) {
+        var appUrl = rootNode.dataset.appUrl;
+        if (!appUrl) return "https://skinin-shopify-app.onrender.com/api/ingredients/analyze";
+        try { return new URL("/api/ingredients/analyze", appUrl).toString(); } catch (e) { return "https://skinin-shopify-app.onrender.com/api/ingredients/analyze"; }
       }
 
       function readIngredients(rootNode) {
