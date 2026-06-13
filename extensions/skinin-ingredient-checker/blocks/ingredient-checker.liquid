@@ -155,8 +155,6 @@
         disclaimerText: "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice."
       };
 
-      var IS_KOREAN = (navigator.language || "").indexOf("ko") === 0;
-
       loadSettings();
 
       function loadSettings() {
@@ -329,10 +327,7 @@
           ? ingredients.map(function (ingredient) {
               var rating = ingredient.safetyRating || "caution";
               var ratingLabel = cfg.labels[rating] || rating;
-              var dotClass = rating === "safe" ? "skinin-rating-safe"
-                : rating === "avoid" ? "skinin-rating-avoid"
-                : "skinin-rating-caution";
-              var reasonText = (IS_KOREAN && ingredient.reason_ko) ? ingredient.reason_ko : (ingredient.reason || "");
+              var reasonText = ingredient.reason || "";
               var toggleAndDetail = reasonText
                 ? "<button type=\"button\" class=\"skinin-toggle\" aria-label=\"Show details\" aria-expanded=\"false\">▼ Details</button>"
                   + "<div class=\"skinin-detail\" style=\"display:none;\"><p class=\"skinin-detail-text\">" + escapeHtml(reasonText) + "</p></div>"
@@ -340,7 +335,6 @@
               return "<article class=\"skinin-modal-item\">"
                 + "<div class=\"skinin-item-info\">"
                   + "<div class=\"skinin-item-name\">"
-                    + "<span class=\"skinin-dot " + dotClass + "\" aria-hidden=\"true\"></span>"
                     + "<h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3>"
                   + "</div>"
                   + "<p class=\"skinin-function\">" + escapeHtml(ingredient.category || ingredient.function || "cosmetic ingredient") + "</p>"
