@@ -346,18 +346,18 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
               <input type="text" id="field-modalTitle" placeholder="Ingredient Check">
             </div>
             <fieldset>
-              <legend>Safety label text</legend>
+              <legend>Ingredient label text</legend>
               <div class="form-group">
-                <label for="field-labelLow">Low concern label</label>
-                <input type="text" id="field-labelLow" placeholder="Low concern">
+                <label for="field-labelLow">Commonly used label</label>
+                <input type="text" id="field-labelLow" placeholder="Commonly used">
               </div>
               <div class="form-group">
-                <label for="field-labelMid">Worth noting label</label>
-                <input type="text" id="field-labelMid" placeholder="Worth noting">
+                <label for="field-labelMid">Worth knowing about label</label>
+                <input type="text" id="field-labelMid" placeholder="Worth knowing about">
               </div>
               <div class="form-group">
-                <label for="field-labelHigh">Potential sensitivity label</label>
-                <input type="text" id="field-labelHigh" placeholder="Potential sensitivity">
+                <label for="field-labelHigh">May cause sensitivity label</label>
+                <input type="text" id="field-labelHigh" placeholder="May cause sensitivity in some users">
               </div>
             </fieldset>
             <div class="form-group">
@@ -392,9 +392,9 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
               <div>
                 <label for="ci-rating">Label</label>
                 <select id="ci-rating">
-                  <option value="safe">Low concern</option>
-                  <option value="caution" selected>Worth noting</option>
-                  <option value="avoid">Potential sensitivity</option>
+                  <option value="safe">Commonly used</option>
+                  <option value="caution" selected>Worth knowing about</option>
+                  <option value="avoid">May cause sensitivity in some users</option>
                 </select>
               </div>
               <div>
@@ -435,9 +435,9 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
               buttonColor: adminGetVal("field-buttonColorHex", "#1f2937"),
               modalTitle: adminGetVal("field-modalTitle", "Ingredient Check"),
               labels: {
-                low: adminGetVal("field-labelLow", "Low concern"),
-                mid: adminGetVal("field-labelMid", "Worth noting"),
-                high: adminGetVal("field-labelHigh", "Potential sensitivity")
+                low: adminGetVal("field-labelLow", "Commonly used"),
+                mid: adminGetVal("field-labelMid", "Worth knowing about"),
+                high: adminGetVal("field-labelHigh", "May cause sensitivity in some users")
               },
               disclaimerText: adminGetVal("field-disclaimerText", ""),
               customIngredients: adminIngredients
@@ -466,9 +466,9 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
               html += "<tr>" +
                 "<td>" + adminEsc(ci.name) + "</td>" +
                 "<td><select data-idx=\\"" + i + "\\">" +
-                  "<option value=\\"safe\\"" + (r === "safe" ? " selected" : "") + ">Low concern</option>" +
-                  "<option value=\\"caution\\"" + (r === "caution" ? " selected" : "") + ">Worth noting</option>" +
-                  "<option value=\\"avoid\\"" + (r === "avoid" ? " selected" : "") + ">Potential sensitivity</option>" +
+                  "<option value=\\"safe\\"" + (r === "safe" ? " selected" : "") + ">Commonly used</option>" +
+                  "<option value=\\"caution\\"" + (r === "caution" ? " selected" : "") + ">Worth knowing about</option>" +
+                  "<option value=\\"avoid\\"" + (r === "avoid" ? " selected" : "") + ">May cause sensitivity in some users</option>" +
                 "</select></td>" +
                 "<td><button type=\\"button\\" class=\\"btn-delete\\" data-idx=\\"" + i + "\\">Delete</button></td>" +
                 "</tr>";

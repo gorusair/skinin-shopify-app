@@ -381,11 +381,11 @@ export function renderAppInfoPage(options = {}) {
         <p>Help shoppers review cosmetic ingredients directly on product pages.</p>
 
         <h3>Short Description</h3>
-        <p>Skinin Ingredient Checker adds a simple ingredient review button to product pages, helping shoppers understand cosmetic ingredient lists with clear SAFE, CAUTION, and AVOID labels.</p>
+        <p>Skinin Ingredient Checker adds a simple ingredient transparency button to product pages, helping shoppers understand cosmetic ingredient lists with clear, informational notes.</p>
 
         <h3>Long Description</h3>
         <p>Skinin Ingredient Checker helps beauty and skincare merchants make ingredient information easier for shoppers to review directly on product pages.</p>
-        <p>Add the theme app block to your product template, include an ingredient list in the product description, and shoppers can click Check Ingredients to view a clean ingredient breakdown. The app highlights common cosmetic ingredients with simple SAFE, CAUTION, and AVOID labels, along with careful explanations such as "Common moisturizer," "Hydrating ingredient," or "Potential irritant for sensitive skin."</p>
+        <p>Add the theme app block to your product template, include an ingredient list in the product description, and shoppers can click Check Ingredients to view a clean ingredient breakdown. The app displays common cosmetic ingredients with transparent, informational labels such as "Commonly used," "Worth knowing about," and "May cause sensitivity in some users," along with brief descriptive notes.</p>
         <p>Skinin Ingredient Checker is designed as an ingredient review aid. It does not provide medical advice and does not diagnose, treat, cure, or prevent any condition. Merchants are responsible for providing accurate ingredient lists in product descriptions.</p>
       </section>
 
@@ -394,7 +394,7 @@ export function renderAppInfoPage(options = {}) {
         <ul>
           <li>Add ingredient review functionality directly to product pages.</li>
           <li>Help shoppers scan ingredient lists more easily.</li>
-          <li>Use simple SAFE, CAUTION, and AVOID labels.</li>
+          <li>Use clear, transparent ingredient notes.</li>
           <li>Show careful, non-medical explanations for common cosmetic ingredients.</li>
           <li>Support clear ingredient formatting in product descriptions.</li>
           <li>Add the storefront feature through a Shopify theme app extension.</li>

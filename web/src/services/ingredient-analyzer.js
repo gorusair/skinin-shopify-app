@@ -365,7 +365,7 @@ export const INGREDIENT_SAFETY = {
 
   // Occlusives
   petrolatum: { rating: "safe", function: "occlusive", reason: "Highly effective occlusive moisturizer; hypoallergenic" },
-  "mineral oil": { rating: "safe", function: "occlusive", reason: "Effective occlusive; refined grades are safe and non-comedogenic" },
+  "mineral oil": { rating: "safe", function: "occlusive", reason: "Effective occlusive; refined grades are widely used in cosmetics and considered non-comedogenic" },
   paraffin: { rating: "safe", function: "occlusive", reason: "Occlusive moisturizer" },
   "paraffinum liquidum": { rating: "safe", function: "occlusive", reason: "Occlusive moisturizer" },
   cyclomethicone: { rating: "caution", function: "emollient", reason: "Silicone compound; environmental concerns under review" },

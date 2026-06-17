@@ -353,9 +353,9 @@
     const rating = escapeHtml(ingredient.safetyRating || "caution");
     const ratingLabel =
       {
-        safe: "Low concern",
-        caution: "Worth noting",
-        avoid: "Potential sensitivity",
+        safe: "Commonly used",
+        caution: "Worth knowing about",
+        avoid: "May cause sensitivity in some users",
       }[rating] ||
       rating.toUpperCase();
     const name = cleanIngredientName(ingredient.name);

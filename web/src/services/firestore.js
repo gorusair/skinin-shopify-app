@@ -136,9 +136,9 @@ const DEFAULT_SETTINGS = {
   buttonColor: "#1f2937",
   modalTitle: "Ingredient Check",
   labels: {
-    low: "Low concern",
-    mid: "Worth noting",
-    high: "Potential sensitivity",
+    low: "Commonly used",
+    mid: "Worth knowing about",
+    high: "May cause sensitivity in some users",
   },
   disclaimerText:
     "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.",
