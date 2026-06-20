@@ -151,7 +151,7 @@
         buttonText: "Check Ingredients",
         buttonColor: "#1f2937",
         modalTitle: "Ingredient Check",
-        labels: { safe: "Commonly used", caution: "Worth knowing about", avoid: "May cause sensitivity in some users" },
+        labels: { safe: "Commonly used", caution: "Listed for disclosure", avoid: "Restricted use", unknown: "Not on the lists we check" },
         disclaimerText: "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice."
       };
 
@@ -175,6 +175,7 @@
               if (data.labels.low) cfg.labels.safe = data.labels.low;
               if (data.labels.mid) cfg.labels.caution = data.labels.mid;
               if (data.labels.high) cfg.labels.avoid = data.labels.high;
+              if (data.labels.unknown) cfg.labels.unknown = data.labels.unknown;
             }
             if (!button.disabled) {
               button.textContent = cfg.buttonText;
@@ -325,8 +326,8 @@
       function showResults(ingredients) {
         var body = ingredients.length
           ? ingredients.map(function (ingredient) {
-              var rating = ingredient.safetyRating || "caution";
-              var ratingLabel = cfg.labels[rating] || rating;
+              var rating = ingredient.safetyRating || "unknown";
+              var ratingLabel = cfg.labels[rating] || cfg.labels.unknown;
               var reasonText = ingredient.reason || "";
               var toggleAndDetail = reasonText
                 ? "<button type=\"button\" class=\"skinin-toggle\" aria-label=\"Show details\" aria-expanded=\"false\">▼ Details</button>"
@@ -349,13 +350,16 @@
         showModal(cfg.modalTitle, body, true);
       }
 
+      var LEGEND_TEXT = "This shows regulatory and ingredient status, not a safety rating. Categories reflect whether an ingredient appears on public regulatory lists (EU Cosmetic Regulation Annexes, etc.) — they do not represent a judgment of safety.";
+
       function showModal(title, body, bodyIsHtml) {
         var existing = document.querySelector(".skinin-modal-overlay");
         if (existing) existing.remove();
 
+        var legendHtml = bodyIsHtml ? "<div class=\"skinin-disclaimer\">" + escapeHtml(LEGEND_TEXT) + "</div>" : "";
         var overlay = document.createElement("div");
         overlay.className = "skinin-modal-overlay";
-        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-modal-body\"><div class=\"skinin-summary skinin-summary-neutral\">" + escapeHtml(title) + "</div>" + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div><div class=\"skinin-modal-footer\">" + escapeHtml(cfg.disclaimerText) + "</div></div>";
+        overlay.innerHTML = "<div class=\"skinin-modal\" role=\"dialog\" aria-modal=\"true\"><div class=\"skinin-modal-header\"><h2>" + escapeHtml(title) + "</h2><button type=\"button\" class=\"skinin-modal-close\" aria-label=\"Close\">&times;</button></div><div class=\"skinin-modal-body\">" + legendHtml + (bodyIsHtml ? "<div class=\"skinin-modal-list\">" + body + "</div>" : "<div class=\"skinin-modal-message\">" + escapeHtml(body) + "</div>") + "</div><div class=\"skinin-modal-footer\">" + escapeHtml(cfg.disclaimerText) + "</div></div>";
         overlay.addEventListener("click", function (event) {
           var toggle = event.target.closest && event.target.closest(".skinin-toggle");
           if (toggle) {

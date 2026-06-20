@@ -137,8 +137,9 @@ const DEFAULT_SETTINGS = {
   modalTitle: "Ingredient Check",
   labels: {
     low: "Commonly used",
-    mid: "Worth knowing about",
-    high: "May cause sensitivity in some users",
+    mid: "Listed for disclosure",
+    high: "Restricted use",
+    unknown: "Not on the lists we check",
   },
   disclaimerText:
     "Ingredient notes are based on the ingredient list in the product description and are for informational purposes only. Not medical advice.",

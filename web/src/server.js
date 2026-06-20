@@ -352,12 +352,12 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
                 <input type="text" id="field-labelLow" placeholder="Commonly used">
               </div>
               <div class="form-group">
-                <label for="field-labelMid">Worth knowing about label</label>
-                <input type="text" id="field-labelMid" placeholder="Worth knowing about">
+                <label for="field-labelMid">Listed for disclosure label</label>
+                <input type="text" id="field-labelMid" placeholder="Listed for disclosure">
               </div>
               <div class="form-group">
-                <label for="field-labelHigh">May cause sensitivity label</label>
-                <input type="text" id="field-labelHigh" placeholder="May cause sensitivity in some users">
+                <label for="field-labelHigh">Restricted use label</label>
+                <input type="text" id="field-labelHigh" placeholder="Restricted use">
               </div>
             </fieldset>
             <div class="form-group">
@@ -393,8 +393,8 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
                 <label for="ci-rating">Label</label>
                 <select id="ci-rating">
                   <option value="safe">Commonly used</option>
-                  <option value="caution" selected>Worth knowing about</option>
-                  <option value="avoid">May cause sensitivity in some users</option>
+                  <option value="caution" selected>Listed for disclosure</option>
+                  <option value="avoid">Restricted use</option>
                 </select>
               </div>
               <div>
@@ -436,8 +436,8 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
               modalTitle: adminGetVal("field-modalTitle", "Ingredient Check"),
               labels: {
                 low: adminGetVal("field-labelLow", "Commonly used"),
-                mid: adminGetVal("field-labelMid", "Worth knowing about"),
-                high: adminGetVal("field-labelHigh", "May cause sensitivity in some users")
+                mid: adminGetVal("field-labelMid", "Listed for disclosure"),
+                high: adminGetVal("field-labelHigh", "Restricted use")
               },
               disclaimerText: adminGetVal("field-disclaimerText", ""),
               customIngredients: adminIngredients
@@ -467,8 +467,8 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
                 "<td>" + adminEsc(ci.name) + "</td>" +
                 "<td><select data-idx=\\"" + i + "\\">" +
                   "<option value=\\"safe\\"" + (r === "safe" ? " selected" : "") + ">Commonly used</option>" +
-                  "<option value=\\"caution\\"" + (r === "caution" ? " selected" : "") + ">Worth knowing about</option>" +
-                  "<option value=\\"avoid\\"" + (r === "avoid" ? " selected" : "") + ">May cause sensitivity in some users</option>" +
+                  "<option value=\\"caution\\"" + (r === "caution" ? " selected" : "") + ">Listed for disclosure</option>" +
+                  "<option value=\\"avoid\\"" + (r === "avoid" ? " selected" : "") + ">Restricted use</option>" +
                 "</select></td>" +
                 "<td><button type=\\"button\\" class=\\"btn-delete\\" data-idx=\\"" + i + "\\">Delete</button></td>" +
                 "</tr>";
@@ -594,9 +594,9 @@ function renderAdminPage({ shop, appUrl, defaultRatingsJson }) {
                 sf("field-modalTitle", data.modalTitle);
                 sf("field-disclaimerText", data.disclaimerText);
                 if (data.labels) {
-                  sf("field-labelLow", data.labels.low);
-                  sf("field-labelMid", data.labels.mid);
-                  sf("field-labelHigh", data.labels.high);
+                  sf("field-labelLow", data.labels.low || "Commonly used");
+                  sf("field-labelMid", data.labels.mid || "Listed for disclosure");
+                  sf("field-labelHigh", data.labels.high || "Restricted use");
                 }
                 adminIngredients = Array.isArray(data.customIngredients) ? data.customIngredients : [];
                 adminRenderTable();

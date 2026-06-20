@@ -275,6 +275,9 @@
     return ingredients.length ? "results" : "empty";
   }
 
+  const LEGEND_TEXT =
+    "This shows regulatory and ingredient status, not a safety rating. Categories reflect whether an ingredient appears on public regulatory lists (EU Cosmetic Regulation Annexes, etc.) — they do not represent a judgment of safety.";
+
   function renderSummary(ingredients, status) {
     if (status === "empty") {
       return `
@@ -294,27 +297,13 @@
 
     if (status === "error") {
       return `
-        <div class="skinin-summary skinin-summary-caution">
+        <div class="skinin-summary skinin-summary-neutral">
           We couldn't check this product right now.
         </div>
       `;
     }
 
-    const attentionCount = ingredients.filter((i) =>
-      ["avoid", "caution"].includes(i.safetyRating),
-    ).length;
-    if (attentionCount > 0) {
-      const summaryClass = ingredients.some((i) => i.safetyRating === "avoid")
-        ? "skinin-summary-avoid"
-        : "skinin-summary-caution";
-      const message =
-        attentionCount === 1
-          ? "1 ingredient may need attention."
-          : `${attentionCount} ingredients may need attention.`;
-      return `<div class="skinin-summary ${summaryClass}">${message}</div>`;
-    }
-
-    return `<div class="skinin-summary skinin-summary-safe">No flagged ingredients found.</div>`;
+    return `<div class="skinin-disclaimer">${LEGEND_TEXT}</div>`;
   }
 
   function renderMessage(status, message) {
@@ -337,7 +326,7 @@
     if (status === "error") {
       return `
         <div class="skinin-modal-message">
-          ${escapeHtml(message || "Please try again in a moment.")}
+          ${escapeHtml(message || "Unable to load ingredient information. Please try again in a moment.")}
         </div>
       `;
     }
@@ -350,14 +339,14 @@
   }
 
   function renderIngredient(ingredient) {
-    const rating = escapeHtml(ingredient.safetyRating || "caution");
+    const rating = escapeHtml(ingredient.safetyRating || "unknown");
     const ratingLabel =
       {
         safe: "Commonly used",
-        caution: "Worth knowing about",
-        avoid: "May cause sensitivity in some users",
-      }[rating] ||
-      rating.toUpperCase();
+        caution: "Listed for disclosure",
+        avoid: "Restricted use",
+        unknown: "Not on the lists we check",
+      }[rating] || "Not on the lists we check";
     const name = cleanIngredientName(ingredient.name);
     const reasonText = ingredient.reason ? escapeHtml(ingredient.reason) : "";
     const reasonHtml = reasonText

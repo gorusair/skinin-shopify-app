@@ -373,29 +373,29 @@ export function renderAppInfoPage(options = {}) {
     ...options,
     title: "Skinin Ingredient Checker",
     subtitle:
-      "Help shoppers review cosmetic ingredients directly on product pages.",
+      "Show shoppers what's inside your products with sourced ingredient information from public regulatory databases.",
     children: `
       <section>
         <h2>App Store Listing Copy</h2>
         <h3>Tagline</h3>
-        <p>Help shoppers review cosmetic ingredients directly on product pages.</p>
+        <p>Show shoppers what's inside your products with sourced ingredient information from public regulatory databases.</p>
 
         <h3>Short Description</h3>
-        <p>Skinin Ingredient Checker adds a simple ingredient transparency button to product pages, helping shoppers understand cosmetic ingredient lists with clear, informational notes.</p>
+        <p>Skinin Ingredient Checker adds an ingredient transparency button to product pages, displaying sourced information from public regulatory lists — so shoppers can see exactly what's in a product and where each ingredient stands in public reference databases.</p>
 
         <h3>Long Description</h3>
-        <p>Skinin Ingredient Checker helps beauty and skincare merchants make ingredient information easier for shoppers to review directly on product pages.</p>
-        <p>Add the theme app block to your product template, include an ingredient list in the product description, and shoppers can click Check Ingredients to view a clean ingredient breakdown. The app displays common cosmetic ingredients with transparent, informational labels such as "Commonly used," "Worth knowing about," and "May cause sensitivity in some users," along with brief descriptive notes.</p>
-        <p>Skinin Ingredient Checker is designed as an ingredient review aid. It does not provide medical advice and does not diagnose, treat, cure, or prevent any condition. Merchants are responsible for providing accurate ingredient lists in product descriptions.</p>
+        <p>Skinin Ingredient Checker helps beauty and skincare merchants make ingredient information transparent directly on product pages.</p>
+        <p>Add the theme app block to your product template, include an ingredient list in the product description, and shoppers can click Check Ingredients to view a clean ingredient breakdown. The app shows each ingredient's regulatory status based on public reference databases — using factual, sourced labels such as "Commonly used," "Listed for disclosure," and "Restricted use" — along with brief descriptive notes on each ingredient's function and regulatory context.</p>
+        <p>Categories reflect whether an ingredient appears on public regulatory lists (EU Cosmetic Regulation Annexes and similar databases) and do not represent a judgment of ingredient quality or personal suitability. Skinin Ingredient Checker is an ingredient transparency tool. It does not provide medical advice and does not diagnose, treat, cure, or prevent any condition. Merchants are responsible for providing accurate ingredient lists in product descriptions.</p>
       </section>
 
       <section>
         <h2>Key Benefits</h2>
         <ul>
-          <li>Add ingredient review functionality directly to product pages.</li>
-          <li>Help shoppers scan ingredient lists more easily.</li>
-          <li>Use clear, transparent ingredient notes.</li>
-          <li>Show careful, non-medical explanations for common cosmetic ingredients.</li>
+          <li>Add ingredient transparency directly to product pages.</li>
+          <li>Help shoppers understand ingredient lists with sourced, regulatory-based context.</li>
+          <li>Display publicly available regulatory status for common cosmetic ingredients.</li>
+          <li>Show factual, non-evaluative notes on ingredient function and regulatory classification.</li>
           <li>Support clear ingredient formatting in product descriptions.</li>
           <li>Add the storefront feature through a Shopify theme app extension.</li>
           <li>Keep setup simple with no theme code editing required.</li>
@@ -421,22 +421,25 @@ export function renderAppInfoPage(options = {}) {
 
       <section>
         <h2>Informational Disclaimer</h2>
-        <p>Results are based on the ingredient information available in the product description and are for informational purposes only. Skinin Ingredient Checker does not provide medical advice and does not guarantee product safety.</p>
+        <p>Results show ingredient regulatory status based on publicly available reference databases. Categories do not represent a judgment of product quality, ingredient suitability for individual users, or medical advice. Skinin Ingredient Checker does not diagnose, treat, cure, or prevent any condition.</p>
       </section>
 
       <section>
         <h2>FAQ</h2>
         <h3>What does Skinin Ingredient Checker do?</h3>
-        <p>It lets shoppers click Check Ingredients on product pages to review cosmetic ingredients with simple labels and explanations.</p>
+        <p>It lets shoppers click Check Ingredients on product pages to see each ingredient's regulatory status based on public reference databases, alongside a brief note on the ingredient's function.</p>
 
         <h3>Does the app provide medical advice?</h3>
-        <p>No. The app is an ingredient review aid only. It does not diagnose, treat, cure, or prevent any condition.</p>
+        <p>No. The app is an ingredient transparency tool only. It does not diagnose, treat, cure, or prevent any condition.</p>
 
         <h3>Where does the app get ingredient data?</h3>
-        <p>The app checks product description ingredient lists against a built-in classification system for common cosmetic ingredients.</p>
+        <p>The app compares product ingredient lists against a built-in reference database sourced from publicly available regulatory information, including EU Cosmetic Regulation Annexes.</p>
+
+        <h3>What do the labels mean?</h3>
+        <p>"Commonly used" indicates an ingredient appears widely in cosmetic formulations with no specific regulatory restrictions. "Listed for disclosure" indicates an ingredient appears on public regulatory disclosure lists (e.g., EU fragrance allergen lists). "Restricted use" indicates an ingredient is subject to regulatory restrictions or conditions of use. These labels describe regulatory status only and do not represent a recommendation about any specific product or person.</p>
 
         <h3>What happens if a product has no ingredient list?</h3>
-        <p>The app shows "No ingredient data found" and asks the merchant to add ingredients to the product description.</p>
+        <p>The app shows "No ingredient list found" and asks the merchant to add ingredients to the product description.</p>
 
         <h3>How should I format ingredients?</h3>
         <p>Use a clear list that starts with "Ingredients:" and separates each ingredient with commas.</p>
@@ -451,8 +454,8 @@ export function renderAppInfoPage(options = {}) {
           <li>Merchant onboarding home screen.</li>
           <li>Theme editor with the Skinin Ingredient Checker app block added to a product template.</li>
           <li>Product page showing the Check Ingredients button below purchase buttons.</li>
-          <li>Ingredient results modal with SAFE, CAUTION, and AVOID examples.</li>
-          <li>No ingredient data state.</li>
+          <li>Ingredient results modal showing regulatory status labels and ingredient function notes.</li>
+          <li>No ingredient list found state.</li>
           <li>Product description showing the recommended ingredient format.</li>
         </ol>
         <p class="muted">Use actual app UI screenshots. Avoid logo-only images, duplicate screenshots, pricing text inside images, unsupported claims, and medical or disease-related language.</p>
