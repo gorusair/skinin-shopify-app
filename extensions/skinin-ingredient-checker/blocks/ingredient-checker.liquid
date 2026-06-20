@@ -2,6 +2,49 @@
   Renders a product page ingredient checker button.
 {% endcomment %}
 
+{% style %}
+  article.skinin-modal-item:has(.skinin-rating-safe) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  article.skinin-modal-item:has(.skinin-rating-caution) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #f59e0b;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  article.skinin-modal-item:has(.skinin-rating-avoid) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #9ca3af;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  article.skinin-modal-item:has(.skinin-rating-unknown) .skinin-item-info h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+{% endstyle %}
+
 {% if product %}
   {{ 'skinin-ingredient-checker.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'skinin-ingredient-checker.js' | asset_url }}" defer></script>
@@ -110,6 +153,10 @@
     .skinin-rating-caution { background: #fffde7 !important; color: #7d4e00 !important; }
     .skinin-rating-avoid   { background: #f3f4f6 !important; color: #6b7280 !important; }
     .skinin-rating-unknown { background: #f9fafb !important; color: #9ca3af !important; }
+    article.skinin-modal-item:has(.skinin-rating-safe)    .skinin-item-info h3::before { background-color: #3b82f6 !important; }
+    article.skinin-modal-item:has(.skinin-rating-caution) .skinin-item-info h3::before { background-color: #f59e0b !important; }
+    article.skinin-modal-item:has(.skinin-rating-avoid)   .skinin-item-info h3::before { background-color: #9ca3af !important; }
+    article.skinin-modal-item:has(.skinin-rating-unknown) .skinin-item-info h3::before { background-color: #e5e7eb !important; }
     .skinin-disclaimer {
       background: #f8fafc !important;
       border-bottom: 1px solid #e5e7eb !important;
