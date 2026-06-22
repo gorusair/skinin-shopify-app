@@ -392,12 +392,16 @@
                 ? "<button type=\"button\" class=\"skinin-toggle\" aria-label=\"Show details\" aria-expanded=\"false\">▼ Details</button>"
                   + "<div class=\"skinin-detail\" style=\"display:none;\"><p class=\"skinin-detail-text\">" + escapeHtml(reasonText) + "</p></div>"
                 : "";
+              var functionText = ingredient.category || ingredient.function;
+              var functionHtml = (functionText && functionText !== "unknown")
+                ? "<p class=\"skinin-function\">" + escapeHtml(functionText) + "</p>"
+                : "";
               return "<article class=\"skinin-modal-item\">"
                 + "<div class=\"skinin-item-info\">"
                   + "<div class=\"skinin-item-name\">"
                     + "<h3>" + escapeHtml(ingredient.name || "Ingredient") + "</h3>"
                   + "</div>"
-                  + "<p class=\"skinin-function\">" + escapeHtml(ingredient.category || ingredient.function || "cosmetic ingredient") + "</p>"
+                  + functionHtml
                   + toggleAndDetail
                 + "</div>"
                 + "<div class=\"skinin-item-right\">"

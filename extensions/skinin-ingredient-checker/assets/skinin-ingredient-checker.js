@@ -352,13 +352,17 @@
     const reasonHtml = reasonText
       ? `<button class="skinin-toggle-btn" style="font-size:12px;color:#888;cursor:pointer;background:none;border:none;padding:2px 0;display:block;">▼ Details</button><p class="skinin-detail-text" style="display:none;font-size:12px;color:#555;margin-top:4px;line-height:1.5;">${reasonText}</p>`
       : "";
+    const functionText = ingredient.category || ingredient.function;
+    const functionHtml = (functionText && functionText !== "unknown")
+      ? `<p class="skinin-function">${escapeHtml(functionText)}</p>`
+      : "";
     return `
       <article class="skinin-modal-item">
         <div class="skinin-item-info">
           <div class="skinin-item-name">
             <h3>${escapeHtml(name)}</h3>
           </div>
-          <p class="skinin-function">${escapeHtml(ingredient.category || ingredient.function || "cosmetic ingredient")}</p>
+          ${functionHtml}
           ${reasonHtml}
         </div>
         <div class="skinin-item-right">
