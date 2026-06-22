@@ -1904,10 +1904,10 @@ async function analyzeIngredient(name, customMap = {}) {
 
   return {
     name: cleanName,
-    safetyRating: "caution",
+    safetyRating: "unknown",
     function: "unknown",
     category: "unknown",
-    reason: "Ingredient information is limited",
+    reason: "",
     reason_ko: "",
     source: "fallback",
   };

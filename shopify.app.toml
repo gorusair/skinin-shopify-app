@@ -13,17 +13,17 @@ automatically_update_urls_on_dev = false
 [webhooks]
 api_version = "2026-04"
 
-[[webhooks.subscriptions]]
-compliance_topics = [ "customers/data_request" ]
-uri = "https://app.skinin.kr/webhooks/customers/data_request"
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
 
-[[webhooks.subscriptions]]
-compliance_topics = [ "customers/redact" ]
-uri = "https://app.skinin.kr/webhooks/customers/redact"
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
 
-[[webhooks.subscriptions]]
-compliance_topics = [ "shop/redact" ]
-uri = "https://app.skinin.kr/webhooks/shop/redact"
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/shop/redact"
+  compliance_topics = [ "shop/redact" ]
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -32,9 +32,8 @@ optional_scopes = [ ]
 use_legacy_install_flow = true
 
 [auth]
-redirect_urls = [
-  "https://app.skinin.kr/auth/callback"
-]
+redirect_urls = [ "https://app.skinin.kr/auth/callback" ]
+
 [[extensions]]
 name = "Skinin Ingredient Checker"
 handle = "skinin-ingredient-checker"
