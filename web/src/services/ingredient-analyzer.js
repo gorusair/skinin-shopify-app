@@ -431,19 +431,17 @@ export const INGREDIENT_SAFETY = {
   "drometrizole trisiloxane": { rating: "safe", function: "UV filter", reason: "Photostable broad-spectrum UV filter" },
 
   // Exfoliants (AHAs / BHAs / PHAs)
-  "glycolic acid": { rating: "caution", function: "exfoliating", reason: "Effective AHA; may cause irritation or photosensitivity", reason_ko: "각질을 효과적으로 제거하는 AHA 성분; 자극 주의" },
-  "lactic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA; may cause irritation at high concentrations", reason_ko: "순하게 각질을 제거하는 AHA 성분; 고농도 주의" },
-  "mandelic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA suitable for sensitive skin; use with caution" },
-  "tartaric acid": { rating: "caution", function: "exfoliating", reason: "AHA; use with caution on sensitive skin" },
-  "malic acid": { rating: "caution", function: "exfoliating", reason: "Gentle AHA; use with caution on sensitive skin" },
-  gluconolactone: { rating: "caution", function: "exfoliating", reason: "Gentle PHA; suitable for sensitive skin but use with caution" },
-  "lactobionic acid": { rating: "caution", function: "exfoliating", reason: "Gentle PHA with antioxidant properties; use with caution" },
-  "polyhydroxy acid": { rating: "caution", function: "exfoliating", reason: "Gentle exfoliant; suitable for sensitive skin" },
+  "glycolic acid": { rating: "caution", function: "exfoliating", reason: "An alpha-hydroxy acid used as an exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III requires cosmetic products containing AHAs above threshold concentrations to include advisory labeling about increased sun sensitivity and sun protection. Source: EU Regulation (EC) No 1223/2009, Annex III.", reason_ko: "각질을 효과적으로 제거하는 AHA 성분; 자극 주의" }, // VERIFY: confirm current Annex III entry number and exact concentration threshold before citing in production
+  "lactic acid": { rating: "caution", function: "exfoliating", reason: "An alpha-hydroxy acid used as an exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III requires cosmetic products containing AHAs above threshold concentrations to include advisory labeling about increased sun sensitivity and sun protection. Source: EU Regulation (EC) No 1223/2009, Annex III.", reason_ko: "순하게 각질을 제거하는 AHA 성분; 고농도 주의" }, // VERIFY: confirm current Annex III entry number and exact concentration threshold before citing in production
+  "mandelic acid": { rating: "caution", function: "exfoliating", reason: "An alpha-hydroxy acid used as a gentle exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III requires cosmetic products containing AHAs above threshold concentrations to include advisory labeling about increased sun sensitivity and sun protection. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex III entry number and exact concentration threshold before citing in production
+  "tartaric acid": { rating: "caution", function: "exfoliating", reason: "An alpha-hydroxy acid used as an exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III requires cosmetic products containing AHAs above threshold concentrations to include advisory labeling about increased sun sensitivity and sun protection. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex III entry number and exact concentration threshold before citing in production
+  "malic acid": { rating: "caution", function: "exfoliating", reason: "An alpha-hydroxy acid used as a gentle exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III requires cosmetic products containing AHAs above threshold concentrations to include advisory labeling about increased sun sensitivity and sun protection. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex III entry number and exact concentration threshold before citing in production
+  gluconolactone: { rating: "caution", function: "exfoliating", reason: "A polyhydroxy acid (PHA) used as a gentle exfoliating and skin-conditioning ingredient. EU Regulation (EC) No 1223/2009, Annex III sun sensitivity advisory labeling requirements apply to AHA/PHA products above threshold concentrations. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm whether PHAs fall under the same Annex III AHA labeling requirement and exact threshold before citing in production
+  "lactobionic acid": { rating: "caution", function: "exfoliating", reason: "A polyhydroxy acid (PHA) used as a gentle exfoliating ingredient with antioxidant properties. EU Regulation (EC) No 1223/2009, Annex III sun sensitivity advisory labeling requirements apply to AHA/PHA products above threshold concentrations. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm whether PHAs fall under the same Annex III AHA labeling requirement and exact threshold before citing in production
+  "polyhydroxy acid": { rating: "caution", function: "exfoliating", reason: "A polyhydroxy acid (PHA) used as a gentle exfoliating ingredient. EU Regulation (EC) No 1223/2009, Annex III sun sensitivity advisory labeling requirements apply to AHA/PHA products above threshold concentrations. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm whether PHAs fall under the same Annex III AHA labeling requirement and exact threshold before citing in production
   "azelaic acid": { rating: "safe", function: "exfoliating", reason: "A dicarboxylic acid used as a brightening and skin-conditioning agent.", reason_ko: "피부 결과 색소 침착에 사용하는 성분; 일부 따끔거림 가능" },
-  "benzoyl peroxide": { rating: "avoid", function: "exfoliating", reason: "An oxidizing compound with antibacterial properties used in acne treatment formulations. Bleaches fabric on contact. Available over-the-counter or by prescription depending on concentration and jurisdiction." },
-  "trichloroacetic acid": { rating: "avoid", function: "exfoliating", reason: "A chemical peeling agent used in professional dermatology settings at controlled concentrations. Not formulated for consumer home use." },
-
-  // Actives/Treatments
+  "benzoyl peroxide": { rating: "avoid", function: "exfoliating", reason: "An oxidizing agent used as an active ingredient in acne treatment formulations, primarily regulated as a drug active rather than a cosmetic ingredient. Subject to pharmaceutical regulations rather than cosmetic ingredient restrictions in most jurisdictions." },
+  "trichloroacetic acid": { rating: "avoid", function: "exfoliating", reason: "A chemical peeling agent used in professional dermatological and medical settings at controlled concentrations. Not intended for consumer home use; regulated as a medical or professional procedure in most jurisdictions." },
   tretinoin: { rating: "avoid", function: "skin-conditioning", reason: "A vitamin A derivative classified as a medicine in most countries. Not permitted in cosmetic products in the EU. Available by prescription only. Source: EU Regulation (EC) No 1223/2009, Annex II." },
   "retinoic acid": { rating: "avoid", function: "skin-conditioning", reason: "A vitamin A derivative classified as a medicine in most countries. Not permitted in cosmetic products in the EU. Available by prescription only. Source: EU Regulation (EC) No 1223/2009, Annex II." },
   "kojic acid": { rating: "safe", function: "skin-conditioning", reason: "A naturally occurring brightening ingredient derived from fungi.", reason_ko: "멜라닌 생성을 억제하는 미백 성분; 자극 주의" },
@@ -534,7 +532,7 @@ export const INGREDIENT_SAFETY = {
   "locust bean gum": { rating: "safe", function: "thickening", reason: "Natural plant-derived thickener" },
   "guar gum": { rating: "safe", function: "thickening", reason: "Natural plant-derived thickener" },
   "sodium acrylates copolymer": { rating: "safe", function: "thickening", reason: "Polymer thickener" },
-  polyacrylamide: { rating: "safe", function: "thickening", reason: "A synthetic polymer used as a thickening and film-forming agent in cosmetic formulations." },
+  polyacrylamide: { rating: "caution", function: "thickening", reason: "A synthetic polymer used as a thickening and film-forming agent in cosmetic formulations. EU Regulation (EC) No 1223/2009, Annex II restricts the maximum residual acrylamide monomer content in polyacrylamide-containing cosmetics. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact maximum residual acrylamide monomer content (ppm / mg per kg of cosmetic product) before citing in production
   triethanolamine: { rating: "safe", function: "pH adjuster", reason: "An alkanolamine used as a pH adjuster and neutralizing agent in cosmetic formulations." },
   "sodium hydroxide": { rating: "safe", function: "pH adjuster", reason: "pH adjuster; safe at low concentrations in finished products" },
   "disodium edta": { rating: "safe", function: "chelating", reason: "Chelating agent; stabilizes formulas" },
@@ -681,21 +679,19 @@ export const INGREDIENT_SAFETY = {
 
   // Concern/Controversial Ingredients
   triclosan: { rating: "avoid", function: "preservative", reason: "An antimicrobial compound. Permitted in the EU only in specific product categories (toothpaste, hand soaps, body soaps/shower gels, deodorants, face powders, and blemish concealers) at defined concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." },
-  triclocarban: { rating: "avoid", function: "preservative", reason: "An antimicrobial preservative compound. Subject to regulatory review in various jurisdictions regarding permitted uses and concentrations." },
+  triclocarban: { rating: "caution", function: "preservative", reason: "An antimicrobial compound removed from the FDA OTC drug monograph for rinse-off products (2016). EU cosmetic Annex status requires verification before use. Source: EU Regulation (EC) No 1223/2009." }, // VERIFY: confirm current EU Regulation (EC) No 1223/2009 Annex status before citing in production
   "dibutyl phthalate": { rating: "avoid", function: "plasticizer", reason: "A plasticizer compound. Prohibited in cosmetic products in the EU. Source: EU Regulation (EC) No 1223/2009, Annex II." },
-  "diethyl phthalate": { rating: "avoid", function: "solvent", reason: "A solvent from the phthalate family. Subject to regulatory restrictions in cosmetic products in multiple jurisdictions." },
+  "diethyl phthalate": { rating: "caution", function: "solvent", reason: "A solvent from the phthalate chemical family. Diethyl phthalate is not specifically prohibited in EU cosmetics (unlike dibutyl phthalate, which appears in Annex II); the broader phthalate class remains under ongoing scientific review. Source: EU Regulation (EC) No 1223/2009." }, // VERIFY: confirm diethyl phthalate is not listed in Annex II and review current SCCS opinion before citing in production
   phthalates: { rating: "avoid", function: "plasticizer", reason: "A class of plasticizer compounds. Several phthalates are prohibited in cosmetics in the EU. Source: EU Regulation (EC) No 1223/2009, Annex II." },
   "butylated hydroxyanisole": { rating: "caution", function: "antioxidant", reason: "An antioxidant used to prevent oxidation in cosmetic formulations. EU regulatory status is under ongoing SCCS scientific review for potential endocrine activity. Source: EU Regulation (EC) No 1223/2009 (SCCS Opinion SCCS/1609/19)." }, // VERIFY: confirm current Annex status and whether specific concentration limits have been formally adopted before citing in production
   bha: { rating: "caution", function: "antioxidant", reason: "Butylated hydroxyanisole; an antioxidant under EU SCCS scientific review for potential endocrine activity. Source: EU Regulation (EC) No 1223/2009 (SCCS Opinion SCCS/1609/19)." }, // VERIFY: confirm current Annex status before citing in production
-  "butylated hydroxytoluene": { rating: "caution", function: "antioxidant", reason: "Antioxidant preservative; under review" },
-  bht: { rating: "caution", function: "antioxidant", reason: "Butylated hydroxytoluene; antioxidant preservative; under review" },
-  talc: { rating: "caution", function: "absorbent", reason: "Mineral powder; some concerns about asbestos contamination in talc" },
+  "butylated hydroxytoluene": { rating: "caution", function: "antioxidant", reason: "A synthetic phenolic antioxidant used to prevent oxidation in cosmetic formulations. EU regulatory status is under ongoing SCCS scientific review for potential endocrine activity; no specific EU concentration restriction is currently in force. Source: EU Regulation (EC) No 1223/2009 (SCCS Opinion)." }, // VERIFY: confirm current Annex status and whether concentration limits have been formally adopted before citing in production
+  bht: { rating: "caution", function: "antioxidant", reason: "Butylated hydroxytoluene; a synthetic phenolic antioxidant under EU SCCS scientific review for potential endocrine activity; no specific concentration restriction currently in force. Source: EU Regulation (EC) No 1223/2009 (SCCS Opinion)." }, // VERIFY: confirm current Annex status before citing in production
+  talc: { rating: "caution", function: "absorbent", reason: "A naturally occurring mineral used as an absorbent and texture-enhancing ingredient. No specific EU cosmetic ingredient restriction; historical concerns relate to potential asbestos contamination in some mined sources, addressed through purity testing requirements." },
   "isopropyl alcohol": { rating: "safe", function: "solvent", reason: "A short-chain alcohol used as a solvent and antimicrobial agent in cosmetic formulations." },
   "sd alcohol": { rating: "safe", function: "solvent", reason: "Denatured ethanol used as a solvent and antimicrobial agent in cosmetic formulations." },
-  "aluminum chlorohydrate": { rating: "caution", function: "antiperspirant", reason: "Aluminum-based antiperspirant; some concerns about long-term use" },
-  "aluminum zirconium tetrachlorohydrex": { rating: "caution", function: "antiperspirant", reason: "Aluminum-based antiperspirant; some concerns about long-term use" },
-
-  // Additional Emulsifiers and Stabilizers
+  "aluminum chlorohydrate": { rating: "caution", function: "antiperspirant", reason: "An aluminum-based compound used as an antiperspirant active ingredient. Subject to ongoing scientific review by the EU Scientific Committee on Consumer Safety (SCCS); no current EU-wide restriction on antiperspirant use has been finalized." },
+  "aluminum zirconium tetrachlorohydrex": { rating: "caution", function: "antiperspirant", reason: "An aluminum-zirconium compound used as an antiperspirant active ingredient. Subject to ongoing scientific review by the EU Scientific Committee on Consumer Safety (SCCS); no current EU-wide restriction on antiperspirant use has been finalized." },
   "ceteareth-20": { rating: "safe", function: "emulsifier", reason: "Emulsifier; generally well-tolerated" },
   "ceteareth-12": { rating: "safe", function: "emulsifier", reason: "Emulsifier; generally well-tolerated" },
   "steareth-20": { rating: "safe", function: "emulsifier", reason: "Emulsifier; generally well-tolerated" },
@@ -975,9 +971,9 @@ export const INGREDIENT_SAFETY = {
   "sodium cocoate": { rating: "safe", function: "cleansing", reason: "Soap derived from coconut oil; gentle cleanser" },
   "potassium cocoate": { rating: "safe", function: "cleansing", reason: "Soft soap from coconut oil; gentle" },
   "sodium olivate": { rating: "safe", function: "cleansing", reason: "Soap derived from olive oil; gentle cleanser" },
-  "cocamide dea": { rating: "caution", function: "cleansing", reason: "Foam booster; potential for nitrosamine formation" },
-  "cocamide mea": { rating: "caution", function: "cleansing", reason: "Foam booster; potential for nitrosamine formation" },
-  "lauramide dea": { rating: "caution", function: "cleansing", reason: "Foam booster; potential for nitrosamine formation" },
+  "cocamide dea": { rating: "caution", function: "cleansing", reason: "A foam booster and surfactant used in cleansing formulations. The EU Scientific Committee on Consumer Safety (SCCS) has evaluated the potential formation of N-nitrosamines in DEA-type ingredients and has recommended restrictions. Source: SCCS/1540/14; EU Regulation (EC) No 1223/2009." }, // VERIFY: confirm current Annex V status and exact concentration limits before citing in production
+  "cocamide mea": { rating: "caution", function: "cleansing", reason: "A foam booster and surfactant used in cleansing formulations. The EU Scientific Committee on Consumer Safety (SCCS) has evaluated nitrosamine formation potential in MEA-type ingredients and has recommended restrictions. Source: SCCS/1540/14; EU Regulation (EC) No 1223/2009." }, // VERIFY: confirm current Annex V status and exact concentration limits before citing in production
+  "lauramide dea": { rating: "caution", function: "cleansing", reason: "A foam booster and surfactant used in cleansing formulations. The EU Scientific Committee on Consumer Safety (SCCS) has evaluated nitrosamine formation potential in DEA-type ingredients and has recommended restrictions. Source: SCCS/1540/14; EU Regulation (EC) No 1223/2009." }, // VERIFY: confirm current Annex V status and exact concentration limits before citing in production
   "oleoyl sarcosine": { rating: "safe", function: "cleansing", reason: "Mild amino acid surfactant" },
   "sodium sarcosinate": { rating: "safe", function: "cleansing", reason: "Mild amphoteric surfactant" },
   "peg-7 glyceryl cocoate": { rating: "safe", function: "cleansing", reason: "Mild PEG emulsifier and cleanser" },
@@ -997,32 +993,30 @@ export const INGREDIENT_SAFETY = {
   "sodium ethylparaben": { rating: "safe", function: "preservative", reason: "A sodium salt of ethylparaben used as a preservative in cosmetic formulations." },
   "isopropylparaben": { rating: "safe", function: "preservative", reason: "A paraben preservative used to prevent microbial growth in cosmetic formulations." },
   "p-hydroxybenzoic acid": { rating: "safe", function: "preservative", reason: "The parent compound of the paraben family; used as a preservative in cosmetic formulations." },
-  "chloroxylenol": { rating: "caution", function: "preservative", reason: "Antimicrobial agent; may cause skin irritation" },
-  "benzethonium chloride": { rating: "caution", function: "preservative", reason: "Quaternary ammonium preservative; potential irritant" },
-  "benzalkonium chloride": { rating: "caution", function: "preservative", reason: "Quaternary ammonium preservative; potential sensitizer" },
-  "cetrimonium bromide": { rating: "caution", function: "preservative", reason: "Quaternary ammonium compound; antimicrobial and conditioning" },
+  "chloroxylenol": { rating: "caution", function: "preservative", reason: "An antimicrobial preservative permitted in EU cosmetics at restricted concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
+  "benzethonium chloride": { rating: "caution", function: "preservative", reason: "A quaternary ammonium preservative permitted in EU cosmetics at restricted concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
+  "benzalkonium chloride": { rating: "caution", function: "preservative", reason: "A quaternary ammonium preservative permitted in EU cosmetics at restricted concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
+  "cetrimonium bromide": { rating: "caution", function: "preservative", reason: "A quaternary ammonium compound with antimicrobial properties, permitted in EU cosmetics at restricted concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
   "hexamidine diisethionate": { rating: "safe", function: "preservative", reason: "Antimicrobial preservative; gentle" },
   "piroctone olamine": { rating: "safe", function: "preservative", reason: "Antifungal preservative; effective against dandruff" },
-  "zinc pyrithione": { rating: "caution", function: "preservative", reason: "Antifungal and antibacterial; may irritate sensitive skin" },
-  "sodium pyrithione": { rating: "caution", function: "preservative", reason: "Antifungal preservative" },
+  "zinc pyrithione": { rating: "caution", function: "preservative", reason: "An antifungal and antibacterial preservative permitted in EU cosmetics in rinse-off hair products only, at a maximum concentration of 1%. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm current product-type restrictions and maximum concentration before citing in production
+  "sodium pyrithione": { rating: "caution", function: "preservative", reason: "An antifungal preservative with restrictions on cosmetic use similar to zinc pyrithione. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
   "climbazole": { rating: "safe", function: "preservative", reason: "Antifungal ingredient; effective and gentle" },
   "glyceryl caprylate": { rating: "safe", function: "preservative", reason: "Natural glycerol ester; mild antimicrobial" },
   "p-anisic acid": { rating: "safe", function: "preservative", reason: "Natural antimicrobial from star anise; gentle preservative" },
   "levulinic acid": { rating: "safe", function: "preservative", reason: "Natural preservative booster; gentle" },
   "sodium levulinate": { rating: "safe", function: "preservative", reason: "Sodium salt of levulinic acid; gentle preservative" },
   "methylchloroisothiazolinone": { rating: "avoid", function: "preservative", reason: "An isothiazolinone preservative effective against bacteria and fungi. Restricted in the EU to rinse-off products at specified concentrations; prohibited in leave-on cosmetics. Source: EU Regulation (EC) No 1223/2009, Annex V." },
-  "benzisothiazolinone": { rating: "caution", function: "preservative", reason: "Isothiazolinone preservative; potential sensitizer" },
-  "octylisothiazolinone": { rating: "caution", function: "preservative", reason: "Isothiazolinone preservative; potential sensitizer" },
-  "iodopropynyl butylcarbamate": { rating: "caution", function: "preservative", reason: "Antimicrobial; may cause skin sensitization" },
-  "ipbc": { rating: "caution", function: "preservative", reason: "Iodopropynyl butylcarbamate; potential sensitizer" },
+  "benzisothiazolinone": { rating: "caution", function: "preservative", reason: "An isothiazolinone preservative permitted in EU cosmetics with maximum concentration restrictions. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
+  "octylisothiazolinone": { rating: "caution", function: "preservative", reason: "An isothiazolinone preservative permitted in EU cosmetics with maximum concentration restrictions. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
+  "iodopropynyl butylcarbamate": { rating: "caution", function: "preservative", reason: "An antimicrobial preservative permitted in EU cosmetics at a maximum concentration of 0.02%, with additional restrictions on use in oral hygiene products and products for children under 3 years. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm current maximum concentration and restricted product categories before citing in production
+  "ipbc": { rating: "caution", function: "preservative", reason: "Iodopropynyl butylcarbamate; an antimicrobial preservative permitted in EU cosmetics at a maximum concentration of 0.02%, with restrictions on certain product types. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm current maximum concentration and restricted product categories before citing in production
   "dilauryl thiodipropionate": { rating: "safe", function: "preservative", reason: "Antioxidant-type preservative" },
   "distearyl thiodipropionate": { rating: "safe", function: "preservative", reason: "Antioxidant-type preservative" },
   "caprylhydroxamic acid": { rating: "safe", function: "preservative", reason: "Gentle chelating preservative" },
   "sodium dehydroacetate": { rating: "safe", function: "preservative", reason: "Gentle, widely tolerated preservative" },
   "4-hydroxybenzoic acid": { rating: "safe", function: "preservative", reason: "The parent compound of the paraben family; used as a preservative in cosmetic formulations." },
-  "o-phenylphenol": { rating: "caution", function: "preservative", reason: "Antimicrobial preservative; potential sensitizer" },
-
-  // ─── FRAGRANCES (additional) ──────────────────────────────────────────────
+  "o-phenylphenol": { rating: "caution", function: "preservative", reason: "An antimicrobial preservative permitted in EU cosmetics at restricted concentrations. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
   "rose oil": { rating: "safe", function: "fragrance", reason: "An essential oil from rose petals used as a fragrance ingredient." },
   "rosa damascena flower oil": { rating: "safe", function: "fragrance", reason: "An essential oil from Damask rose petals used as a fragrance ingredient." },
   "rosa centifolia flower oil": { rating: "safe", function: "fragrance", reason: "An essential oil from cabbage rose petals used as a fragrance ingredient." },
@@ -1077,19 +1071,19 @@ export const INGREDIENT_SAFETY = {
   "piper nigrum fruit oil": { rating: "safe", function: "fragrance", reason: "An essential oil from black pepper used as a fragrance ingredient." },
   "nutmeg oil": { rating: "safe", function: "fragrance", reason: "An essential oil from nutmeg used as a fragrance ingredient." },
   "myristica fragrans kernel oil": { rating: "safe", function: "fragrance", reason: "An essential oil from nutmeg used as a fragrance ingredient." },
-  "galaxolide": { rating: "caution", function: "fragrance", reason: "Synthetic polycyclic musk; potential environmental concern" },
-  "tonalide": { rating: "caution", function: "fragrance", reason: "Synthetic polycyclic musk; potential environmental concern" },
-  "musk ketone": { rating: "avoid", function: "fragrance", reason: "Nitromusk; restricted in EU cosmetics" },
-  "musk xylene": { rating: "avoid", function: "fragrance", reason: "Nitromusk; banned in EU due to neurotoxicity" },
-  "musk ambrette": { rating: "avoid", function: "fragrance", reason: "Nitromusk; banned in EU due to phototoxicity" },
-  "methyl eugenol": { rating: "avoid", function: "fragrance", reason: "EU-restricted fragrance; potential carcinogen" },
-  "atranol": { rating: "avoid", function: "fragrance", reason: "Potent allergen banned in EU cosmetics" },
-  "chloroatranol": { rating: "avoid", function: "fragrance", reason: "Potent allergen banned in EU cosmetics" },
-  "lilial": { rating: "avoid", function: "fragrance", reason: "Butylphenyl methylpropional; banned in EU due to reproductive toxicity" },
-  "lyral": { rating: "avoid", function: "fragrance", reason: "Hydroxyisohexyl 3-cyclohexene carboxaldehyde; banned in EU" },
-  "safrole": { rating: "avoid", function: "fragrance", reason: "Fragrance chemical; banned in cosmetics due to carcinogenicity" },
-  "estragole": { rating: "avoid", function: "fragrance", reason: "Fragrance chemical; genotoxic concerns; restricted in EU" },
-  "pulegone": { rating: "avoid", function: "fragrance", reason: "Fragrance ketone; hepatotoxic concerns; restricted in EU" },
+  "galaxolide": { rating: "caution", function: "fragrance", reason: "A synthetic polycyclic musk (HHCB) used as a fragrance ingredient. Subject to ongoing environmental safety evaluation under REACH; no finalized restriction on cosmetic use is currently in force." },
+  "tonalide": { rating: "caution", function: "fragrance", reason: "A synthetic polycyclic musk (AHTN) used as a fragrance ingredient. Subject to ongoing environmental safety evaluation under REACH; no finalized restriction on cosmetic use is currently in force." },
+  "musk ketone": { rating: "caution", function: "fragrance", reason: "A synthetic nitromusk fragrance compound subject to restriction in EU cosmetic products. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm whether musk ketone is in Annex II (prohibited) or Annex III (restricted) and exact concentration limits before citing in production
+  "musk xylene": { rating: "avoid", function: "fragrance", reason: "A nitromusk fragrance compound prohibited in cosmetic products in the EU. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "musk ambrette": { rating: "avoid", function: "fragrance", reason: "A nitromusk fragrance compound prohibited in cosmetic products in the EU due to phototoxicity. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "methyl eugenol": { rating: "caution", function: "fragrance", reason: "A fragrance compound subject to maximum concentration restrictions in EU cosmetic products. Source: EU Regulation (EC) No 1223/2009, Annex III, as amended by Commission Regulation (EU) 2017/238." }, // VERIFY: confirm current concentration limits per product type before citing in production
+  "atranol": { rating: "avoid", function: "fragrance", reason: "A fragrance compound derived from oakmoss and treemoss, prohibited in cosmetic products in the EU. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "chloroatranol": { rating: "avoid", function: "fragrance", reason: "A fragrance compound derived from oakmoss and treemoss, prohibited in cosmetic products in the EU. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "lilial": { rating: "avoid", function: "fragrance", reason: "A fragrance compound (butylphenyl methylpropional) prohibited in EU cosmetics from 1 March 2022 due to reproductive toxicity classification (CMR 1B). Source: EU Regulation (EC) No 1223/2009, Annex II, as amended by Commission Regulation (EU) 2021/1902." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "lyral": { rating: "avoid", function: "fragrance", reason: "A fragrance compound (hydroxyisohexyl 3-cyclohexene carboxaldehyde / HICC) prohibited for use in EU cosmetic products. Source: EU Regulation (EC) No 1223/2009, Annex II, as amended by Commission Regulation (EU) 2017/1410." }, // VERIFY: confirm exact Annex II entry number before citing in production
+  "safrole": { rating: "avoid", function: "fragrance", reason: "A fragrance compound prohibited in cosmetic products in the EU due to carcinogenicity concerns. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact Annex II entry number and effective date before citing in production
+  "estragole": { rating: "caution", function: "fragrance", reason: "A fragrance compound subject to maximum concentration restrictions in certain EU cosmetic product types. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex III concentration limits per product type before citing in production
+  "pulegone": { rating: "caution", function: "fragrance", reason: "A fragrance ketone subject to maximum concentration restrictions in EU cosmetic products. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex III concentration limits before citing in production
   "benzaldehyde": { rating: "safe", function: "fragrance", reason: "A naturally occurring and synthetic aromatic aldehyde used as a fragrance ingredient." },
   "alpha-terpineol": { rating: "safe", function: "fragrance", reason: "A fragrance monoterpene alcohol used as a fragrance ingredient." },
   "linalyl acetate": { rating: "safe", function: "fragrance", reason: "A fragrance ester occurring naturally in lavender and bergamot; used as a fragrance ingredient." },
@@ -1098,7 +1092,7 @@ export const INGREDIENT_SAFETY = {
   "menthol": { rating: "safe", function: "fragrance", reason: "A naturally occurring fragrance ingredient derived from mint oils; provides a cooling sensation." },
   "menthone": { rating: "safe", function: "fragrance", reason: "A fragrance ketone occurring naturally in mint oils; used as a fragrance ingredient." },
   "methyl salicylate": { rating: "safe", function: "fragrance", reason: "A fragrance ingredient occurring naturally in wintergreen; used as a fragrance." },
-  "amyl cinnamaldehyde": { rating: "avoid", function: "fragrance", reason: "EU-restricted fragrance allergen; common sensitizer" },
+  "amyl cinnamaldehyde": { rating: "caution", function: "fragrance", reason: "A fragrance compound listed as a disclosable fragrance allergen in EU cosmetics. Source: EU Regulation (EC) No 1223/2009, Annex III." }, // VERIFY: confirm current Annex status (disclosure allergen vs potential Annex II prohibition) before citing in production
   "iso e super": { rating: "safe", function: "fragrance", reason: "A synthetic woody fragrance ingredient used in perfumery." },
   "ethylene brassylate": { rating: "safe", function: "fragrance", reason: "A macrocyclic musk used as a fragrance ingredient." },
   "habanolide": { rating: "safe", function: "fragrance", reason: "A macrocyclic musk used as a fragrance ingredient." },
@@ -1121,8 +1115,8 @@ export const INGREDIENT_SAFETY = {
   "benzophenone-1": { rating: "caution", function: "UV filter", reason: "Chemical UV filter; potential endocrine activity" },
   "benzophenone-2": { rating: "caution", function: "UV filter", reason: "Chemical UV filter; potential endocrine activity" },
   "benzophenone-5": { rating: "safe", function: "UV filter", reason: "A water-soluble benzophenone UV filter used in sunscreen formulations." },
-  "4-aminobenzoic acid": { rating: "avoid", function: "UV filter", reason: "PABA; high sensitization potential; mostly discontinued" },
-  "paba": { rating: "avoid", function: "UV filter", reason: "Para-aminobenzoic acid; strong sensitizer; mostly discontinued" },
+  "4-aminobenzoic acid": { rating: "avoid", function: "UV filter", reason: "Para-aminobenzoic acid (PABA); no longer permitted as a UV filter in EU cosmetics following its removal from the list of permitted UV filters. Source: EU Regulation (EC) No 1223/2009, Annex VI, as amended." }, // VERIFY: confirm exact removal amendment and whether any cosmetic uses remain permitted before citing in production
+  "paba": { rating: "avoid", function: "UV filter", reason: "Para-aminobenzoic acid; no longer permitted as a UV filter in EU cosmetics following its removal from the list of permitted UV filters. Source: EU Regulation (EC) No 1223/2009, Annex VI, as amended." }, // VERIFY: confirm exact removal amendment and whether any cosmetic uses remain permitted before citing in production
   "padimate o": { rating: "caution", function: "UV filter", reason: "Ethylhexyl dimethyl PABA; potential sensitizer" },
   "ethylhexyl dimethyl paba": { rating: "caution", function: "UV filter", reason: "PABA ester UV filter; potential sensitizer" },
   "isoamyl p-methoxycinnamate": { rating: "safe", function: "UV filter", reason: "A cinnamate-based chemical UV filter permitted for use in EU cosmetics." },
@@ -1249,7 +1243,7 @@ export const INGREDIENT_SAFETY = {
   "polyacrylate-1 crosspolymer": { rating: "safe", function: "thickening", reason: "Cross-linked acrylate polymer thickener" },
   "polyacrylate crosspolymer-6": { rating: "safe", function: "thickening", reason: "Crosslinked polymer thickener" },
   "sodium polyacrylate starch": { rating: "safe", function: "thickening", reason: "Hybrid polymer-starch thickener" },
-  "acrylamide/sodium acrylate copolymer": { rating: "safe", function: "thickening", reason: "A synthetic polymer used as a thickening and film-forming agent." },
+  "acrylamide/sodium acrylate copolymer": { rating: "caution", function: "thickening", reason: "A synthetic copolymer used as a thickening agent in cosmetic formulations. EU Regulation (EC) No 1223/2009, Annex II restricts residual acrylamide monomer content in acrylamide-containing polymers used in cosmetics. Source: EU Regulation (EC) No 1223/2009, Annex II." }, // VERIFY: confirm exact maximum residual acrylamide monomer content before citing in production
   "methyl cellulose": { rating: "safe", function: "thickening", reason: "Cellulose ether; thickening and gelling agent" },
   "ethyl cellulose": { rating: "safe", function: "thickening", reason: "Cellulose ether; film-forming thickener" },
   "carboxymethyl cellulose": { rating: "safe", function: "thickening", reason: "Cellulose derivative thickener; hydrophilic" },
@@ -1781,8 +1775,8 @@ export const INGREDIENT_SAFETY = {
   "oat kernel oil": { rating: "safe", function: "emollient", reason: "Avena sativa oil; rich in ceramides and avenanthramides" },
   "avena sativa kernel oil": { rating: "safe", function: "emollient", reason: "Oat oil; ceramide-containing soothing emollient" },
   "avenanthramides": { rating: "safe", function: "soothing", reason: "Unique oat polyphenols; potent anti-inflammatory" },
-  "chlorhexidine": { rating: "avoid", function: "preservative", reason: "Antimicrobial; strong potential sensitizer at cosmetic use" },
-  "chlorhexidine digluconate": { rating: "caution", function: "preservative", reason: "Antimicrobial antiseptic; may cause sensitization" },
+  "chlorhexidine": { rating: "caution", function: "preservative", reason: "An antimicrobial compound permitted in EU cosmetics at restricted concentrations in certain product types (e.g., oral hygiene products). Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm current Annex V concentration limits per product type before citing in production
+  "chlorhexidine digluconate": { rating: "caution", function: "preservative", reason: "An antimicrobial compound permitted in EU cosmetics at restricted concentrations in certain product types. Source: EU Regulation (EC) No 1223/2009, Annex V." }, // VERIFY: confirm exact Annex entry number and concentration limits before citing in production
   "mafura butter": { rating: "safe", function: "emollient", reason: "African tree butter; nourishing emollient" },
   "trichilia emetica seed butter": { rating: "safe", function: "emollient", reason: "Mafura butter; African nourishing emollient" },
   "cupuacu butter": { rating: "safe", function: "emollient", reason: "Amazonian butter; highly emollient and moisturizing" },
