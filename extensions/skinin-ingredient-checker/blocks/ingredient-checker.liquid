@@ -392,7 +392,7 @@
         return ingredients.filter(function (v) {
           if (/^\d+(\.\d+)?\s*(ml|fl\.?\s?oz\.?|g|kg|mg|oz|lb|lbs|l)\.?$/i.test(v)) return false;
           if (/^\d+(\.\d+)?%?$/.test(v)) return false;
-          if (/^(net\s+wt\.?|made\s+in|best\s+before|use\s+by|mfg\.?|batch\s+no\.?|lot\s+no\.?)$/i.test(v)) return false;
+          if (/^(volume|net\s+wt\.?|made\s+in|best\s+before|use\s+by|mfg\.?|batch\s+no\.?|lot\s+no\.?)$/i.test(v)) return false;
           return true;
         });
       }

@@ -117,7 +117,7 @@
   function extractIngredients(productData) {
     const metafieldIngredients = productData.metafieldIngredients;
     if (Array.isArray(metafieldIngredients)) {
-      const ingredients = cleanIngredients(metafieldIngredients);
+      const ingredients = filterIngredients(cleanIngredients(metafieldIngredients));
       return {
         ingredients: isPlausibleIngredientList(ingredients) ? ingredients : [],
         status: "empty",
@@ -127,7 +127,7 @@
       typeof metafieldIngredients === "string" &&
       metafieldIngredients.trim()
     ) {
-      const ingredients = splitIngredients(metafieldIngredients);
+      const ingredients = filterIngredients(splitIngredients(metafieldIngredients));
       return {
         ingredients: isPlausibleIngredientList(ingredients, metafieldIngredients)
           ? ingredients
@@ -139,7 +139,7 @@
     const description = productData.description || "";
     const ingredientText = findIngredientText(description);
     if (ingredientText) {
-      const ingredients = splitIngredients(ingredientText);
+      const ingredients = filterIngredients(splitIngredients(ingredientText));
       if (isPlausibleIngredientList(ingredients, ingredientText)) {
         return { ingredients, status: "empty" };
       }
@@ -168,11 +168,14 @@
   }
 
   function trimIngredientSection(value) {
-    const sectionBreak = String(value).search(
-      /\b(directions|usage|how to use|warnings?|caution|description|details|benefits|related products?|you may also like|sale)\b\s*:/i,
+    const text = String(value);
+    const colonBreak = text.search(/\b(directions|usage|how to use|warnings?|caution|description|details|benefits|related products?|you may also like|sale|made\s+in|country\s+of\s+origin|best\s+before|expiry|expiration|batch\s+no\.?|lot\s+no\.?)\b\s*:/i);
+    const metaBreak = text.search(/\b(volume|net\s?wt\.?|net\s?weight|size|capacity|qty|quantity)\s*:?\s*\d/i);
+    const cutoff = Math.min(
+      colonBreak >= 0 ? colonBreak : text.length,
+      metaBreak >= 0 ? metaBreak : text.length,
     );
-    const section =
-      sectionBreak >= 0 ? String(value).slice(0, sectionBreak) : String(value);
+    const section = cutoff < text.length ? text.slice(0, cutoff) : text;
     return section.replace(/^[:\s-]+/, "").trim();
   }
 
@@ -201,11 +204,22 @@
       )
     )
       return false;
+    if (/^\d+(\.\d+)?\s*(ml|fl\.?\s?oz\.?|g|kg|mg|oz|lb|lbs|l)\.?$/i.test(ingredient)) return false;
+    if (/^\d+(\.\d+)?%?$/.test(ingredient)) return false;
     return true;
   }
 
   function cleanIngredients(values) {
     return values.map(cleanIngredientName).filter(Boolean).slice(0, 80);
+  }
+
+  function filterIngredients(ingredients) {
+    return ingredients.filter((v) => {
+      if (/^\d+(\.\d+)?\s*(ml|fl\.?\s?oz\.?|g|kg|mg|oz|lb|lbs|l)\.?$/i.test(v)) return false;
+      if (/^\d+(\.\d+)?%?$/.test(v)) return false;
+      if (/^(volume|net\s+wt\.?|made\s+in|best\s+before|use\s+by|mfg\.?|batch\s+no\.?|lot\s+no\.?)$/i.test(v)) return false;
+      return true;
+    });
   }
 
   function cleanIngredientName(value) {
