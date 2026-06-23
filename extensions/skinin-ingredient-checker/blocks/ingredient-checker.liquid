@@ -314,17 +314,17 @@
         }
 
         if (Array.isArray(productData.metafieldIngredients)) {
-          var metafieldArrayIngredients = cleanIngredients(productData.metafieldIngredients);
+          var metafieldArrayIngredients = filterIngredients(cleanIngredients(productData.metafieldIngredients));
           return isPlausibleIngredientList(metafieldArrayIngredients) ? metafieldArrayIngredients : [];
         }
 
         if (productData.metafieldIngredients) {
-          var metafieldIngredients = splitIngredients(productData.metafieldIngredients);
+          var metafieldIngredients = filterIngredients(splitIngredients(productData.metafieldIngredients));
           return isPlausibleIngredientList(metafieldIngredients, productData.metafieldIngredients) ? metafieldIngredients : [];
         }
 
         var ingredientText = findIngredientText(productData.description || "");
-        var ingredients = splitIngredients(ingredientText);
+        var ingredients = filterIngredients(splitIngredients(ingredientText));
         return isPlausibleIngredientList(ingredients, ingredientText) ? ingredients : [];
       }
 
@@ -369,6 +369,8 @@
         if (ingredient.length < 2 || ingredient.length > 80) return false;
         if (/[+$€£¥₩]|(?:\d+%?\s*off)|(?:\$\s*\d+)/i.test(ingredient)) return false;
         if (/\b(add to cart|buy now|sale|sold out|related products?|you may also like|shipping|returns?|reviews?|price|subtotal|checkout|home|menu)\b/i.test(ingredient)) return false;
+        if (/^\d+(\.\d+)?\s*(ml|fl\.?\s?oz\.?|g|kg|mg|oz|lb|lbs|l)\.?$/i.test(ingredient)) return false;
+        if (/^\d+(\.\d+)?%?$/.test(ingredient)) return false;
         return true;
       }
 
@@ -376,6 +378,15 @@
         return values.map(function (value) {
           return String(value).trim().replace(/[.,;:]+$/g, "").trim();
         }).filter(Boolean).slice(0, 80);
+      }
+
+      function filterIngredients(ingredients) {
+        return ingredients.filter(function (v) {
+          if (/^\d+(\.\d+)?\s*(ml|fl\.?\s?oz\.?|g|kg|mg|oz|lb|lbs|l)\.?$/i.test(v)) return false;
+          if (/^\d+(\.\d+)?%?$/.test(v)) return false;
+          if (/^(net\s+wt\.?|made\s+in|best\s+before|use\s+by|mfg\.?|batch\s+no\.?|lot\s+no\.?)$/i.test(v)) return false;
+          return true;
+        });
       }
 
       function escapeRegExp(value) {
