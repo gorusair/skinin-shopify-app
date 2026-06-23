@@ -344,8 +344,16 @@
       }
 
       function trimIngredientSection(value) {
-        var sectionBreak = String(value).search(/\b(directions|usage|how to use|warnings?|caution|description|details|benefits|related products?|you may also like|sale)\b\s*:/i);
-        var section = sectionBreak >= 0 ? String(value).slice(0, sectionBreak) : String(value);
+        var text = String(value);
+        // Named section headers that use a colon (existing + added metadata phrases)
+        var colonBreak = text.search(/\b(directions|usage|how to use|warnings?|caution|description|details|benefits|related products?|you may also like|sale|made\s+in|country\s+of\s+origin|best\s+before|expiry|expiration|batch\s+no\.?|lot\s+no\.?)\b\s*:/i);
+        // Metadata labels that precede a number — colon is optional (catches "Volume300 ml", "Net Wt. 50g", etc.)
+        var metaBreak = text.search(/\b(volume|net\s?wt\.?|net\s?weight|size|capacity|qty|quantity)\s*:?\s*\d/i);
+        var cutoff = Math.min(
+          colonBreak >= 0 ? colonBreak : text.length,
+          metaBreak >= 0 ? metaBreak : text.length
+        );
+        var section = cutoff < text.length ? text.slice(0, cutoff) : text;
         return section.replace(/^[:\s-]+/, "").trim();
       }
 
